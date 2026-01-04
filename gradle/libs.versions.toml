@@ -7,7 +7,7 @@ targetSdk = "35"
 # Kotlin
 kotlin = "1.9.25"
 kotlinxCoroutines = "1.9.0"
-kotlinxSerialization = "1.7.3"
+kotlinxSerialization = "1.6.3"
 
 # AndroidX Core
 androidxCore = "1.15.0"
@@ -38,7 +38,7 @@ coil = "2.7.0"
 
 # JSON
 gson = "2.11.0"
-kotlinxSerializationJson = "1.7.3"
+kotlinxSerializationJson = "1.6.3"
 
 # DataStore
 datastore = "1.1.1"
