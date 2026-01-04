@@ -19,6 +19,12 @@ internal interface RealmService {
      */
     val isInitialized: Boolean
 
+    /**
+     * Get Realm instance for direct queries
+     * Only use this when repository needs direct Realm access
+     */
+    fun getRealm(): io.realm.kotlin.Realm
+
     // MARK: - Chapter (Surah) Operations
 
     /**

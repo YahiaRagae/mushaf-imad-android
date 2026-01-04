@@ -4,9 +4,11 @@ import android.content.Context
 import com.mushafimad.library.data.cache.ChaptersDataCache
 import com.mushafimad.library.data.cache.QuranDataCacheService
 import com.mushafimad.library.data.repository.*
+import com.mushafimad.library.domain.repository.BookmarkRepository
 import com.mushafimad.library.domain.repository.ChapterRepository
 import com.mushafimad.library.domain.repository.PageRepository
 import com.mushafimad.library.domain.repository.QuranRepository
+import com.mushafimad.library.domain.repository.ReadingHistoryRepository
 import com.mushafimad.library.domain.repository.VerseRepository
 import dagger.Module
 import dagger.Provides
@@ -84,5 +86,21 @@ object MushafCoreModule {
         quranDataCacheService: QuranDataCacheService
     ): QuranRepository {
         return QuranRepositoryImpl(realmService, chaptersDataCache, quranDataCacheService)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideBookmarkRepository(
+        realmService: RealmService
+    ): BookmarkRepository {
+        return BookmarkRepositoryImpl(realmService)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideReadingHistoryRepository(
+        realmService: RealmService
+    ): ReadingHistoryRepository {
+        return ReadingHistoryRepositoryImpl(realmService)
     }
 }

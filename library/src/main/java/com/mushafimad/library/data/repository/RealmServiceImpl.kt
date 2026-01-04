@@ -26,7 +26,7 @@ internal class RealmServiceImpl @Inject constructor(
 
     companion object {
         private const val REALM_FILE_NAME = "quran.realm"
-        private const val SCHEMA_VERSION = 24L
+        private const val SCHEMA_VERSION = 25L  // Updated for user data features
     }
 
     override val isInitialized: Boolean
@@ -60,6 +60,7 @@ internal class RealmServiceImpl @Inject constructor(
         // Configure Realm
         val config = RealmConfiguration.Builder(
             schema = setOf(
+                // Core Quran entities
                 ChapterEntity::class,
                 VerseEntity::class,
                 PageEntity::class,
@@ -69,7 +70,11 @@ internal class RealmServiceImpl @Inject constructor(
                 VerseMarkerEntity::class,
                 PageHeaderEntity::class,
                 ChapterHeaderEntity::class,
-                QuranSectionEntity::class
+                QuranSectionEntity::class,
+                // User data entities (Week 7)
+                BookmarkEntity::class,
+                ReadingHistoryEntity::class,
+                LastReadPositionEntity::class
             )
         )
             .name(REALM_FILE_NAME)
@@ -79,6 +84,10 @@ internal class RealmServiceImpl @Inject constructor(
 
         configuration = config
         realm = Realm.open(config)
+    }
+
+    override fun getRealm(): Realm {
+        return realm ?: throw IllegalStateException("Realm not initialized. Call initialize() first.")
     }
 
     // MARK: - Chapter Operations
