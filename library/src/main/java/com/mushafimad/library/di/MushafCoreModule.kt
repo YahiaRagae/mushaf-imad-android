@@ -1,8 +1,13 @@
 package com.mushafimad.library.di
 
 import android.content.Context
-import com.mushafimad.library.data.repository.RealmService
-import com.mushafimad.library.data.repository.RealmServiceImpl
+import com.mushafimad.library.data.cache.ChaptersDataCache
+import com.mushafimad.library.data.cache.QuranDataCacheService
+import com.mushafimad.library.data.repository.*
+import com.mushafimad.library.domain.repository.ChapterRepository
+import com.mushafimad.library.domain.repository.PageRepository
+import com.mushafimad.library.domain.repository.QuranRepository
+import com.mushafimad.library.domain.repository.VerseRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,5 +29,60 @@ object MushafCoreModule {
         @ApplicationContext context: Context
     ): RealmService {
         return RealmServiceImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideChaptersDataCache(
+        realmService: RealmService
+    ): ChaptersDataCache {
+        return ChaptersDataCache(realmService)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideQuranDataCacheService(
+        realmService: RealmService
+    ): QuranDataCacheService {
+        return QuranDataCacheService(realmService)
+    }
+
+    // Repository Providers
+
+    @Provides
+    @Singleton
+    internal fun provideChapterRepository(
+        realmService: RealmService,
+        chaptersDataCache: ChaptersDataCache
+    ): ChapterRepository {
+        return ChapterRepositoryImpl(realmService, chaptersDataCache)
+    }
+
+    @Provides
+    @Singleton
+    internal fun providePageRepository(
+        realmService: RealmService,
+        cacheService: QuranDataCacheService
+    ): PageRepository {
+        return PageRepositoryImpl(realmService, cacheService)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideVerseRepository(
+        realmService: RealmService,
+        cacheService: QuranDataCacheService
+    ): VerseRepository {
+        return VerseRepositoryImpl(realmService, cacheService)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideQuranRepository(
+        realmService: RealmService,
+        chaptersDataCache: ChaptersDataCache,
+        quranDataCacheService: QuranDataCacheService
+    ): QuranRepository {
+        return QuranRepositoryImpl(realmService, chaptersDataCache, quranDataCacheService)
     }
 }
