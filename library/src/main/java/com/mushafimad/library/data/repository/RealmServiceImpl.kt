@@ -45,11 +45,14 @@ internal class RealmServiceImpl @Inject constructor(
         // Skip if already initialized
         if (realm != null) return
 
+        println("RealmService: Initializing Realm...")
+
         // Get the bundled Realm file from assets
         val assetManager = context.assets
         val realmInputStream = try {
             assetManager.open(REALM_FILE_NAME)
         } catch (e: Exception) {
+            println("RealmService: ERROR - Could not find $REALM_FILE_NAME in assets")
             throw IllegalStateException("Could not find $REALM_FILE_NAME in assets", e)
         }
 
@@ -57,13 +60,20 @@ internal class RealmServiceImpl @Inject constructor(
         val appFilesDir = context.filesDir
         val realmFile = File(appFilesDir, REALM_FILE_NAME)
 
+        println("RealmService: Realm file path: ${realmFile.absolutePath}")
+        println("RealmService: Realm file exists: ${realmFile.exists()}, size: ${if (realmFile.exists()) realmFile.length() else 0} bytes")
+
         // Copy the bundled Realm file to internal storage if it doesn't exist
         if (!realmFile.exists()) {
+            println("RealmService: Copying realm file from assets...")
             realmInputStream.use { input ->
                 realmFile.outputStream().use { output ->
                     input.copyTo(output)
                 }
             }
+            println("RealmService: Copied realm file, new size: ${realmFile.length()} bytes")
+        } else {
+            println("RealmService: Using existing realm file")
         }
 
         // Configure Realm
@@ -95,6 +105,17 @@ internal class RealmServiceImpl @Inject constructor(
 
         configuration = config
         realm = Realm.open(config)
+
+        println("RealmService: Realm opened successfully")
+        println("RealmService: Testing query - chapter count...")
+        try {
+            val chapterCount = realm?.query<ChapterEntity>()?.count()?.find()
+            println("RealmService: Found $chapterCount chapters in database")
+            val verseCount = realm?.query<VerseEntity>()?.count()?.find()
+            println("RealmService: Found $verseCount verses in database")
+        } catch (e: Exception) {
+            println("RealmService: ERROR querying database: ${e.message}")
+        }
     }
 
     /**
@@ -211,14 +232,30 @@ internal class RealmServiceImpl @Inject constructor(
 
     override suspend fun getVersesForPage(pageNumber: Int, mushafType: MushafType): List<Verse> =
         withContext(Dispatchers.IO) {
-            val page = getPageEntity(pageNumber) ?: return@withContext emptyList()
+            println("RealmService: getVersesForPage($pageNumber, $mushafType)")
+            val page = getPageEntity(pageNumber)
 
-            val verses = when (mushafType) {
-                MushafType.HAFS_1441 -> page.verses1441
-                MushafType.HAFS_1405 -> page.verses1405
+            if (page == null) {
+                println("RealmService: ERROR - Page $pageNumber not found!")
+                return@withContext emptyList()
             }
 
-            verses.map { it.toDomain() }
+            println("RealmService: Found page ${page.number}")
+
+            val verses = when (mushafType) {
+                MushafType.HAFS_1441 -> {
+                    println("RealmService: Getting verses1441, count: ${page.verses1441.size}")
+                    page.verses1441
+                }
+                MushafType.HAFS_1405 -> {
+                    println("RealmService: Getting verses1405, count: ${page.verses1405.size}")
+                    page.verses1405
+                }
+            }
+
+            val result = verses.map { it.toDomain() }
+            println("RealmService: Returning ${result.size} verses")
+            result
         }
 
     override suspend fun getVersesForChapter(chapterNumber: Int): List<Verse> = withContext(Dispatchers.IO) {

@@ -79,7 +79,9 @@ class MushafViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val mushafType = _uiState.value.mushafType
+                println("MushafViewModel: Loading page $pageNumber with mushafType $mushafType")
                 val verses = verseRepository.getVersesForPage(pageNumber, mushafType)
+                println("MushafViewModel: Got ${verses.size} verses for page $pageNumber")
 
                 if (verses.isEmpty()) {
                     _uiState.update {
