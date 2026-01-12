@@ -133,6 +133,7 @@ fun MushafView(
                         chapters = uiState.chapters,
                         pageNumber = uiState.currentPage,
                         juzNumber = viewModel.getPageInfo().juzNumber,
+                        mushafType = uiState.mushafType,
                         selectedVerse = uiState.selectedVerse,
                         onVerseClick = { verse ->
                             viewModel.selectVerse(verse)

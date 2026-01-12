@@ -416,7 +416,24 @@ internal class RealmServiceImpl @Inject constructor(
         chapterNumber = chapter?.number ?: 0,
         pageNumber = page1441?.number ?: 0,
         partNumber = part?.number ?: 0,
-        hizbNumber = quarter?.hizbNumber ?: 0
+        hizbNumber = quarter?.hizbNumber ?: 0,
+        marker1441 = marker1441?.toDomain(),
+        marker1405 = marker1405?.toDomain(),
+        highlights1441 = highlights1441.map { it.toDomain() },
+        highlights1405 = highlights1405.map { it.toDomain() }
+    )
+
+    private fun VerseMarkerEntity.toDomain() = com.mushafimad.library.domain.models.VerseMarker(
+        numberCodePoint = numberCodePoint,
+        line = line,
+        centerX = centerX,
+        centerY = centerY
+    )
+
+    private fun VerseHighlightEntity.toDomain() = com.mushafimad.library.domain.models.VerseHighlight(
+        line = line,
+        left = left,
+        right = right
     )
 
     private fun PageEntity.toDomain() = Page(

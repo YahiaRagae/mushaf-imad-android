@@ -44,6 +44,7 @@ fun QuranPageView(
     chapters: List<Chapter>,
     pageNumber: Int,
     juzNumber: Int,
+    mushafType: com.mushafimad.library.domain.models.MushafType = com.mushafimad.library.domain.models.MushafType.HAFS_1441,
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
     onVerseClick: ((Verse) -> Unit)? = null,
@@ -83,13 +84,13 @@ fun QuranPageView(
                     .padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                // Render 15 lines (0-14) as images
-                items(15) { line ->
+                // Render 15 lines (1-15) as images - skip line 0 which is often empty
+                items(15) { index ->
+                    val line = index + 1  // Start from line 1 instead of 0
                     QuranLineImageView(
                         page = pageNumber,
                         line = line,
-                        containerWidth = screenWidth,
-                        scaledImageHeight = lineHeight * 0.7f, // Match iOS scaling
+                        mushafType = mushafType,
                         verses = verses.filter { it.pageNumber == pageNumber },
                         selectedVerse = selectedVerse,
                         highlightedVerse = highlightedVerse,

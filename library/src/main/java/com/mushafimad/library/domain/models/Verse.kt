@@ -16,5 +16,9 @@ data class Verse(
     val chapterNumber: Int = 0,
     val pageNumber: Int = 0,
     val partNumber: Int = 0,
-    val hizbNumber: Int = 0
+    val hizbNumber: Int = 0,
+    val marker1441: VerseMarker? = null,
+    val marker1405: VerseMarker? = null,
+    val highlights1441: List<VerseHighlight> = emptyList(),
+    val highlights1405: List<VerseHighlight> = emptyList()
 )
