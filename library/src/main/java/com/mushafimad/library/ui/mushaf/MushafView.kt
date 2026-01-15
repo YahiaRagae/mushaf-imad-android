@@ -45,6 +45,7 @@ import kotlinx.coroutines.delay
  * @param colorScheme The color scheme for UI elements
  * @param mushafType The Mushaf layout type
  * @param initialPage Initial page to display (default: last read position)
+ * @param highlightedVerse Verse to highlight (e.g., during audio playback)
  * @param showNavigationControls Show next/previous page buttons
  * @param showPageInfo Show page/juz information
  * @param onVerseSelected Callback when a verse is selected
@@ -58,6 +59,7 @@ fun MushafView(
     colorScheme: ColorSchemeType = ColorSchemeType.DEFAULT,
     mushafType: MushafType = MushafType.HAFS_1441,
     initialPage: Int? = null,
+    highlightedVerse: Verse? = null,
     showNavigationControls: Boolean = true,
     showPageInfo: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
@@ -135,6 +137,7 @@ fun MushafView(
                         juzNumber = viewModel.getPageInfo().juzNumber,
                         mushafType = uiState.mushafType,
                         selectedVerse = uiState.selectedVerse,
+                        highlightedVerse = highlightedVerse,
                         onVerseClick = { verse ->
                             viewModel.selectVerse(verse)
                             onVerseSelected?.invoke(verse)
