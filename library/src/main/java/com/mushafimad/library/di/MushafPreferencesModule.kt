@@ -1,6 +1,7 @@
 package com.mushafimad.library.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.mushafimad.library.data.repository.PreferencesRepositoryImpl
 import com.mushafimad.library.data.repository.ReciterPreferencesRepositoryImpl
 import com.mushafimad.library.data.repository.ThemeRepositoryImpl
@@ -21,6 +22,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object MushafPreferencesModule {
+
+    @Provides
+    @Singleton
+    internal fun provideSharedPreferences(
+        @ApplicationContext context: Context
+    ): SharedPreferences {
+        return context.getSharedPreferences("mushaf_preferences", Context.MODE_PRIVATE)
+    }
 
     @Provides
     @Singleton

@@ -1,6 +1,8 @@
 package com.mushafimad.library.data.audio
 
 import android.content.Context
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -72,7 +74,17 @@ data class AudioPlayerState(
 internal class AudioPlayerService @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val player: ExoPlayer = ExoPlayer.Builder(context).build()
+    private val player: ExoPlayer = ExoPlayer.Builder(context)
+        .setHandleAudioBecomingNoisy(true)
+        .setWakeMode(C.WAKE_MODE_NETWORK)
+        .setAudioAttributes(
+            AudioAttributes.Builder()
+                .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
+                .setUsage(C.USAGE_MEDIA)
+                .build(),
+            /* handleAudioFocus = */ true
+        )
+        .build()
     private val scope = CoroutineScope(Dispatchers.Main)
     private var positionUpdateJob: Job? = null
 
