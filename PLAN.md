@@ -2,7 +2,7 @@
 
 ## 📊 Progress Overview
 
-**Current Status:** Production Ready (8/8 phases) | ✅ v1.0.0 Released
+**Current Status:** Production Ready (9/9 phases) | ✅ v1.0.1 Released
 
 ### Completed Phases
 - [x] Phase 1: Foundation ✅
@@ -13,12 +13,13 @@
 - [x] Phase 6: Sample App Restructuring ✅
 - [x] Phase 7: Background Audio Playback ✅
 - [x] Phase 8: Library Modularization ✅
+- [x] Phase 9: Dependency Injection Migration ✅
 
 ### Quick Stats
-- **Lines of Code:** ~15,500+ (Android)
-- **Completion:** 100% (8/8 phases complete)
+- **Lines of Code:** ~14,600+ (Android)
+- **Completion:** 100% (9/9 phases complete)
 - **Critical Blockers:** None
-- **Current Version:** v1.0.0 (Stable)
+- **Current Version:** v1.0.1 (Stable)
 
 ---
 
@@ -36,7 +37,7 @@ Mushaf Imad is a cross-platform Quran reader library providing high-quality Mush
 
 ### Phase 1: Foundation ✅
 - [x] Project structure setup
-- [x] Dependency injection with Hilt
+- [x] Dependency injection (migrated from Hilt to Koin in Phase 9)
 - [x] Data models (Verse, Chapter, MushafType, etc.)
 - [x] Local data providers for Quran metadata
 - [x] Repository pattern implementation
@@ -1165,6 +1166,157 @@ signing {
 
 ---
 
+## Phase 9: Dependency Injection Migration ✅
+
+### Overview
+
+**Goal:** Remove Hilt dependency and implement zero-configuration library initialization using ContentProvider + Koin DI
+
+**Status:** ✅ COMPLETE - Implementation completed January 17, 2026
+
+**Completed:** January 17, 2026
+
+**Benefits:**
+- ✅ No framework requirement for consumers (removed Hilt)
+- ✅ Zero-configuration setup (ContentProvider auto-init)
+- ✅ Lightweight DI with Koin (no code generation)
+- ✅ Smaller library footprint
+- ✅ Easier testing with Koin modules
+- ✅ Better ViewModel scoping
+
+### Implementation Tasks
+
+#### Task 9.1: Remove Hilt Dependency
+- [x] Remove Hilt from mushaf-core/build.gradle.kts
+- [x] Remove Hilt from mushaf-ui/build.gradle.kts
+- [x] Remove Hilt from sample/build.gradle.kts
+- [x] Remove @HiltAndroidApp annotation
+- [x] Delete all Hilt DI modules (4 files)
+
+#### Task 9.2: Add Koin Dependencies
+- [x] Add Koin to gradle/libs.versions.toml
+- [x] Add Koin dependencies to mushaf-core
+- [x] Add Koin dependencies to mushaf-ui
+
+#### Task 9.3: Create ContentProvider Auto-Initialization
+- [x] Create MushafInitProvider.kt in mushaf-core
+- [x] Initialize ServiceRegistry in ContentProvider
+- [x] Start Koin with coreModule
+- [x] Register provider in mushaf-core AndroidManifest.xml
+
+#### Task 9.4: Create Koin Modules
+- [x] Create CoreModule.kt (12 repository bindings)
+- [x] Create UiModule.kt (7 ViewModels)
+- [x] Bridge Koin with ServiceRegistry pattern
+
+#### Task 9.5: Update ViewModels
+- [x] Remove @HiltViewModel and @Inject annotations
+- [x] Remove default parameters from constructors
+- [x] Update all composables to use koinViewModel()
+- [x] Test ViewModel scoping
+
+#### Task 9.6: Dual ContentProvider Pattern
+- [x] Create MushafUiInitProvider.kt in mushaf-ui
+- [x] Auto-load uiModule via ContentProvider
+- [x] Register provider in mushaf-ui AndroidManifest.xml
+- [x] Ensure proper initialization order
+
+#### Task 9.7: Clean Up Code
+- [x] Remove unused imports (MushafLibrary)
+- [x] Clean up excessive comments
+- [x] Remove experimental code (experimental-text-based)
+- [x] Fix package naming violations
+
+#### Task 9.8: Update Documentation
+- [x] Update README.md with zero-config setup
+- [x] Update PLAN.md with Phase 9
+- [x] Document new DI architecture
+- [x] Update code samples
+
+#### Task 9.9: Build and Test
+- [x] Build mushaf-core successfully
+- [x] Build mushaf-ui successfully
+- [x] Build sample app successfully
+- [x] Verify zero-config works
+
+### Architecture Changes
+
+**Before (Hilt):**
+```kotlin
+// Consumers required Hilt setup
+@HiltAndroidApp
+class MyApp : Application()
+
+// ViewModels used Hilt
+@HiltViewModel
+class MushafViewModel @Inject constructor(...)
+
+// Composables used hiltViewModel()
+@Composable
+fun MushafView() {
+    val viewModel: MushafViewModel = hiltViewModel()
+}
+```
+
+**After (Koin + ContentProvider):**
+```kotlin
+// Zero-configuration
+class MyApp : Application() {
+    // No setup needed!
+}
+
+// ViewModels use Koin
+class MushafViewModel(
+    private val repository: VerseRepository
+    // Dependencies injected via Koin
+) : ViewModel()
+
+// Composables use koinViewModel()
+@Composable
+fun MushafView() {
+    val viewModel: MushafViewModel = koinViewModel()
+}
+```
+
+### Key Implementation Details
+
+**1. Dual ContentProvider Pattern:**
+- `MushafInitProvider` (mushaf-core): Initializes ServiceRegistry + starts Koin with coreModule
+- `MushafUiInitProvider` (mushaf-ui): Loads uiModule into existing Koin instance
+- Runs before Application.onCreate() automatically
+
+**2. ServiceRegistry + Koin Hybrid:**
+- ServiceRegistry manages internal singletons (services, caches)
+- Koin manages repositories and ViewModels
+- Repositories delegate to MushafLibrary.get*Repository()
+
+**3. Removed Code:**
+- 4 Hilt DI modules → 2 Koin modules
+- 903 lines of experimental code deleted
+- 59 lines of excessive comments removed
+- 6 unused imports removed
+
+### Success Criteria
+
+**Phase 9 is complete when:**
+- [x] No Hilt dependency in any module
+- [x] Library auto-initializes via ContentProvider
+- [x] Sample app requires zero setup code
+- [x] All ViewModels properly scoped via Koin
+- [x] All tests pass
+- [x] Build succeeds for all modules
+- [x] Documentation updated
+
+### Future Work (Phase 10)
+
+**Code Quality & Linting:**
+- [ ] Add ktlint for automated code formatting
+- [ ] Configure pre-commit hooks
+- [ ] Fix remaining deprecation warnings
+- [ ] Add comprehensive KDoc documentation
+
+---
+
 ## Current Status
 
 ### Android Library
@@ -1471,11 +1623,12 @@ utils/
 
 ### Key Dependencies
 - **Jetpack Compose** - Modern UI toolkit
-- **Hilt** - Dependency injection
+- **Koin** - Dependency injection (migrated from Hilt in Phase 9)
 - **Media3 (ExoPlayer)** - Audio playback
 - **Kotlin Coroutines & Flow** - Asynchronous programming
 - **Realm Kotlin** - Local database
 - **Coil** - Image loading
+- **ContentProvider** - Auto-initialization pattern
 
 ### Assets
 - **Quran Images**: 604 pages, line-by-line images
@@ -1497,7 +1650,8 @@ utils/
 2. **Line-by-line images** for better performance than full-page images
 3. **ExoPlayer** for robust audio playback with network streaming
 4. **StateFlow** for reactive state management
-5. **Hilt** for compile-time safe dependency injection
+5. **Koin** for lightweight runtime dependency injection (migrated from Hilt in Phase 9)
+6. **ContentProvider** for zero-configuration auto-initialization
 
 ### Future Considerations
 - Consider migrating to type-safe navigation (Navigation 3's `@Serializable` routes)
@@ -1545,7 +1699,7 @@ This is a private project. For questions or contributions, please contact the pr
 ---
 
 **Last Updated:** January 17, 2026
-**Current Phase:** Phase 7 Complete - Background Audio Playback ✅
-**Status:** 87.5% Complete (7/8 phases) - Ready for v1.0 after testing
-**Next Milestone:** Physical device testing, then v1.0 production release
-**Future Phase:** Phase 8 - Library Modularization (v2.0)
+**Current Phase:** Phase 9 Complete - Dependency Injection Migration ✅
+**Status:** 100% Complete (9/9 phases) - v1.0.1 Production Ready
+**Next Milestone:** Code quality improvements (ktlint, documentation)
+**Future Phase:** Phase 10 - Code Quality & Linting

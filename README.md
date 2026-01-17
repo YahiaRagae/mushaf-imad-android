@@ -21,8 +21,9 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 - 📱 RTL (Right-to-Left) layout support
 - 💾 Offline-first architecture
 - 🏗️ Modular architecture (mushaf-core + mushaf-ui)
-- 🎯 Clean Architecture with Hilt DI
+- 🎯 Clean Architecture with Koin DI
 - 🎨 Jetpack Compose UI
+- 🚀 Zero-configuration setup (auto-initialization)
 
 ---
 
@@ -48,10 +49,6 @@ The library is split into two modules for flexibility:
 dependencies {
     // UI module (includes mushaf-core transitively)
     implementation(project(":mushaf-ui"))
-
-    // Required dependencies
-    implementation("com.google.dagger:hilt-android:2.54")
-    kapt("com.google.dagger:hilt-android-compiler:2.54")
 }
 ```
 
@@ -60,24 +57,26 @@ dependencies {
 dependencies {
     // Core module only (for custom UI implementations)
     implementation(project(":mushaf-core"))
-
-    // Required dependencies
-    implementation("com.google.dagger:hilt-android:2.54")
-    kapt("com.google.dagger:hilt-android-compiler:2.54")
 }
 ```
 
-### 2. Initialize in Application
+### 2. Zero-Configuration Setup
 
 ```kotlin
-@HiltAndroidApp
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Library initializes automatically via Hilt
+        // Library auto-initializes via ContentProvider!
+        // No manual setup required.
+
+        // Optional: custom logger/analytics
+        // MushafLibrary.setLogger(CustomLogger())
+        // MushafLibrary.setAnalytics(CustomAnalytics())
     }
 }
 ```
+
+✨ The library uses **ContentProvider** for automatic initialization - no `@HiltAndroidApp` or manual setup required!
 
 ### 3. Update AndroidManifest.xml
 
@@ -293,23 +292,29 @@ mushaf-core/                    # Headless data layer
 │   ├── models/                 # Domain models
 │   └── repository/             # Repository interfaces
 │
-└── di/                         # Dependency injection
-    ├── MushafCoreModule.kt
-    ├── MushafAudioModule.kt
-    └── MushafPreferencesModule.kt
+├── di/                         # Dependency injection (Koin)
+│   └── CoreModule.kt           # Koin module for repositories
+└── internal/
+    └── MushafInitProvider.kt   # ContentProvider for auto-init
 
 mushaf-ui/                      # UI components (Jetpack Compose)
 ├── mushaf/                     # Mushaf reader components
 │   ├── MushafView.kt          # Main Mushaf composable
+│   ├── MushafViewModel.kt     # Mushaf state management
 │   └── QuranPageView.kt       # Page rendering
 ├── player/                     # Audio player components
 │   ├── QuranPlayerView.kt     # Player UI composable
 │   └── QuranPlayerViewModel.kt # Player state management
 ├── search/                     # Search components
-│   └── SearchView.kt          # Search UI composable
-└── theme/                      # Theming
-    ├── ReadingTheme.kt        # Reading themes
-    └── ColorScheme.kt         # Color schemes
+│   ├── SearchView.kt          # Search UI composable
+│   └── SearchViewModel.kt     # Search state management
+├── theme/                      # Theming
+│   ├── ReadingTheme.kt        # Reading themes
+│   └── ColorScheme.kt         # Color schemes
+├── di/                         # UI DI (Koin)
+│   └── UiModule.kt            # Koin module for ViewModels
+└── internal/
+    └── MushafUiInitProvider.kt # ContentProvider for UI module
 ```
 
 ### Key Benefits
@@ -325,11 +330,12 @@ mushaf-ui/                      # UI components (Jetpack Compose)
 - **UI:** Jetpack Compose with Material 3
 - **Database:** Realm Kotlin 2.3.0 (schema version 24)
 - **Audio:** Media3 (ExoPlayer) 1.5.0
-- **DI:** Hilt 2.54
+- **DI:** Koin 3.5.6
 - **Async:** Kotlin Coroutines + Flow
 - **Navigation:** Navigation Compose 2.8.5
 - **Image Loading:** Coil 2.7.0
 - **Build:** Gradle 8.7.3 with Version Catalog
+- **Init:** ContentProvider auto-initialization
 
 ---
 
@@ -429,7 +435,8 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 
 ### ✅ Architecture
 - ✅ Modular design (mushaf-core + mushaf-ui)
-- ✅ Clean Architecture with Hilt DI
+- ✅ Clean Architecture with Koin DI
+- ✅ ContentProvider auto-initialization (zero-config)
 - ✅ Jetpack Compose UI
 - ✅ Sample app demonstrating all features
 
@@ -456,7 +463,21 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 - ✅ Clean migration with package renaming
 - ✅ Version 1.0.0 released
 
-### Priority 1: Testing & Stabilization (v1.1.0)
+### ✅ Phase 9: Dependency Injection Migration (COMPLETED)
+- ✅ Removed Hilt dependency (no framework requirement)
+- ✅ Implemented Koin for lightweight DI
+- ✅ ContentProvider auto-initialization (zero-config)
+- ✅ Dual ContentProvider pattern (core + UI modules)
+- ✅ Cleaned up unused code and comments
+- ✅ Removed experimental code with invalid package names
+
+### Priority 1: Code Quality & Linting (v1.1.0)
+- Add ktlint for automated code formatting
+- Configure pre-commit hooks
+- Fix remaining deprecation warnings
+- Improve code documentation
+
+### Priority 2: Testing & Stabilization (v1.1.0)
 - Test audio playback on more physical devices
 - Verify all 18 reciters' audio URLs
 - Test on different Android versions (API 24-35)
@@ -465,7 +486,7 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 - Fix Android 16 KB alignment warning
 - Fix Material icon deprecation warnings
 
-### Priority 2: Missing Features (v1.2.0 - v1.5.0)
+### Priority 3: Missing Features (v1.2.0 - v1.5.0)
 - Bookmarks system
 - Translations support
 - Tafsir (commentary) integration
@@ -473,7 +494,7 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 - Verse-by-verse audio playback
 - Download manager for offline audio
 
-### Priority 3: Library Publishing (v2.0.0)
+### Priority 4: Library Publishing (v2.0.0)
 - API documentation (KDoc)
 - Maven Central or JitPack publishing
 - Comprehensive integration guide
@@ -512,7 +533,7 @@ Developed with care for the Muslim community.
 **Acknowledgments:**
 - Quran text and metadata
 - Audio recitations from various reciters
-- Open source libraries: Jetpack Compose, Realm, ExoPlayer, Hilt
+- Open source libraries: Jetpack Compose, Realm, ExoPlayer, Koin
 
 ---
 
