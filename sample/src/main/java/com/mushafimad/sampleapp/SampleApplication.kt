@@ -8,12 +8,8 @@ class SampleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Library auto-initializes via ContentProvider!
-        // Optional: Initialize manually with custom logger/analytics
-        // MushafLibrary.initialize(
-        //     context = this,
-        //     logger = FirebaseMushafLogger(),
-        //     analytics = FirebaseMushafAnalytics()
-        // )
+        // Optional: custom logger/analytics
+        // MushafLibrary.setLogger(CustomLogger())
+        // MushafLibrary.setAnalytics(CustomAnalytics())
     }
 }

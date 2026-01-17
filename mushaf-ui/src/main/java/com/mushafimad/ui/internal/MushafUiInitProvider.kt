@@ -1,35 +1,22 @@
-package com.mushafimad.core.internal
+package com.mushafimad.ui.internal
 
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-import com.mushafimad.core.MushafLibrary
-import com.mushafimad.core.di.coreModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
+import com.mushafimad.ui.di.uiModule
+import org.koin.core.context.loadKoinModules
 
 /**
- * ContentProvider that automatically initializes the Mushaf library.
- * Runs before Application.onCreate() to ensure zero-configuration setup.
+ * ContentProvider that automatically loads the UI module into Koin.
+ * Runs after mushaf-core's provider to ensure Koin is initialized.
  *
  * @internal This class is not part of the public API.
  */
-internal class MushafInitProvider : ContentProvider() {
+internal class MushafUiInitProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
-        val context = context ?: return false
-
-        MushafLibrary.initializeInternal(context.applicationContext)
-
-        startKoin {
-            androidLogger(Level.ERROR)
-            androidContext(context.applicationContext)
-            modules(coreModule)
-        }
-
+        loadKoinModules(uiModule)
         return true
     }
 

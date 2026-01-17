@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import com.mushafimad.core.data.audio.PlaybackState
 import com.mushafimad.core.domain.models.ReciterInfo
 import com.mushafimad.ui.theme.MushafColors
@@ -48,7 +48,7 @@ fun QuranPlayerView(
     onNextVerse: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: QuranPlayerViewModel = viewModel()
+    val viewModel: QuranPlayerViewModel = koinViewModel()
     val playbackState by viewModel.playbackState.collectAsState()
     val currentTimeMs by viewModel.currentTimeMs.collectAsState()
     val durationMs by viewModel.durationMs.collectAsState()

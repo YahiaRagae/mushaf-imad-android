@@ -18,9 +18,11 @@ import kotlinx.coroutines.launch
  * ViewModel for Quran audio player
  * Coordinates audio playback with verse timing synchronization
  * Internal implementation - not directly exposed, used via QuranPlayerView composable
+ *
+ * Dependencies are injected via Koin DI
  */
 internal class QuranPlayerViewModel(
-    private val audioRepository: AudioRepository = MushafLibrary.getAudioRepository()
+    private val audioRepository: AudioRepository
 ) : ViewModel() {
 
     companion object {

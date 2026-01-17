@@ -89,11 +89,17 @@ dependencies {
     // DataStore (Preferences)
     implementation(libs.androidx.datastore.preferences)
 
+    // Koin DI
+    api(libs.koin.core)
+    api(libs.koin.android)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.truth)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
 }

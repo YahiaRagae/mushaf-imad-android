@@ -2,7 +2,6 @@ package com.mushafimad.ui.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.Bookmark
 import com.mushafimad.core.domain.repository.BookmarkRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +14,11 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for managing bookmarks
  * Provides UI state and operations for bookmark management
+ *
+ * Dependencies are injected via Koin DI
  */
 internal class BookmarksViewModel(
-    private val bookmarkRepository: BookmarkRepository = MushafLibrary.getBookmarkRepository()
+    private val bookmarkRepository: BookmarkRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BookmarksUiState())

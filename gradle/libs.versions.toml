@@ -27,6 +27,9 @@ composeNavigation = "2.8.5"
 hilt = "2.54"
 hiltNavigationCompose = "1.2.0"
 
+# Koin
+koin = "3.5.6"
+
 # Realm - Using 1.16.0 for Kotlin 1.9.x compatibility
 realm = "1.16.0"
 
@@ -98,6 +101,13 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+# Koin
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 
 # Realm
 realm-library-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm" }

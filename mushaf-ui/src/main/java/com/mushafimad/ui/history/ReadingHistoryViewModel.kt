@@ -2,7 +2,6 @@ package com.mushafimad.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.LastReadPosition
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.ReadingStats
@@ -17,9 +16,11 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for reading history and statistics
  * Provides UI state for reading progress, streaks, and statistics
+ *
+ * Dependencies are injected via Koin DI
  */
 internal class ReadingHistoryViewModel(
-    private val readingHistoryRepository: ReadingHistoryRepository = MushafLibrary.getReadingHistoryRepository()
+    private val readingHistoryRepository: ReadingHistoryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ReadingHistoryUiState())

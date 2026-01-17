@@ -95,6 +95,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    // Koin Compose
+    implementation(libs.koin.androidx.compose)
+
     // Coil (Image loading for Compose)
     implementation(libs.coil.compose)
 

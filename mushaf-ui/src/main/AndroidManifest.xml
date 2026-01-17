@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- UI module: no permissions or services needed -->
-    <!-- All services and permissions are in mushaf-core -->
+
+    <application>
+        <provider
+            android:name=".internal.MushafUiInitProvider"
+            android:authorities="${applicationId}.mushaf-ui-initializer"
+            android:exported="false" />
+    </application>
 </manifest>
