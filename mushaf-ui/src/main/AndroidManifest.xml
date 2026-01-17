@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- UI module: no permissions or services needed -->
-    <!-- All services and permissions are in mushaf-core -->
 
     <application>
-        <!-- ContentProvider that automatically loads the UI module into Koin -->
-        <!-- This provider runs after mushaf-core's provider (due to dependency order) -->
         <provider
             android:name=".internal.MushafUiInitProvider"
             android:authorities="${applicationId}.mushaf-ui-initializer"
