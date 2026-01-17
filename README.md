@@ -293,7 +293,8 @@ mushaf-core/                    # Headless data layer
 │   └── repository/             # Repository interfaces
 │
 ├── di/                         # Dependency injection (Koin)
-│   └── CoreModule.kt           # Koin module for repositories
+│   └── CoreModule.kt           # Koin module with direct injection
+│                               # Manages all repository singletons
 └── internal/
     └── MushafInitProvider.kt   # ContentProvider for auto-init
 
@@ -322,6 +323,9 @@ mushaf-ui/                      # UI components (Jetpack Compose)
 - **mushaf-ui**: Pre-built Compose components (depends on mushaf-core)
 - **Clean separation**: Data layer completely independent from UI
 - **Flexible integration**: Use core only or full UI components
+- **Clean Architecture**: Koin manages repository lifecycle (no manual singletons)
+- **Zero boilerplate**: Repositories are simple classes with constructor injection
+- **Testable**: Easy to inject fakes/mocks via Koin modules
 
 ---
 
@@ -330,7 +334,7 @@ mushaf-ui/                      # UI components (Jetpack Compose)
 - **UI:** Jetpack Compose with Material 3
 - **Database:** Realm Kotlin 2.3.0 (schema version 24)
 - **Audio:** Media3 (ExoPlayer) 1.5.0
-- **DI:** Koin 3.5.6
+- **DI:** Koin 3.5.6 (lightweight runtime DI, no code generation)
 - **Async:** Kotlin Coroutines + Flow
 - **Navigation:** Navigation Compose 2.8.5
 - **Image Loading:** Coil 2.7.0

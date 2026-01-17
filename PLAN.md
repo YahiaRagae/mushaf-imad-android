@@ -1239,6 +1239,17 @@ signing {
 - [x] Build sample app successfully
 - [x] Verify zero-config works
 
+#### Task 9.10: Koin Lifecycle Refactoring (January 18, 2026)
+- [x] Rename repositories from *Impl to Default* pattern for consistency
+- [x] Remove getInstance() from all 13 repositories (~200 lines)
+- [x] Update CoreModule for direct Koin injection with get()
+- [x] MushafLibrary implements KoinComponent and uses get()
+- [x] Repositories changed to simple classes with constructor injection
+- [x] Eliminated static Context reference lint warnings
+- [x] Keep companion objects only for constants (preferences keys, schema version)
+- [x] Fixed CoreModule parameter issues with named parameters
+- [x] All tests pass after refactoring
+
 ### Architecture Changes
 
 **Before (Hilt):**
@@ -1285,16 +1296,25 @@ fun MushafView() {
 - `MushafUiInitProvider` (mushaf-ui): Loads uiModule into existing Koin instance
 - Runs before Application.onCreate() automatically
 
-**2. ServiceRegistry + Koin Hybrid:**
-- ServiceRegistry manages internal singletons (services, caches)
-- Koin manages repositories and ViewModels
-- Repositories delegate to MushafLibrary.get*Repository()
+**2. ServiceRegistry + Koin Hybrid (Updated in Task 9.10):**
+- ServiceRegistry manages infrastructure services (Realm, Context, Audio services)
+- Koin manages repository lifecycle and ViewModels
+- MushafLibrary delegates to Koin's get() for repositories
+- Repositories are simple classes with constructor injection
+- No manual singleton management (getInstance() removed)
 
 **3. Removed Code:**
 - 4 Hilt DI modules → 2 Koin modules
 - 903 lines of experimental code deleted
 - 59 lines of excessive comments removed
 - 6 unused imports removed
+- ~200 lines of getInstance() boilerplate removed (Task 9.10)
+
+**4. Refactored Code (Task 9.10):**
+- 13 repositories: *Impl → Default* naming pattern
+- 13 repositories: removed companion object getInstance()
+- CoreModule: direct Koin injection instead of wrapping MushafLibrary calls
+- MushafLibrary: implements KoinComponent, delegates to Koin
 
 ### Success Criteria
 
