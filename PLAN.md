@@ -197,30 +197,32 @@ Mushaf Imad is a cross-platform Quran reader library providing high-quality Mush
 - [ ] Add implementation dependency to `library/build.gradle.kts`
 
 #### Task 7.2: Create MediaSessionService
-- [ ] Create `AudioPlaybackService.kt` extending `MediaSessionService`
-- [ ] Implement ExoPlayer integration
-- [ ] Implement MediaSession lifecycle management
-- [ ] Add custom command handling (chapter selection, reciter change)
-- [ ] Implement automatic notification generation
-- [ ] Add proper resource cleanup in `onDestroy()`
+- [x] Create `AudioPlaybackService.kt` extending `MediaSessionService`
+- [x] Implement ExoPlayer integration
+- [x] Implement MediaSession lifecycle management
+- [x] Add custom command handling (chapter selection, reciter change)
+- [x] Implement automatic notification generation with metadata
+- [x] Add proper resource cleanup in `onDestroy()`
 
 #### Task 7.3: Update Library Manifest
-- [ ] Add `FOREGROUND_SERVICE` permission
-- [ ] Add `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permission
-- [ ] Add `POST_NOTIFICATIONS` permission
-- [ ] Declare service with `foregroundServiceType="mediaPlayback"`
-- [ ] Add MediaSessionService intent filter
+- [x] Add `FOREGROUND_SERVICE` permission
+- [x] Add `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permission
+- [x] Add `POST_NOTIFICATIONS` permission
+- [x] Declare service with `foregroundServiceType="mediaPlayback"`
+- [x] Add MediaSessionService intent filter
 
-#### Task 7.4: Refactor AudioPlayerService
-- [ ] Choose refactoring approach (Option A: Facade or Option B: Merge)
-- [ ] Implement MediaController communication (if Option A)
-- [ ] Update dependency injection
-- [ ] Test existing functionality still works
+#### Task 7.4: Integrate MediaSessionManager
+- [x] Remove legacy AudioPlayerService (in-process player)
+- [x] Create MediaSessionManager with MediaController
+- [x] Implement playerState Flow for reactive updates
+- [x] Update QuranPlayerViewModel to use MediaSessionManager
+- [x] Update AudioRepositoryImpl and dependency injection
+- [x] Test existing functionality still works
 
 #### Task 7.5: Handle Notification Permissions (Android 13+)
-- [ ] Add runtime permission request in sample app
-- [ ] Handle permission denial gracefully
-- [ ] Test on Android 13+ devices
+- [x] Add runtime permission request in sample app
+- [x] Handle permission denial gracefully
+- [ ] Test on Android 13+ devices (requires physical device)
 
 #### Task 7.6: Testing
 - [ ] Test: Audio continues with screen off
@@ -308,7 +310,7 @@ android/
 ├── mushaf-core/              # Core library module
 │   ├── src/main/java/com/mushafimad/core/
 │   │   ├── data/              # Data providers, cache, networking
-│   │   │   ├── audio/         # Audio services (AudioPlayerService, ReciterService)
+│   │   │   ├── audio/         # Audio services (MediaSessionManager, ReciterService)
 │   │   │   ├── local/         # Realm database, DAOs
 │   │   │   ├── repository/    # Repository implementations
 │   │   │   ├── cache/         # Image and data caching
@@ -354,7 +356,7 @@ android/
 - ✅ Realm database and entities
 - ✅ Repository pattern (interfaces + implementations)
 - ✅ Domain models (Verse, Chapter, Page, Part, Quarter, MushafType)
-- ✅ Audio services (AudioPlayerService, AyahTimingService, ReciterService)
+- ✅ Audio services (MediaSessionManager, AyahTimingService, ReciterService)
 - ✅ Data providers (ChapterDataProvider, ReciterDataProvider)
 - ✅ Networking (if needed for audio/translations)
 - ✅ Caching (ImageCache, data caching)
@@ -408,10 +410,11 @@ interface VerseRepository {
     suspend fun searchVerses(query: String): List<Verse>
 }
 
-interface AudioPlayerService {
-    fun play(verse: Verse)
+interface AudioRepository {
+    fun loadChapter(chapterNumber: Int, reciterId: Int, autoPlay: Boolean)
+    fun play()
     fun pause()
-    val playbackState: StateFlow<PlaybackState>
+    fun getPlayerStateFlow(): Flow<AudioPlayerState>
 }
 
 // DI entry point for custom implementations
@@ -420,7 +423,7 @@ interface AudioPlayerService {
 interface MushafCoreEntryPoint {
     fun verseRepository(): VerseRepository
     fun chapterRepository(): ChapterRepository
-    fun audioPlayerService(): AudioPlayerService
+    fun audioRepository(): AudioRepository
 }
 ```
 
@@ -1207,7 +1210,8 @@ Both iOS and Android implementations share:
 ```
 data/
 ├── audio/
-│   ├── AudioPlayerService.kt       (ExoPlayer wrapper)
+│   ├── AudioPlaybackService.kt     (MediaSessionService for background audio)
+│   ├── MediaSessionManager.kt      (MediaController wrapper)
 │   ├── AyahTimingService.kt        (Verse timing from JSON)
 │   ├── ReciterService.kt           (Reciter management)
 │   └── ReciterDataProvider.kt      (18 reciters metadata)
@@ -1277,15 +1281,18 @@ utils/
 
 ## Next Steps
 
-### Priority 0: Critical - Background Audio Playback (Phase 7)
-**Status:** 🔴 MUST DO FIRST - Blocking production release
+### Priority 0: Background Audio Testing (Phase 7)
+**Status:** ✅ Implementation Complete - Testing Required
 
-- [ ] **Task 7.1**: Add MediaSession dependencies
-- [ ] **Task 7.2**: Create MediaSessionService for background playback
-- [ ] **Task 7.3**: Update library manifest with permissions
-- [ ] **Task 7.4**: Refactor AudioPlayerService integration
-- [ ] **Task 7.5**: Handle notification permissions (Android 13+)
-- [ ] **Task 7.6**: Test on multiple Android versions
+**Remaining Tasks:**
+- [ ] Test on physical device (Android 10+)
+- [ ] Test audio continues with screen off
+- [ ] Test lock screen controls (play/pause/stop)
+- [ ] Test notification controls work correctly
+- [ ] Test Bluetooth headset controls
+- [ ] Test on Android 13+ (notification permissions)
+- [ ] Test app backgrounded → audio continues
+- [ ] Test service properly declared with mediaPlayback type
 
 **See Phase 7 section above for detailed implementation checklist**
 
@@ -1299,27 +1306,7 @@ utils/
 - [x] Handle network errors gracefully (basic audio focus handling implemented)
 - [ ] Fix Android 16 KB alignment issue (requires Realm library update or workaround)
 
-### Priority 2: Missing Features
-- [ ] **Bookmarks System**
-  - [ ] Save favorite verses
-  - [ ] Bookmark management UI
-  - [ ] Sync across devices (optional)
-
-- [ ] **Translations**
-  - [ ] Display verse translations
-  - [ ] Multiple language support
-  - [ ] Translation selection UI
-
-- [ ] **Tafsir (Commentary)**
-  - [ ] Display verse explanations
-  - [ ] Multiple tafsir sources
-  - [ ] Tafsir viewer UI
-
-- [ ] **Reading History**
-  - [ ] Track recently read pages
-  - [ ] Reading statistics
-  - [ ] Reading goals/progress
-
+### Priority 2: Audio Enhancements
 - [ ] **Verse-by-Verse Audio Playback**
   - [ ] Integrate AyahTimingService with AudioPlaybackService
   - [ ] Emit current verse events during playback
@@ -1464,6 +1451,35 @@ utils/
 
 ---
 
+## Future Features (Post v1.0)
+
+These features are planned for future releases (v1.1+) and are not blockers for v1.0:
+
+### Bookmarks System
+- [ ] Save favorite verses
+- [ ] Bookmark management UI
+- [ ] Sync across devices (optional)
+
+### Translations
+- [ ] Display verse translations
+- [ ] Multiple language support
+- [ ] Translation selection UI
+- [ ] Integration with translation APIs
+
+### Tafsir (Commentary)
+- [ ] Display verse explanations
+- [ ] Multiple tafsir sources
+- [ ] Tafsir viewer UI
+- [ ] Integration with tafsir APIs
+
+### Reading History & Analytics
+- [ ] Track recently read pages
+- [ ] Reading statistics and progress
+- [ ] Reading goals and streaks
+- [ ] Reading time tracking
+
+---
+
 ## Contact & Contribution
 
 This is a private project. For questions or contributions, please contact the project maintainer.
@@ -1471,7 +1487,7 @@ This is a private project. For questions or contributions, please contact the pr
 ---
 
 **Last Updated:** January 17, 2026
-**Current Phase:** Core Features Complete (Phases 1-6: Foundation, Audio, Search, Navigation, Sample App)
-**Critical Next Phase:** Phase 7 - Background Audio Playback (1-2 weeks)
-**Planned Phase:** Phase 8 - Library Modularization (mushaf-core + mushaf-ui)
-**Next Milestone:** Implement background audio playback for production readiness
+**Current Phase:** Phase 7 Complete - Background Audio Playback ✅
+**Status:** 87.5% Complete (7/8 phases) - Ready for v1.0 after testing
+**Next Milestone:** Physical device testing, then v1.0 production release
+**Future Phase:** Phase 8 - Library Modularization (v2.0)
