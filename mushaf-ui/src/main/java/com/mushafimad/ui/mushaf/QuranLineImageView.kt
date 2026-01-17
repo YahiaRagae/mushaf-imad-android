@@ -147,9 +147,10 @@ fun QuranLineImageView(
                 val markerX = containerWidth * (1.0f - marker.centerX)
                 val markerY = containerHeight * marker.centerY
 
-                // Match quran_android's marker size calculation exactly
-                // quran_android: markerDimen = (0.025f * 2 * width).toInt()
-                val markerDimen = (0.025f * 2 * containerWidth).toInt()
+                // Marker size calculation (increased from quran_android's 5% for better readability)
+                // quran_android uses: markerDimen = (0.025f * 2 * width).toInt() = 5%
+                // We use 7% for better visibility and readability
+                val markerDimen = (0.035f * 2 * containerWidth).toInt()
 
                 // Center the marker at coordinates (quran_android approach)
                 // x = points[0] - (markerDimen / 2) + paddingLeft

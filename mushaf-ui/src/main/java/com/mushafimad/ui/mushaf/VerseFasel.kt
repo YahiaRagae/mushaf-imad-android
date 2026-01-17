@@ -24,20 +24,19 @@ import com.mushafimad.ui.theme.readingTheme
 
 /**
  * VerseFasel - Decorative verse number marker
- * Matches iOS VerseFasel.swift implementation
  *
- * Renders verse number in Arabic numerals with decorative background
+ * Renders verse number in Arabic-Indic numerals with decorative ornamental background
  */
 @Composable
 fun VerseFasel(
     number: Int,
     scale: Float = 1.0f,
-    sizeInPx: Float? = null,  // quran_android approach: pass size directly
+    sizeInPx: Float? = null,  // Optional size in pixels, overrides scale-based calculation
     modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
 
-    // Base dimensions (matching quran_android approach)
+    // Base dimensions for marker sizing and font scaling
     val baseFontSize = 18f
     val balance = 1.2f
     val baseWidth = 21 * balance
@@ -60,7 +59,7 @@ fun VerseFasel(
         modifier = modifier.size(finalSize),
         contentAlignment = Alignment.Center
     ) {
-        // Decorative fasel background from iOS assets (uses original colors from SVG)
+        // Decorative ornamental background
         Image(
             painter = painterResource(id = R.drawable.fasel),
             contentDescription = null,
@@ -68,14 +67,16 @@ fun VerseFasel(
             contentScale = ContentScale.Fit
         )
 
-        // Arabic numeral overlay (no offset - centered in Box)
         Text(
             text = convertToArabicNumerals(number),
-            fontSize = (baseFontSize * effectiveScale * 0.8f).sp,
+            fontSize = (baseFontSize * effectiveScale * 0.6f).sp,
             fontFamily = QuranFonts.UthmanTaha,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.offset(
+                y = (1 * effectiveScale).dp,
+            )
         )
     }
 }
@@ -112,8 +113,8 @@ private fun VerseFaselPreview() {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            VerseFasel(number = 100, scale = 1.0f)
-            VerseFasel(number = 200, scale = 1.0f)
+            VerseFasel(number = 1, scale = 1.0f)
+            VerseFasel(number = 22, scale = 1.0f)
             VerseFasel(number = 286, scale = 1.0f)
         }
     }
@@ -147,10 +148,9 @@ private fun VerseFaselScalesPreview() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            VerseFasel(number = 123, scale = 0.5f)
-            VerseFasel(number = 123, scale = 1.0f)
-            VerseFasel(number = 123, scale = 1.5f)
+            VerseFasel(number = 23, scale = 1.0f)
             VerseFasel(number = 123, scale = 2.0f)
+            VerseFasel(number = 123, scale = 3.0f)
         }
     }
 }
