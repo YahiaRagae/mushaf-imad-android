@@ -38,12 +38,11 @@ val uiModule = module {
         )
     }
 
-    // Search ViewModel (5 dependencies)
+    // Search ViewModel (4 dependencies)
     viewModel {
         SearchViewModel(
             verseRepository = get(),
             chapterRepository = get(),
-            audioRepository = get(),
             bookmarkRepository = get(),
             searchHistoryRepository = get()
         )

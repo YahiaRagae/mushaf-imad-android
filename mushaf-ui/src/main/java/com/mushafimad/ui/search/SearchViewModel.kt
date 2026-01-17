@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Unified search ViewModel
- * Combines searching across verses, chapters, reciters, and bookmarks
+ * Combines searching across verses, chapters, and bookmarks
  * Manages search history and suggestions
  *
  * Dependencies are injected via Koin DI
@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
     private val verseRepository: VerseRepository,
     private val chapterRepository: ChapterRepository,
-    private val audioRepository: AudioRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
@@ -55,7 +54,6 @@ class SearchViewModel(
                 // Record search in history
                 val totalResults = results.verseResults.size +
                         results.chapterResults.size +
-                        results.reciterResults.size +
                         results.bookmarkResults.size
 
                 searchHistoryRepository.recordSearch(
@@ -102,14 +100,6 @@ class SearchViewModel(
     }
 
     /**
-     * Search only reciters
-     */
-    private suspend fun searchReciters(query: String): SearchResults {
-        val reciters = audioRepository.searchReciters(query)
-        return SearchResults(reciterResults = reciters)
-    }
-
-    /**
      * Search only bookmarks
      */
     private suspend fun searchBookmarks(query: String): SearchResults {
@@ -125,7 +115,6 @@ class SearchViewModel(
             SearchResults(
                 verseResults = verseRepository.searchVerses(query),
                 chapterResults = chapterRepository.searchChapters(query),
-                reciterResults = audioRepository.searchReciters(query),
                 bookmarkResults = bookmarkRepository.searchBookmarks(query)
             )
         } catch (e: Exception) {
@@ -264,14 +253,11 @@ data class SearchUiState(
 data class SearchResults(
     val verseResults: List<Verse> = emptyList(),
     val chapterResults: List<Chapter> = emptyList(),
-    val reciterResults: List<ReciterInfo> = emptyList(),
     val bookmarkResults: List<Bookmark> = emptyList()
 ) {
     val isEmpty: Boolean
-        get() = verseResults.isEmpty() && chapterResults.isEmpty() &&
-                reciterResults.isEmpty() && bookmarkResults.isEmpty()
+        get() = verseResults.isEmpty() && chapterResults.isEmpty() && bookmarkResults.isEmpty()
 
     val totalCount: Int
-        get() = verseResults.size + chapterResults.size +
-                reciterResults.size + bookmarkResults.size
+        get() = verseResults.size + chapterResults.size + bookmarkResults.size
 }
