@@ -5,11 +5,14 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)](https://android-arsenal.com/api?level=24)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.25-blue.svg)](https://kotlinlang.org)
+[![Status](https://img.shields.io/badge/Status-Pre--Release-orange.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
+
+> ⚠️ **Development Status:** This library is in active development (v0.9.0-alpha). Core features are complete, but **background audio playback is missing**. Audio currently only works when the app is in the foreground. This will be addressed in Phase 7 before the v1.0 release.
 
 ## Features
 
 - 📖 Full Quran text display (604 pages)
-- 🎵 Audio playback with 18 reciters
+- 🎵 Audio playback with 18 reciters ⚠️ *(foreground only - background playback in progress)*
 - ✨ Real-time verse highlighting during audio
 - 🎨 Multiple reading themes (Comfortable, Calm, Night, White)
 - 🔍 Search functionality (verses and chapters)
@@ -340,8 +343,8 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 
 ## Project Status
 
-**Version:** Pre-release / Development
-**Status:** ✅ Feature Complete
+**Version:** Pre-release / Development (v0.9.0-alpha)
+**Status:** 🔴 75% Complete - **Critical: Background Audio Missing**
 
 ### What's Working
 - ✅ Page navigation (604 pages)
@@ -349,7 +352,7 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 - ✅ Verse highlighting and selection
 - ✅ Fasel (verse number) decorations
 - ✅ Multiple reading themes and color schemes
-- ✅ Audio playback with 18 reciters
+- ✅ Audio playback with 18 reciters *(foreground only)*
 - ✅ Real-time verse highlighting during audio
 - ✅ Reciter selection
 - ✅ Playback controls (play/pause, seek, speed, repeat)
@@ -358,13 +361,31 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 - ✅ RTL layout support
 - ✅ Sample app demonstrating all features
 
-### Known Issues
+### Critical Issues (Blocking v1.0 Release)
+- 🔴 **No background audio playback** - Audio stops when screen turns off
+- 🔴 **No lock screen controls** - Can't control playback from lock screen
+- 🔴 **No notification controls** - Missing playback notification
+
+### Other Known Issues
 - Audio playback requires testing on physical devices
 - Performance testing needed on lower-end devices
+- Android 16 KB alignment warning (Realm library compatibility)
 
 ---
 
 ## Roadmap
+
+### Priority 0: Critical - Background Audio Playback 🔴
+**Status:** In Progress (Phase 7 - Estimated: 1-2 weeks)
+
+- [ ] Implement MediaSessionService for background playback
+- [ ] Add lock screen playback controls
+- [ ] Add notification with playback controls
+- [ ] Support Bluetooth headset controls
+- [ ] Add required Android permissions (FOREGROUND_SERVICE_MEDIA_PLAYBACK)
+- [ ] Test on Android 8.0+ devices
+
+**This is blocking the v1.0 release.**
 
 ### Priority 1: Testing & Stabilization
 - Test audio playback on physical devices
@@ -372,20 +393,28 @@ Output: `sample/build/outputs/apk/debug/sample-debug.apk`
 - Test on different Android versions (API 24-35)
 - Performance optimization
 - Memory leak detection
+- Fix Android 16 KB alignment warning
 
 ### Priority 2: Missing Features
 - Bookmarks system
 - Translations support
 - Tafsir (commentary) integration
 - Reading history
+- Verse-by-verse audio playback
+- Download manager for offline audio
 
-### Priority 3: Library Publishing
+### Priority 3: Library Modularization (Phase 8)
+- Split into `mushaf-core` (data layer) and `mushaf-ui` (UI components)
+- Enable developers to use data layer with custom UI
+- Non-breaking migration strategy (v1.0 → v2.0)
+
+### Priority 4: Library Publishing
 - API documentation (KDoc)
 - Maven Central or JitPack setup
 - Integration guide
 - Release process automation
 
-See **PLAN.md** for detailed roadmap.
+See **PLAN.md** for detailed roadmap and task breakdowns.
 
 ---
 
@@ -421,5 +450,6 @@ Developed with care for the Muslim community.
 
 ---
 
-**Last Updated:** January 15, 2026
-**Current Phase:** Core Features Complete
+**Last Updated:** January 17, 2026
+**Current Phase:** Phase 7 - Background Audio Playback (Critical)
+**Next Release:** v1.0.0 (after Phase 7 completion)
