@@ -66,7 +66,6 @@ fun SearchView(
                 searchQuery = ""
                 viewModel.clearSearch()
             },
-            onBack = onDismiss,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -151,14 +150,13 @@ fun SearchView(
 }
 
 /**
- * Search bar with back button and clear button
+ * Search bar with clear button
  */
 @Composable
 private fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onClear: () -> Unit,
-    onBack: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -169,20 +167,10 @@ private fun SearchBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Back button
-            if (onBack != null) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }
-
             // Search field
             TextField(
                 value = query,

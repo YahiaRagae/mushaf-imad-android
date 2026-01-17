@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -421,7 +422,9 @@ fun ChaptersListScreen(navController: NavHostController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchDemoScreen(navController: NavHostController) {
+    val verseRepository = remember { com.mushafimad.core.MushafLibrary.getVerseRepository() }
     var currentPage by remember { mutableStateOf<Int?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     if (currentPage != null) {
         // Show Mushaf at the selected page
@@ -451,17 +454,37 @@ fun SearchDemoScreen(navController: NavHostController) {
         }
     } else {
         // Show search
-        SearchView(
-            onVerseSelected = { verse ->
-                currentPage = verse.pageNumber
-            },
-            onChapterSelected = { chapter ->
-                println("Chapter selected: ${chapter.number}")
-            },
-            onDismiss = {
-                navController.popBackStack()
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Search") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        }
+                    }
+                )
             }
-        )
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                SearchView(
+                    onVerseSelected = { verse ->
+                        currentPage = verse.pageNumber
+                    },
+                    onChapterSelected = { chapter ->
+                        // Get first verse of chapter to determine start page
+                        coroutineScope.launch {
+                            val firstVerse = verseRepository.getVerse(chapter.number, 1)
+                            currentPage = firstVerse?.pageNumber ?: 1
+                        }
+                    },
+                    onDismiss = {
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
     }
 }
 
