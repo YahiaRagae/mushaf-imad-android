@@ -7,12 +7,10 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.mushafimad.core.domain.repository.ReciterPreferencesRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.mushafimad.core.internal.ServiceRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private val Context.reciterDataStore by preferencesDataStore(name = "reciter_preferences")
 
@@ -20,14 +18,20 @@ private val Context.reciterDataStore by preferencesDataStore(name = "reciter_pre
  * Implementation of ReciterPreferencesRepository using DataStore
  * Internal implementation - not exposed in public API
  */
-@Singleton
-internal class ReciterPreferencesRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+internal class ReciterPreferencesRepositoryImpl private constructor(
+    private val context: Context
 ) : ReciterPreferencesRepository {
 
     private val dataStore = context.reciterDataStore
 
     companion object {
+        @Volatile private var instance: ReciterPreferencesRepositoryImpl? = null
+
+        fun getInstance(): ReciterPreferencesRepository = instance ?: synchronized(this) {
+            instance ?: ReciterPreferencesRepositoryImpl(
+                ServiceRegistry.getContext()
+            ).also { instance = it }
+        }
         private val SELECTED_RECITER_ID_KEY = intPreferencesKey("selected_reciter_id")
         private val PLAYBACK_SPEED_KEY = floatPreferencesKey("playback_speed")
         private val REPEAT_MODE_KEY = booleanPreferencesKey("repeat_mode")

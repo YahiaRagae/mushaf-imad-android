@@ -2,26 +2,24 @@ package com.mushafimad.ui.theme
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.ColorScheme
 import com.mushafimad.core.domain.models.ThemeConfig
 import com.mushafimad.core.domain.models.ThemeMode
 import com.mushafimad.core.domain.repository.ThemeRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for managing app theme and appearance
  * Provides UI state and operations for theme customization
  */
-@HiltViewModel
-class ThemeViewModel @Inject constructor(
-    private val themeRepository: ThemeRepository
+internal class ThemeViewModel(
+    private val themeRepository: ThemeRepository = MushafLibrary.getThemeRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ThemeUiState())

@@ -4,15 +4,12 @@ import com.mushafimad.core.data.repository.RealmService
 import com.mushafimad.core.domain.models.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Singleton cache for chapters data to avoid reloading on every view appearance
  * Internal API - not exposed to library consumers
  */
-@Singleton
-internal class ChaptersDataCache @Inject constructor(
+internal class ChaptersDataCache(
     private val realmService: RealmService
 ) {
     private val mutex = Mutex()

@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
 import com.mushafimad.ui.theme.*
@@ -51,7 +51,6 @@ import kotlinx.coroutines.delay
  * @param onVerseSelected Callback when a verse is selected
  * @param onPageChanged Callback when page changes
  * @param modifier Optional modifier
- * @param viewModel Optional ViewModel (injected by default)
  */
 @Composable
 fun MushafView(
@@ -65,7 +64,7 @@ fun MushafView(
     onVerseSelected: ((Verse) -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    viewModel: MushafViewModel = hiltViewModel()
+    viewModel: MushafViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

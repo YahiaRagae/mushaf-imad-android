@@ -22,13 +22,11 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.repository.ChapterRepository
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Commands for custom actions
@@ -52,15 +50,11 @@ private const val ARG_SPEED = "speed"
  * - Bluetooth headset controls
  * - Android Auto integration
  */
-@AndroidEntryPoint
 @OptIn(UnstableApi::class)
 class AudioPlaybackService : MediaSessionService() {
 
-    @Inject
-    lateinit var chapterRepository: ChapterRepository
-
-    @Inject
-    lateinit var reciterService: ReciterService
+    private lateinit var chapterRepository: ChapterRepository
+    private lateinit var reciterService: ReciterService
 
     private var mediaSession: MediaSession? = null
     private lateinit var player: ExoPlayer
@@ -73,6 +67,10 @@ class AudioPlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         MushafLibrary.logger.info("AudioPlaybackService: onCreate()")
+
+        // Initialize dependencies from MushafLibrary
+        chapterRepository = MushafLibrary.getChapterRepository()
+        reciterService = com.mushafimad.core.internal.ServiceRegistry.getReciterService()
 
         // Initialize ExoPlayer with audio configuration
         player = ExoPlayer.Builder(this)

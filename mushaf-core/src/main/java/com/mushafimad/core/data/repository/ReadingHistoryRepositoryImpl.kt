@@ -9,18 +9,26 @@ import com.mushafimad.core.domain.models.ReadingStats
 import com.mushafimad.core.domain.repository.ReadingHistoryRepository
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
+import com.mushafimad.core.internal.ServiceRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-internal class ReadingHistoryRepositoryImpl @Inject constructor(
+internal class ReadingHistoryRepositoryImpl private constructor(
     private val realmService: RealmService
 ) : ReadingHistoryRepository {
+
+    companion object {
+        @Volatile private var instance: ReadingHistoryRepositoryImpl? = null
+
+        fun getInstance(): ReadingHistoryRepository = instance ?: synchronized(this) {
+            instance ?: ReadingHistoryRepositoryImpl(
+                ServiceRegistry.getRealmService()
+            ).also { instance = it }
+        }
+    }
 
     private val realm: Realm
         get() = realmService.getRealm()

@@ -2,12 +2,12 @@ package com.mushafimad.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.UserDataBackup
 import com.mushafimad.core.domain.repository.DataExportRepository
 import com.mushafimad.core.domain.repository.ImportResult
 import com.mushafimad.core.domain.repository.PreferencesRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,16 +15,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for app settings and data management
  * Handles preferences, data export/import, and backup operations
  */
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository,
-    private val dataExportRepository: DataExportRepository
+internal class SettingsViewModel(
+    private val preferencesRepository: PreferencesRepository = MushafLibrary.getPreferencesRepository(),
+    private val dataExportRepository: DataExportRepository = MushafLibrary.getDataExportRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())

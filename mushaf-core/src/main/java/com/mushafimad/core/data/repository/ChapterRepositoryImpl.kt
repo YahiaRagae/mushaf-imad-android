@@ -6,20 +6,29 @@ import com.mushafimad.core.domain.models.ChaptersByHizb
 import com.mushafimad.core.domain.models.ChaptersByPart
 import com.mushafimad.core.domain.models.ChaptersByType
 import com.mushafimad.core.domain.repository.ChapterRepository
+import com.mushafimad.core.internal.ServiceRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of ChapterRepository
  * Internal API - not exposed to library consumers
  */
-@Singleton
-internal class ChapterRepositoryImpl @Inject constructor(
+internal class ChapterRepositoryImpl private constructor(
     private val realmService: RealmService,
     private val chaptersDataCache: ChaptersDataCache
 ) : ChapterRepository {
+
+    companion object {
+        @Volatile private var instance: ChapterRepositoryImpl? = null
+
+        fun getInstance(): ChapterRepository = instance ?: synchronized(this) {
+            instance ?: ChapterRepositoryImpl(
+                ServiceRegistry.getRealmService(),
+                ServiceRegistry.getChaptersCache()
+            ).also { instance = it }
+        }
+    }
 
     override fun getAllChaptersFlow(): Flow<List<Chapter>> = flow {
         // Emit cached data if available

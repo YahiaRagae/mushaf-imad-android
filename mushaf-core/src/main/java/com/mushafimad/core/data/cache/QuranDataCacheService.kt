@@ -6,15 +6,12 @@ import com.mushafimad.core.domain.models.PageHeaderInfo
 import com.mushafimad.core.domain.models.Verse
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Service to cache Quran data from Realm for quick access
  * Internal API - not exposed to library consumers
  */
-@Singleton
-internal class QuranDataCacheService @Inject constructor(
+internal class QuranDataCacheService(
     private val realmService: RealmService
 ) {
     private val mutex = Mutex()

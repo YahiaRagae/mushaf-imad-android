@@ -2,21 +2,19 @@ package com.mushafimad.sampleapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.Chapter
 import com.mushafimad.core.domain.repository.ChapterRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel demonstrating ChapterRepository usage
  */
-@HiltViewModel
-class ChaptersViewModel @Inject constructor(
-    private val chapterRepository: ChapterRepository
+class ChaptersViewModel(
+    private val chapterRepository: ChapterRepository = MushafLibrary.getChapterRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChaptersUiState>(ChaptersUiState.Loading)

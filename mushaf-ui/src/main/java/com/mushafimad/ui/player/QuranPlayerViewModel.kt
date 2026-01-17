@@ -3,12 +3,9 @@ package com.mushafimad.ui.player
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mushafimad.core.MushafLibrary
-import com.mushafimad.core.data.audio.AyahTimingService
-import com.mushafimad.core.data.audio.MediaSessionManager
 import com.mushafimad.core.data.audio.PlaybackState
-import com.mushafimad.core.data.audio.ReciterService
 import com.mushafimad.core.domain.models.ReciterInfo
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.mushafimad.core.domain.repository.AudioRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,18 +13,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for Quran audio player
  * Coordinates audio playback with verse timing synchronization
  * Internal implementation - not directly exposed, used via QuranPlayerView composable
  */
-@HiltViewModel
-internal class QuranPlayerViewModel @Inject constructor(
-    private val mediaSessionManager: MediaSessionManager,
-    private val ayahTimingService: AyahTimingService,
-    private val reciterService: ReciterService
+internal class QuranPlayerViewModel(
+    private val audioRepository: AudioRepository = MushafLibrary.getAudioRepository()
 ) : ViewModel() {
 
     companion object {
@@ -68,10 +61,8 @@ internal class QuranPlayerViewModel @Inject constructor(
     private var verseTrackingJob: Job? = null
 
     init {
-        // Initialize MediaSessionManager
-        mediaSessionManager.initialize()
         observePlayerState()
-        observeReciters()
+        loadReciters()
     }
 
     /**
@@ -79,7 +70,7 @@ internal class QuranPlayerViewModel @Inject constructor(
      */
     private fun observePlayerState() {
         viewModelScope.launch {
-            mediaSessionManager.playerState.collect { playerState ->
+            audioRepository.getPlayerStateFlow().collect { playerState ->
                 _playbackState.value = playerState.playbackState
                 _currentTimeMs.value = playerState.currentPositionMs
                 _durationMs.value = playerState.durationMs
@@ -96,20 +87,16 @@ internal class QuranPlayerViewModel @Inject constructor(
     }
 
     /**
-     * Observe reciter service for available reciters
+     * Load available reciters
      */
-    private fun observeReciters() {
+    private fun loadReciters() {
         viewModelScope.launch {
-            reciterService.availableReciters.collect { reciters ->
-                _availableReciters.value = reciters
-            }
-        }
+            val reciters = audioRepository.getAllReciters()
+            _availableReciters.value = reciters
 
-        viewModelScope.launch {
-            reciterService.selectedReciter.collect { reciter ->
-                _selectedReciter.value = reciter
-                reciter?.let { currentReciterId = it.id }
-            }
+            val defaultReciter = audioRepository.getDefaultReciter()
+            _selectedReciter.value = defaultReciter
+            currentReciterId = defaultReciter.id
         }
     }
 
@@ -130,8 +117,8 @@ internal class QuranPlayerViewModel @Inject constructor(
         reciterId?.let {
             currentReciterId = it
             // Update selected reciter if different
-            reciterService.getReciterById(it)?.let { reciter ->
-                reciterService.selectReciter(reciter)
+            audioRepository.getReciterById(it)?.let { reciter ->
+                _selectedReciter.value = reciter
             }
         }
 
@@ -148,21 +135,21 @@ internal class QuranPlayerViewModel @Inject constructor(
             return
         }
 
-        mediaSessionManager.loadChapter(chapterNumber, currentReciterId, autoPlay)
+        audioRepository.loadChapter(chapterNumber, currentReciterId, autoPlay)
     }
 
     /**
      * Start or resume playback
      */
     fun play() {
-        mediaSessionManager.play()
+        audioRepository.play()
     }
 
     /**
      * Pause playback
      */
     fun pause() {
-        mediaSessionManager.pause()
+        audioRepository.pause()
     }
 
     /**
@@ -180,7 +167,7 @@ internal class QuranPlayerViewModel @Inject constructor(
      * Stop playback and reset
      */
     fun stop() {
-        mediaSessionManager.stop()
+        audioRepository.stop()
         _currentVerseNumber.value = null
         stopVerseTracking()
     }
@@ -189,7 +176,7 @@ internal class QuranPlayerViewModel @Inject constructor(
      * Seek to specific position in milliseconds
      */
     fun seekTo(positionMs: Long) {
-        mediaSessionManager.seekTo(positionMs)
+        audioRepository.seekTo(positionMs)
         viewModelScope.launch {
             updateCurrentVerse()
         }
@@ -202,13 +189,13 @@ internal class QuranPlayerViewModel @Inject constructor(
      */
     fun seekToVerse(verseNumber: Int) {
         viewModelScope.launch {
-            val timing = ayahTimingService.getTiming(currentReciterId, chapterNumber, verseNumber)
+            val timing = audioRepository.getAyahTiming(currentReciterId, chapterNumber, verseNumber)
             if (timing == null) {
                 MushafLibrary.logger.warning("No timing found for verse $verseNumber in chapter $chapterNumber")
                 return@launch
             }
 
-            mediaSessionManager.seekTo(timing.startTime.toLong())
+            audioRepository.seekTo(timing.startTime.toLong())
             _currentVerseNumber.value = verseNumber
             MushafLibrary.logger.info("Seeked to verse $verseNumber at ${timing.startTime}ms")
         }
@@ -240,7 +227,7 @@ internal class QuranPlayerViewModel @Inject constructor(
         val newRate = PLAYBACK_RATES[nextIndex]
 
         _playbackRate.value = newRate
-        mediaSessionManager.setPlaybackSpeed(newRate)
+        audioRepository.setPlaybackSpeed(newRate)
 
         MushafLibrary.logger.info("Playback rate changed to ${newRate}x")
     }
@@ -250,7 +237,7 @@ internal class QuranPlayerViewModel @Inject constructor(
      */
     fun toggleRepeat() {
         val newValue = !_isRepeatEnabled.value
-        mediaSessionManager.toggleRepeat()
+        audioRepository.setRepeatMode(newValue)
         _isRepeatEnabled.value = newValue
         MushafLibrary.logger.info("Repeat mode: $newValue")
     }
@@ -261,7 +248,7 @@ internal class QuranPlayerViewModel @Inject constructor(
      * @param reloadAudio Whether to reload current chapter with new reciter
      */
     fun selectReciter(reciter: ReciterInfo, reloadAudio: Boolean = true) {
-        reciterService.selectReciter(reciter)
+        _selectedReciter.value = reciter
         currentReciterId = reciter.id
 
         if (reloadAudio && chapterNumber > 0) {
@@ -302,7 +289,7 @@ internal class QuranPlayerViewModel @Inject constructor(
         if (chapterNumber <= 0 || currentReciterId <= 0) return
 
         val currentTimeMs = _currentTimeMs.value.toInt()
-        val verseNumber = ayahTimingService.getCurrentVerse(
+        val verseNumber = audioRepository.getCurrentVerse(
             currentReciterId,
             chapterNumber,
             currentTimeMs

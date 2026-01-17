@@ -20,6 +20,13 @@
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
+
+        <!-- ContentProvider for automatic library initialization -->
+        <provider
+            android:name=".internal.MushafInitProvider"
+            android:authorities="${applicationId}.mushaf-initializer"
+            android:exported="false"
+            android:multiprocess="true" />
     </application>
 
 </manifest>

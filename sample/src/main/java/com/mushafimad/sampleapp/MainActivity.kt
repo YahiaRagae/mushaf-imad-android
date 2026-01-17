@@ -33,13 +33,11 @@ import com.mushafimad.ui.mushaf.MushafWithPlayerView
 import com.mushafimad.ui.search.SearchView
 import com.mushafimad.ui.theme.ColorSchemeType
 import com.mushafimad.ui.theme.ReadingTheme
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Sample app demonstrating MushafView and Audio Player integration
  * Structured like iOS example app with categories
  */
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     // Permission launcher for POST_NOTIFICATIONS (Android 13+)

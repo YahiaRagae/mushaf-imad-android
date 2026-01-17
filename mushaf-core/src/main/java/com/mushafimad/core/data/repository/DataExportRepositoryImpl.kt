@@ -7,15 +7,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of DataExportRepository
  * Internal implementation - not exposed in public API
  */
-@Singleton
-internal class DataExportRepositoryImpl @Inject constructor(
+internal class DataExportRepositoryImpl private constructor(
     private val bookmarkRepository: BookmarkRepository,
     private val readingHistoryRepository: ReadingHistoryRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -23,6 +20,21 @@ internal class DataExportRepositoryImpl @Inject constructor(
     private val reciterPreferencesRepository: ReciterPreferencesRepository,
     private val themeRepository: ThemeRepository
 ) : DataExportRepository {
+
+    companion object {
+        @Volatile private var instance: DataExportRepositoryImpl? = null
+
+        fun getInstance(): DataExportRepository = instance ?: synchronized(this) {
+            instance ?: DataExportRepositoryImpl(
+                BookmarkRepositoryImpl.getInstance(),
+                ReadingHistoryRepositoryImpl.getInstance(),
+                SearchHistoryRepositoryImpl.getInstance(),
+                PreferencesRepositoryImpl.getInstance(),
+                ReciterPreferencesRepositoryImpl.getInstance(),
+                ThemeRepositoryImpl.getInstance()
+            ).also { instance = it }
+        }
+    }
 
     private val json = Json {
         prettyPrint = true

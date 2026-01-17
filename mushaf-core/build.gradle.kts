@@ -1,9 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.realm)
 }
 
@@ -76,10 +74,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    // Hilt (Dependency Injection)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
     // Realm (Database)
     implementation(libs.realm.library.base)
 
@@ -102,8 +96,4 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.truth)
     androidTestImplementation(libs.androidx.test.ext.junit)
-}
-
-kapt {
-    correctErrorTypes = true
 }

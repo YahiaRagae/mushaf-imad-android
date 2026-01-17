@@ -14,15 +14,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of RealmService that provides access to the Quran database
  * Internal API - not exposed to library consumers
  */
-@Singleton
-internal class RealmServiceImpl @Inject constructor(
+internal class RealmServiceImpl(
     private val context: Context
 ) : RealmService {
 

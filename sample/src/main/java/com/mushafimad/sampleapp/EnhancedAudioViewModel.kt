@@ -2,19 +2,18 @@ package com.mushafimad.sampleapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.data.audio.AudioPlayerState
 import com.mushafimad.core.data.audio.PlaybackState
 import com.mushafimad.core.domain.models.AyahTiming
 import com.mushafimad.core.domain.models.ReciterInfo
 import com.mushafimad.core.domain.repository.AudioRepository
 import com.mushafimad.core.domain.repository.ReciterPreferencesRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Enhanced UI state for advanced audio playback features
@@ -36,10 +35,9 @@ data class EnhancedAudioUiState(
  * Enhanced ViewModel with scrubbing, verse navigation, and playback rate cycling
  * Demonstrates all audio playback features
  */
-@HiltViewModel
-class EnhancedAudioViewModel @Inject constructor(
-    private val audioRepository: AudioRepository,
-    private val reciterPreferencesRepository: ReciterPreferencesRepository
+class EnhancedAudioViewModel(
+    private val audioRepository: AudioRepository = MushafLibrary.getAudioRepository(),
+    private val reciterPreferencesRepository: ReciterPreferencesRepository = MushafLibrary.getReciterPreferencesRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EnhancedAudioUiState())

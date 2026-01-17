@@ -5,18 +5,27 @@ import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Page
 import com.mushafimad.core.domain.models.PageHeaderInfo
 import com.mushafimad.core.domain.repository.PageRepository
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.mushafimad.core.internal.ServiceRegistry
 
 /**
  * Implementation of PageRepository
  * Internal API - not exposed to library consumers
  */
-@Singleton
-internal class PageRepositoryImpl @Inject constructor(
+internal class PageRepositoryImpl private constructor(
     private val realmService: RealmService,
     private val cacheService: QuranDataCacheService
 ) : PageRepository {
+
+    companion object {
+        @Volatile private var instance: PageRepositoryImpl? = null
+
+        fun getInstance(): PageRepository = instance ?: synchronized(this) {
+            instance ?: PageRepositoryImpl(
+                ServiceRegistry.getRealmService(),
+                ServiceRegistry.getQuranCacheService()
+            ).also { instance = it }
+        }
+    }
 
     override suspend fun getPage(number: Int): Page? {
         return realmService.getPage(number)

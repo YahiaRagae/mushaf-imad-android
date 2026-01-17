@@ -2,17 +2,16 @@ package com.mushafimad.sampleapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.data.audio.AudioPlayerState
 import com.mushafimad.core.data.audio.PlaybackState
 import com.mushafimad.core.domain.models.AyahTiming
 import com.mushafimad.core.domain.models.ReciterInfo
 import com.mushafimad.core.domain.repository.AudioRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * UI state for audio playback
@@ -29,9 +28,8 @@ data class AudioUiState(
 /**
  * ViewModel demonstrating audio playback and reciter management
  */
-@HiltViewModel
-class AudioViewModel @Inject constructor(
-    private val audioRepository: AudioRepository
+class AudioViewModel(
+    private val audioRepository: AudioRepository = MushafLibrary.getAudioRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AudioUiState())

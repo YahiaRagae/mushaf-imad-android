@@ -6,19 +6,29 @@ import com.mushafimad.core.data.cache.QuranDataCacheService
 import com.mushafimad.core.domain.models.Part
 import com.mushafimad.core.domain.models.Quarter
 import com.mushafimad.core.domain.repository.QuranRepository
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.mushafimad.core.internal.ServiceRegistry
 
 /**
  * Implementation of QuranRepository
  * Internal API - not exposed to library consumers
  */
-@Singleton
-internal class QuranRepositoryImpl @Inject constructor(
+internal class QuranRepositoryImpl private constructor(
     private val realmService: RealmService,
     private val chaptersDataCache: ChaptersDataCache,
     private val quranDataCacheService: QuranDataCacheService
 ) : QuranRepository {
+
+    companion object {
+        @Volatile private var instance: QuranRepositoryImpl? = null
+
+        fun getInstance(): QuranRepository = instance ?: synchronized(this) {
+            instance ?: QuranRepositoryImpl(
+                ServiceRegistry.getRealmService(),
+                ServiceRegistry.getChaptersCache(),
+                ServiceRegistry.getQuranCacheService()
+            ).also { instance = it }
+        }
+    }
 
     override suspend fun initialize() {
         realmService.initialize()

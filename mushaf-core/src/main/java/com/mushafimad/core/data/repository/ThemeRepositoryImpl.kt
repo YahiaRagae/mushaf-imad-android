@@ -9,12 +9,10 @@ import com.mushafimad.core.domain.models.ColorScheme
 import com.mushafimad.core.domain.models.ThemeConfig
 import com.mushafimad.core.domain.models.ThemeMode
 import com.mushafimad.core.domain.repository.ThemeRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.mushafimad.core.internal.ServiceRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private val Context.themeDataStore by preferencesDataStore(name = "theme_preferences")
 
@@ -22,14 +20,20 @@ private val Context.themeDataStore by preferencesDataStore(name = "theme_prefere
  * Implementation of ThemeRepository using DataStore
  * Internal implementation - not exposed in public API
  */
-@Singleton
-internal class ThemeRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+internal class ThemeRepositoryImpl private constructor(
+    private val context: Context
 ) : ThemeRepository {
 
     private val dataStore = context.themeDataStore
 
     companion object {
+        @Volatile private var instance: ThemeRepositoryImpl? = null
+
+        fun getInstance(): ThemeRepository = instance ?: synchronized(this) {
+            instance ?: ThemeRepositoryImpl(
+                ServiceRegistry.getContext()
+            ).also { instance = it }
+        }
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         private val COLOR_SCHEME_KEY = stringPreferencesKey("color_scheme")
         private val AMOLED_MODE_KEY = booleanPreferencesKey("amoled_mode")

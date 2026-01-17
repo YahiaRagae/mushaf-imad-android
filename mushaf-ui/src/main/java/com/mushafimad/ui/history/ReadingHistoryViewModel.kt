@@ -2,26 +2,24 @@ package com.mushafimad.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.LastReadPosition
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.ReadingStats
 import com.mushafimad.core.domain.repository.ReadingHistoryRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for reading history and statistics
  * Provides UI state for reading progress, streaks, and statistics
  */
-@HiltViewModel
-class ReadingHistoryViewModel @Inject constructor(
-    private val readingHistoryRepository: ReadingHistoryRepository
+internal class ReadingHistoryViewModel(
+    private val readingHistoryRepository: ReadingHistoryRepository = MushafLibrary.getReadingHistoryRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ReadingHistoryUiState())

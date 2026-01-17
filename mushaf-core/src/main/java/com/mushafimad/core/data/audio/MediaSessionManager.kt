@@ -12,7 +12,6 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.mushafimad.core.MushafLibrary
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,8 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Playback states for audio player
@@ -71,10 +68,9 @@ data class AudioPlayerState(
  * - Sending custom commands (load chapter, change reciter, etc.)
  * - Exposing playback state via StateFlow
  */
-@Singleton
 @OptIn(UnstableApi::class)
-class MediaSessionManager @Inject constructor(
-    @ApplicationContext private val context: Context
+internal class MediaSessionManager(
+    private val context: Context
 ) {
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null

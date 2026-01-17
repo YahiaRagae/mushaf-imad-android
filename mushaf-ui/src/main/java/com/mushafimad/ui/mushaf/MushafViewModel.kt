@@ -2,27 +2,25 @@ package com.mushafimad.ui.mushaf
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.*
 import com.mushafimad.core.domain.repository.*
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for Mushaf (Quran) page display and navigation
  * Manages page state, verse selection, navigation, and reading position
  */
-@HiltViewModel
-class MushafViewModel @Inject constructor(
-    private val verseRepository: VerseRepository,
-    private val chapterRepository: ChapterRepository,
-    private val readingHistoryRepository: ReadingHistoryRepository,
-    private val preferencesRepository: PreferencesRepository
+class MushafViewModel(
+    private val verseRepository: VerseRepository = MushafLibrary.getVerseRepository(),
+    private val chapterRepository: ChapterRepository = MushafLibrary.getChapterRepository(),
+    private val readingHistoryRepository: ReadingHistoryRepository = MushafLibrary.getReadingHistoryRepository(),
+    private val preferencesRepository: PreferencesRepository = MushafLibrary.getPreferencesRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MushafUiState())

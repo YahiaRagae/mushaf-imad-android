@@ -4,20 +4,16 @@ import android.content.Context
 import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.AyahTiming
 import com.mushafimad.core.domain.models.ReciterTiming
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Service for loading and managing ayah timing data for audio synchronization
  * Internal implementation - not exposed in public API
  */
-@Singleton
-class AyahTimingService @Inject constructor(
-    @ApplicationContext private val context: Context
+internal class AyahTimingService(
+    private val context: Context
 ) {
     private val json = Json {
         ignoreUnknownKeys = true

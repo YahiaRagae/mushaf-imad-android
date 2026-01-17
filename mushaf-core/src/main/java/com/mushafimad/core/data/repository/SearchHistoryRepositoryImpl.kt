@@ -7,22 +7,30 @@ import com.mushafimad.core.domain.models.SearchType
 import com.mushafimad.core.domain.repository.SearchHistoryRepository
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
+import com.mushafimad.core.internal.ServiceRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of SearchHistoryRepository using Realm
  * Internal implementation - not exposed in public API
  */
-@Singleton
-internal class SearchHistoryRepositoryImpl @Inject constructor(
+internal class SearchHistoryRepositoryImpl private constructor(
     private val realmService: RealmService
 ) : SearchHistoryRepository {
+
+    companion object {
+        @Volatile private var instance: SearchHistoryRepositoryImpl? = null
+
+        fun getInstance(): SearchHistoryRepository = instance ?: synchronized(this) {
+            instance ?: SearchHistoryRepositoryImpl(
+                ServiceRegistry.getRealmService()
+            ).also { instance = it }
+        }
+    }
 
     private val realm: Realm
         get() = realmService.getRealm()

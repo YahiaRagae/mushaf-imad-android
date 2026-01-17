@@ -2,28 +2,26 @@ package com.mushafimad.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.*
 import com.mushafimad.core.domain.repository.*
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Unified search ViewModel
  * Combines searching across verses, chapters, reciters, and bookmarks
  * Manages search history and suggestions
  */
-@HiltViewModel
-class SearchViewModel @Inject constructor(
-    private val verseRepository: VerseRepository,
-    private val chapterRepository: ChapterRepository,
-    private val audioRepository: AudioRepository,
-    private val bookmarkRepository: BookmarkRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
+class SearchViewModel(
+    private val verseRepository: VerseRepository = MushafLibrary.getVerseRepository(),
+    private val chapterRepository: ChapterRepository = MushafLibrary.getChapterRepository(),
+    private val audioRepository: AudioRepository = MushafLibrary.getAudioRepository(),
+    private val bookmarkRepository: BookmarkRepository = MushafLibrary.getBookmarkRepository(),
+    private val searchHistoryRepository: SearchHistoryRepository = MushafLibrary.getSearchHistoryRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())

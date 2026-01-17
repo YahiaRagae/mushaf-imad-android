@@ -3,6 +3,7 @@ package com.mushafimad.core.data.repository
 import com.mushafimad.core.data.local.entities.BookmarkEntity
 import com.mushafimad.core.domain.models.Bookmark
 import com.mushafimad.core.domain.repository.BookmarkRepository
+import com.mushafimad.core.internal.ServiceRegistry
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
@@ -10,17 +11,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Implementation of BookmarkRepository using Realm
  * Internal implementation - not exposed in public API
  */
-@Singleton
-internal class BookmarkRepositoryImpl @Inject constructor(
+internal class BookmarkRepositoryImpl private constructor(
     private val realmService: RealmService
 ) : BookmarkRepository {
+
+    companion object {
+        @Volatile private var instance: BookmarkRepositoryImpl? = null
+
+        fun getInstance(): BookmarkRepository = instance ?: synchronized(this) {
+            instance ?: BookmarkRepositoryImpl(
+                ServiceRegistry.getRealmService()
+            ).also { instance = it }
+        }
+    }
 
     private val realm: Realm
         get() = realmService.getRealm()

@@ -2,24 +2,22 @@ package com.mushafimad.ui.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.Bookmark
 import com.mushafimad.core.domain.repository.BookmarkRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for managing bookmarks
  * Provides UI state and operations for bookmark management
  */
-@HiltViewModel
-class BookmarksViewModel @Inject constructor(
-    private val bookmarkRepository: BookmarkRepository
+internal class BookmarksViewModel(
+    private val bookmarkRepository: BookmarkRepository = MushafLibrary.getBookmarkRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BookmarksUiState())

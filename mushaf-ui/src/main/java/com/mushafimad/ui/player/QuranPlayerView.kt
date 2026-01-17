@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mushafimad.core.data.audio.PlaybackState
 import com.mushafimad.core.domain.models.ReciterInfo
 import com.mushafimad.ui.theme.MushafColors
@@ -48,7 +48,7 @@ fun QuranPlayerView(
     onNextVerse: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: QuranPlayerViewModel = hiltViewModel()
+    val viewModel: QuranPlayerViewModel = viewModel()
     val playbackState by viewModel.playbackState.collectAsState()
     val currentTimeMs by viewModel.currentTimeMs.collectAsState()
     val durationMs by viewModel.durationMs.collectAsState()

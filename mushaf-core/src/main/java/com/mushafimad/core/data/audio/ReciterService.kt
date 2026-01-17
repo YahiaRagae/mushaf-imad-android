@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.ReciterInfo
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -12,17 +11,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Service for managing Quran reciters
  * Handles loading reciter information, selection, and persistence
  * Internal implementation - not exposed in public API
  */
-@Singleton
-class ReciterService @Inject constructor(
-    @ApplicationContext private val context: Context,
+internal class ReciterService(
+    private val context: Context,
     private val ayahTimingService: AyahTimingService,
     private val prefs: SharedPreferences
 ) {

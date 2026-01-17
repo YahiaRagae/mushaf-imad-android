@@ -2,6 +2,7 @@ package com.mushafimad.sampleapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.PageHeaderInfo
 import com.mushafimad.core.domain.models.Verse
@@ -9,24 +10,21 @@ import com.mushafimad.core.domain.repository.PageRepository
 import com.mushafimad.core.domain.repository.PreferencesRepository
 import com.mushafimad.core.domain.repository.QuranRepository
 import com.mushafimad.core.domain.repository.VerseRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel demonstrating page, verse, and preferences usage
  */
-@HiltViewModel
-class QuranViewModel @Inject constructor(
-    private val pageRepository: PageRepository,
-    private val verseRepository: VerseRepository,
-    private val quranRepository: QuranRepository,
-    private val preferencesRepository: PreferencesRepository
+class QuranViewModel(
+    private val pageRepository: PageRepository = MushafLibrary.getPageRepository(),
+    private val verseRepository: VerseRepository = MushafLibrary.getVerseRepository(),
+    private val quranRepository: QuranRepository = MushafLibrary.getQuranRepository(),
+    private val preferencesRepository: PreferencesRepository = MushafLibrary.getPreferencesRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<QuranUiState>(QuranUiState.Loading)
