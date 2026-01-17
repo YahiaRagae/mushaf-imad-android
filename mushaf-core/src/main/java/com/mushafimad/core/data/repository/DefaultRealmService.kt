@@ -19,7 +19,7 @@ import java.io.File
  * Implementation of RealmService that provides access to the Quran database
  * Internal API - not exposed to library consumers
  */
-internal class RealmServiceImpl(
+internal class DefaultRealmService(
     private val context: Context
 ) : RealmService {
 

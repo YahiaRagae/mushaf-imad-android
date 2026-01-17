@@ -20,17 +20,17 @@ private val Context.themeDataStore by preferencesDataStore(name = "theme_prefere
  * Implementation of ThemeRepository using DataStore
  * Internal implementation - not exposed in public API
  */
-internal class ThemeRepositoryImpl private constructor(
+internal class DefaultThemeRepository private constructor(
     private val context: Context
 ) : ThemeRepository {
 
     private val dataStore = context.themeDataStore
 
     companion object {
-        @Volatile private var instance: ThemeRepositoryImpl? = null
+        @Volatile private var instance: DefaultThemeRepository? = null
 
         fun getInstance(): ThemeRepository = instance ?: synchronized(this) {
-            instance ?: ThemeRepositoryImpl(
+            instance ?: DefaultThemeRepository(
                 ServiceRegistry.getContext()
             ).also { instance = it }
         }

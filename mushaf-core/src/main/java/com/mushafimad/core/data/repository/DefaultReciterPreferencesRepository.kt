@@ -18,17 +18,17 @@ private val Context.reciterDataStore by preferencesDataStore(name = "reciter_pre
  * Implementation of ReciterPreferencesRepository using DataStore
  * Internal implementation - not exposed in public API
  */
-internal class ReciterPreferencesRepositoryImpl private constructor(
+internal class DefaultReciterPreferencesRepository private constructor(
     private val context: Context
 ) : ReciterPreferencesRepository {
 
     private val dataStore = context.reciterDataStore
 
     companion object {
-        @Volatile private var instance: ReciterPreferencesRepositoryImpl? = null
+        @Volatile private var instance: DefaultReciterPreferencesRepository? = null
 
         fun getInstance(): ReciterPreferencesRepository = instance ?: synchronized(this) {
-            instance ?: ReciterPreferencesRepositoryImpl(
+            instance ?: DefaultReciterPreferencesRepository(
                 ServiceRegistry.getContext()
             ).also { instance = it }
         }

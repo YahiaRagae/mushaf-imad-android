@@ -9,10 +9,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
- * Implementation of DataExportRepository
+ * Default implementation of DataExportRepository
  * Internal implementation - not exposed in public API
  */
-internal class DataExportRepositoryImpl private constructor(
+internal class DefaultDataExportRepository private constructor(
     private val bookmarkRepository: BookmarkRepository,
     private val readingHistoryRepository: ReadingHistoryRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -22,16 +22,16 @@ internal class DataExportRepositoryImpl private constructor(
 ) : DataExportRepository {
 
     companion object {
-        @Volatile private var instance: DataExportRepositoryImpl? = null
+        @Volatile private var instance: DefaultDataExportRepository? = null
 
         fun getInstance(): DataExportRepository = instance ?: synchronized(this) {
-            instance ?: DataExportRepositoryImpl(
-                BookmarkRepositoryImpl.getInstance(),
-                ReadingHistoryRepositoryImpl.getInstance(),
-                SearchHistoryRepositoryImpl.getInstance(),
-                PreferencesRepositoryImpl.getInstance(),
-                ReciterPreferencesRepositoryImpl.getInstance(),
-                ThemeRepositoryImpl.getInstance()
+            instance ?: DefaultDataExportRepository(
+                DefaultBookmarkRepository.getInstance(),
+                DefaultReadingHistoryRepository.getInstance(),
+                DefaultSearchHistoryRepository.getInstance(),
+                DefaultPreferencesRepository.getInstance(),
+                DefaultReciterPreferencesRepository.getInstance(),
+                DefaultThemeRepository.getInstance()
             ).also { instance = it }
         }
     }
@@ -161,7 +161,7 @@ internal class DataExportRepositoryImpl private constructor(
 
     override suspend fun importFromJson(json: String, mergeWithExisting: Boolean): ImportResult = withContext(Dispatchers.IO) {
         try {
-            val backup = this@DataExportRepositoryImpl.json.decodeFromString<UserDataBackup>(json)
+            val backup = this@DefaultDataExportRepository.json.decodeFromString<UserDataBackup>(json)
             importUserData(backup, mergeWithExisting)
         } catch (e: Exception) {
             ImportResult(

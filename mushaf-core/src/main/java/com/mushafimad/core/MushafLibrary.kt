@@ -1,12 +1,13 @@
 package com.mushafimad.core
 
 import android.content.Context
+import com.mushafimad.core.data.repository.*
+import com.mushafimad.core.domain.repository.*
 import com.mushafimad.core.internal.ServiceRegistry
+import com.mushafimad.core.logging.DefaultMushafLogger
 import com.mushafimad.core.logging.MushafAnalytics
 import com.mushafimad.core.logging.MushafLogger
-import com.mushafimad.core.logging.DefaultMushafLogger
 import com.mushafimad.core.logging.NoOpMushafAnalytics
-import com.mushafimad.core.domain.repository.*
 
 /**
  * Main entry point for MushafImad library
@@ -128,7 +129,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getQuranRepository(): QuranRepository {
-        return com.mushafimad.core.data.repository.QuranRepositoryImpl.getInstance()
+        return DefaultQuranRepository.getInstance()
     }
 
     /**
@@ -137,7 +138,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getChapterRepository(): ChapterRepository {
-        return com.mushafimad.core.data.repository.ChapterRepositoryImpl.getInstance()
+        return DefaultChapterRepository.getInstance()
     }
 
     /**
@@ -146,7 +147,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getPageRepository(): PageRepository {
-        return com.mushafimad.core.data.repository.PageRepositoryImpl.getInstance()
+        return DefaultPageRepository.getInstance()
     }
 
     /**
@@ -155,7 +156,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getVerseRepository(): VerseRepository {
-        return com.mushafimad.core.data.repository.VerseRepositoryImpl.getInstance()
+        return DefaultVerseRepository.getInstance()
     }
 
     /**
@@ -164,7 +165,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getBookmarkRepository(): BookmarkRepository {
-        return com.mushafimad.core.data.repository.BookmarkRepositoryImpl.getInstance()
+        return DefaultBookmarkRepository.getInstance()
     }
 
     /**
@@ -173,7 +174,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getReadingHistoryRepository(): ReadingHistoryRepository {
-        return com.mushafimad.core.data.repository.ReadingHistoryRepositoryImpl.getInstance()
+        return DefaultReadingHistoryRepository.getInstance()
     }
 
     /**
@@ -182,7 +183,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getSearchHistoryRepository(): SearchHistoryRepository {
-        return com.mushafimad.core.data.repository.SearchHistoryRepositoryImpl.getInstance()
+        return DefaultSearchHistoryRepository.getInstance()
     }
 
     /**
@@ -191,7 +192,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getAudioRepository(): AudioRepository {
-        return com.mushafimad.core.data.repository.AudioRepositoryImpl.getInstance()
+        return DefaultAudioRepository.getInstance()
     }
 
     /**
@@ -200,7 +201,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getPreferencesRepository(): PreferencesRepository {
-        return com.mushafimad.core.data.repository.PreferencesRepositoryImpl.getInstance()
+        return DefaultPreferencesRepository.getInstance()
     }
 
     /**
@@ -209,7 +210,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getReciterPreferencesRepository(): ReciterPreferencesRepository {
-        return com.mushafimad.core.data.repository.ReciterPreferencesRepositoryImpl.getInstance()
+        return DefaultReciterPreferencesRepository.getInstance()
     }
 
     /**
@@ -218,7 +219,7 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getThemeRepository(): ThemeRepository {
-        return com.mushafimad.core.data.repository.ThemeRepositoryImpl.getInstance()
+        return DefaultThemeRepository.getInstance()
     }
 
     /**
@@ -227,6 +228,6 @@ object MushafLibrary {
      */
     @JvmStatic
     fun getDataExportRepository(): DataExportRepository {
-        return com.mushafimad.core.data.repository.DataExportRepositoryImpl.getInstance()
+        return DefaultDataExportRepository.getInstance()
     }
 }

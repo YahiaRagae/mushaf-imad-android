@@ -11,19 +11,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 /**
- * Implementation of ChapterRepository
+ * Default implementation of ChapterRepository
  * Internal API - not exposed to library consumers
  */
-internal class ChapterRepositoryImpl private constructor(
+internal class DefaultChapterRepository private constructor(
     private val realmService: RealmService,
     private val chaptersDataCache: ChaptersDataCache
 ) : ChapterRepository {
 
     companion object {
-        @Volatile private var instance: ChapterRepositoryImpl? = null
+        @Volatile private var instance: DefaultChapterRepository? = null
 
         fun getInstance(): ChapterRepository = instance ?: synchronized(this) {
-            instance ?: ChapterRepositoryImpl(
+            instance ?: DefaultChapterRepository(
                 ServiceRegistry.getRealmService(),
                 ServiceRegistry.getChaptersCache()
             ).also { instance = it }

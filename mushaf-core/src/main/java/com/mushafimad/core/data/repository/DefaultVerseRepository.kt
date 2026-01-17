@@ -7,19 +7,19 @@ import com.mushafimad.core.domain.repository.VerseRepository
 import com.mushafimad.core.internal.ServiceRegistry
 
 /**
- * Implementation of VerseRepository
+ * Default implementation of VerseRepository
  * Internal API - not exposed to library consumers
  */
-internal class VerseRepositoryImpl private constructor(
+internal class DefaultVerseRepository private constructor(
     private val realmService: RealmService,
     private val cacheService: QuranDataCacheService
 ) : VerseRepository {
 
     companion object {
-        @Volatile private var instance: VerseRepositoryImpl? = null
+        @Volatile private var instance: DefaultVerseRepository? = null
 
         fun getInstance(): VerseRepository = instance ?: synchronized(this) {
-            instance ?: VerseRepositoryImpl(
+            instance ?: DefaultVerseRepository(
                 ServiceRegistry.getRealmService(),
                 ServiceRegistry.getQuranCacheService()
             ).also { instance = it }

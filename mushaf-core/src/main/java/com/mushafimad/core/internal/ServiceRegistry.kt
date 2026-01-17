@@ -8,7 +8,7 @@ import com.mushafimad.core.data.audio.ReciterService
 import com.mushafimad.core.data.cache.ChaptersDataCache
 import com.mushafimad.core.data.cache.QuranDataCacheService
 import com.mushafimad.core.data.repository.RealmService
-import com.mushafimad.core.data.repository.RealmServiceImpl
+import com.mushafimad.core.data.repository.DefaultRealmService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -72,7 +72,7 @@ internal object ServiceRegistry {
      * Thread-safe lazy initialization.
      */
     fun getRealmService(): RealmService = _realmService ?: synchronized(lock) {
-        _realmService ?: RealmServiceImpl(getContext()).also {
+        _realmService ?: DefaultRealmService(getContext()).also {
             _realmService = it
         }
     }

@@ -15,18 +15,18 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 
 /**
- * Implementation of SearchHistoryRepository using Realm
+ * Default implementation of SearchHistoryRepository using Realm
  * Internal implementation - not exposed in public API
  */
-internal class SearchHistoryRepositoryImpl private constructor(
+internal class DefaultSearchHistoryRepository private constructor(
     private val realmService: RealmService
 ) : SearchHistoryRepository {
 
     companion object {
-        @Volatile private var instance: SearchHistoryRepositoryImpl? = null
+        @Volatile private var instance: DefaultSearchHistoryRepository? = null
 
         fun getInstance(): SearchHistoryRepository = instance ?: synchronized(this) {
-            instance ?: SearchHistoryRepositoryImpl(
+            instance ?: DefaultSearchHistoryRepository(
                 ServiceRegistry.getRealmService()
             ).also { instance = it }
         }

@@ -8,19 +8,19 @@ import com.mushafimad.core.domain.repository.PageRepository
 import com.mushafimad.core.internal.ServiceRegistry
 
 /**
- * Implementation of PageRepository
+ * Default implementation of PageRepository
  * Internal API - not exposed to library consumers
  */
-internal class PageRepositoryImpl private constructor(
+internal class DefaultPageRepository private constructor(
     private val realmService: RealmService,
     private val cacheService: QuranDataCacheService
 ) : PageRepository {
 
     companion object {
-        @Volatile private var instance: PageRepositoryImpl? = null
+        @Volatile private var instance: DefaultPageRepository? = null
 
         fun getInstance(): PageRepository = instance ?: synchronized(this) {
-            instance ?: PageRepositoryImpl(
+            instance ?: DefaultPageRepository(
                 ServiceRegistry.getRealmService(),
                 ServiceRegistry.getQuranCacheService()
             ).also { instance = it }

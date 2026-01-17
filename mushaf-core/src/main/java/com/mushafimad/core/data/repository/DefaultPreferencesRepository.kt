@@ -17,17 +17,17 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  * Implementation of PreferencesRepository using DataStore
  * Internal API - not exposed to library consumers
  */
-internal class PreferencesRepositoryImpl private constructor(
+internal class DefaultPreferencesRepository private constructor(
     private val context: Context
 ) : PreferencesRepository {
 
     private val dataStore = context.dataStore
 
     companion object {
-        @Volatile private var instance: PreferencesRepositoryImpl? = null
+        @Volatile private var instance: DefaultPreferencesRepository? = null
 
         fun getInstance(): PreferencesRepository = instance ?: synchronized(this) {
-            instance ?: PreferencesRepositoryImpl(
+            instance ?: DefaultPreferencesRepository(
                 ServiceRegistry.getContext()
             ).also { instance = it }
         }

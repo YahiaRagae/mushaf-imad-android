@@ -9,20 +9,20 @@ import com.mushafimad.core.domain.repository.QuranRepository
 import com.mushafimad.core.internal.ServiceRegistry
 
 /**
- * Implementation of QuranRepository
+ * Default implementation of QuranRepository
  * Internal API - not exposed to library consumers
  */
-internal class QuranRepositoryImpl private constructor(
+internal class DefaultQuranRepository private constructor(
     private val realmService: RealmService,
     private val chaptersDataCache: ChaptersDataCache,
     private val quranDataCacheService: QuranDataCacheService
 ) : QuranRepository {
 
     companion object {
-        @Volatile private var instance: QuranRepositoryImpl? = null
+        @Volatile private var instance: DefaultQuranRepository? = null
 
         fun getInstance(): QuranRepository = instance ?: synchronized(this) {
-            instance ?: QuranRepositoryImpl(
+            instance ?: DefaultQuranRepository(
                 ServiceRegistry.getRealmService(),
                 ServiceRegistry.getChaptersCache(),
                 ServiceRegistry.getQuranCacheService()

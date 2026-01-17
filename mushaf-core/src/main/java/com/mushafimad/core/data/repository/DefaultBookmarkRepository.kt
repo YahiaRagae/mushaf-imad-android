@@ -13,18 +13,18 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 
 /**
- * Implementation of BookmarkRepository using Realm
+ * Default implementation of BookmarkRepository using Realm
  * Internal implementation - not exposed in public API
  */
-internal class BookmarkRepositoryImpl private constructor(
+internal class DefaultBookmarkRepository private constructor(
     private val realmService: RealmService
 ) : BookmarkRepository {
 
     companion object {
-        @Volatile private var instance: BookmarkRepositoryImpl? = null
+        @Volatile private var instance: DefaultBookmarkRepository? = null
 
         fun getInstance(): BookmarkRepository = instance ?: synchronized(this) {
-            instance ?: BookmarkRepositoryImpl(
+            instance ?: DefaultBookmarkRepository(
                 ServiceRegistry.getRealmService()
             ).also { instance = it }
         }
