@@ -27,6 +27,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * Commands for custom actions
@@ -49,12 +51,15 @@ private const val ARG_SPEED = "speed"
  * - Notification playback controls
  * - Bluetooth headset controls
  * - Android Auto integration
+ *
+ * Dependencies are injected via Koin for testability
  */
 @OptIn(UnstableApi::class)
-class AudioPlaybackService : MediaSessionService() {
+class AudioPlaybackService : MediaSessionService(), KoinComponent {
 
-    private lateinit var chapterRepository: ChapterRepository
-    private lateinit var reciterService: ReciterService
+    // Inject dependencies via Koin
+    private val chapterRepository: ChapterRepository by inject()
+    private val reciterService: ReciterService by inject()
 
     private var mediaSession: MediaSession? = null
     private lateinit var player: ExoPlayer
@@ -67,10 +72,6 @@ class AudioPlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         MushafLibrary.logger.info("AudioPlaybackService: onCreate()")
-
-        // Initialize dependencies from MushafLibrary
-        chapterRepository = MushafLibrary.getChapterRepository()
-        reciterService = com.mushafimad.core.internal.ServiceRegistry.getReciterService()
 
         // Initialize ExoPlayer with audio configuration
         player = ExoPlayer.Builder(this)
@@ -163,6 +164,34 @@ class AudioPlaybackService : MediaSessionService() {
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
                 .setAvailableSessionCommands(sessionCommands)
                 .build()
+        }
+
+        override fun onPlaybackResumption(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
+            // Handle playback resumption request
+            // If we have a current chapter loaded, allow resumption
+            // Otherwise, return empty to indicate nothing to resume
+            return if (currentChapter != null && player.mediaItemCount > 0) {
+                MushafLibrary.logger.info("Resuming playback for chapter $currentChapter")
+                Futures.immediateFuture(
+                    MediaSession.MediaItemsWithStartPosition(
+                        player.currentMediaItem?.let { listOf(it) } ?: emptyList(),
+                        player.currentMediaItemIndex,
+                        player.currentPosition
+                    )
+                )
+            } else {
+                MushafLibrary.logger.info("No chapter loaded, nothing to resume")
+                Futures.immediateFuture(
+                    MediaSession.MediaItemsWithStartPosition(
+                        emptyList(),
+                        C.INDEX_UNSET,
+                        C.TIME_UNSET
+                    )
+                )
+            }
         }
 
         override fun onCustomCommand(

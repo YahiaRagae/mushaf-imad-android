@@ -27,26 +27,36 @@ internal class DefaultAudioRepository (
     }
 
     // Reciter operations
-    override fun getAllReciters(): List<ReciterInfo> {
+    override suspend fun getAllReciters(): List<ReciterInfo> {
+        reciterService.awaitInitialization()
         return reciterService.availableReciters.value
     }
 
-    override fun getReciterById(reciterId: Int): ReciterInfo? {
+    override suspend fun getReciterById(reciterId: Int): ReciterInfo? {
         return reciterService.getReciterById(reciterId)
     }
 
-    override fun searchReciters(query: String, languageCode: String): List<ReciterInfo> {
+    override suspend fun searchReciters(query: String, languageCode: String): List<ReciterInfo> {
         return reciterService.searchReciters(query, languageCode)
     }
 
-    override fun getHafsReciters(): List<ReciterInfo> {
+    override suspend fun getHafsReciters(): List<ReciterInfo> {
         return reciterService.getHafsReciters()
     }
 
-    override fun getDefaultReciter(): ReciterInfo {
+    override suspend fun getDefaultReciter(): ReciterInfo {
+        reciterService.awaitInitialization()
         return reciterService.selectedReciter.value
             ?: reciterService.availableReciters.value.firstOrNull()
             ?: ReciterDataProvider.getDefaultReciter()
+    }
+
+    override fun saveSelectedReciter(reciter: ReciterInfo) {
+        reciterService.selectReciter(reciter)
+    }
+
+    override fun getSelectedReciterFlow(): Flow<ReciterInfo?> {
+        return reciterService.selectedReciter
     }
 
     // Playback control

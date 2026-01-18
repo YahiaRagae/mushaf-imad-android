@@ -63,7 +63,13 @@ fun QuranPlayerView(
     // Configure player on initial load
     LaunchedEffect(chapterNumber, reciterId) {
         viewModel.configure(chapterNumber, chapterName, reciterId)
-        viewModel.loadChapter(autoPlay)
+    }
+
+    // Load chapter only after reciter is selected
+    LaunchedEffect(chapterNumber, selectedReciter) {
+        if (selectedReciter != null) {
+            viewModel.loadChapter(autoPlay)
+        }
     }
 
     // Accent color matching iOS

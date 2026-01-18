@@ -13,33 +13,49 @@ interface AudioRepository {
 
     /**
      * Get all available reciters
+     * Waits for ReciterService to finish initializing if needed
      */
-    fun getAllReciters(): List<ReciterInfo>
+    suspend fun getAllReciters(): List<ReciterInfo>
 
     /**
      * Get reciter by ID
+     * Waits for ReciterService to finish initializing if needed
      * @param reciterId The reciter ID
      * @return ReciterInfo if found, null otherwise
      */
-    fun getReciterById(reciterId: Int): ReciterInfo?
+    suspend fun getReciterById(reciterId: Int): ReciterInfo?
 
     /**
      * Search reciters by name
+     * Waits for ReciterService to finish initializing if needed
      * @param query Search query
      * @param languageCode Language for search ("ar" for Arabic, "en" for English)
      * @return List of matching reciters
      */
-    fun searchReciters(query: String, languageCode: String = "en"): List<ReciterInfo>
+    suspend fun searchReciters(query: String, languageCode: String = "en"): List<ReciterInfo>
 
     /**
      * Get all Hafs reciters
+     * Waits for ReciterService to finish initializing if needed
      */
-    fun getHafsReciters(): List<ReciterInfo>
+    suspend fun getHafsReciters(): List<ReciterInfo>
 
     /**
      * Get default reciter
+     * Waits for ReciterService to finish initializing if needed
      */
-    fun getDefaultReciter(): ReciterInfo
+    suspend fun getDefaultReciter(): ReciterInfo
+
+    /**
+     * Select a reciter and save the preference
+     * @param reciter The reciter to select
+     */
+    fun saveSelectedReciter(reciter: ReciterInfo)
+
+    /**
+     * Observe the selected reciter (updates when ReciterService finishes loading)
+     */
+    fun getSelectedReciterFlow(): Flow<ReciterInfo?>
 
     /**
      * Observe audio player state

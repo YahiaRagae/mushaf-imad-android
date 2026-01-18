@@ -33,7 +33,7 @@ internal class QuranPlayerViewModel(
     // Configuration
     private var chapterNumber: Int = 0
     private var chapterName: String = ""
-    private var currentReciterId: Int = 1
+    private var currentReciterId: Int = 0  // Will be set by loadReciters() or configure()
 
     // State flows
     private val _playbackState = MutableStateFlow(PlaybackState.IDLE)
@@ -89,16 +89,29 @@ internal class QuranPlayerViewModel(
     }
 
     /**
-     * Load available reciters
+     * Load available reciters and observe the selected reciter from ReciterService
+     * Waits for ReciterService to finish initializing before collecting
      */
     private fun loadReciters() {
         viewModelScope.launch {
+            // Wait for ReciterService to finish initializing
             val reciters = audioRepository.getAllReciters()
             _availableReciters.value = reciters
+            MushafLibrary.logger.info("Loaded ${reciters.size} reciters")
 
-            val defaultReciter = audioRepository.getDefaultReciter()
-            _selectedReciter.value = defaultReciter
-            currentReciterId = defaultReciter.id
+            // NOW start observing selected reciter (after initialization is complete)
+            // This ensures we get the final saved reciter, not intermediate values
+            audioRepository.getSelectedReciterFlow().collect { reciter ->
+                if (reciter != null) {
+                    _selectedReciter.value = reciter
+
+                    // Only update currentReciterId if it's not already set (0 means not set)
+                    if (currentReciterId == 0) {
+                        currentReciterId = reciter.id
+                        MushafLibrary.logger.info("Initial reciter set to: ${reciter.nameArabic} (ID: ${reciter.id})")
+                    }
+                }
+            }
         }
     }
 
@@ -106,7 +119,7 @@ internal class QuranPlayerViewModel(
      * Configure player for a specific chapter
      * @param chapterNumber Chapter number (1-114)
      * @param chapterName Chapter name (for display)
-     * @param reciterId Optional reciter ID (uses current if not specified)
+     * @param reciterId Optional reciter ID (uses current/default if not specified)
      */
     fun configure(chapterNumber: Int, chapterName: String, reciterId: Int? = null) {
         if (this.chapterNumber == chapterNumber && reciterId == null) {
@@ -116,15 +129,19 @@ internal class QuranPlayerViewModel(
         this.chapterNumber = chapterNumber
         this.chapterName = chapterName
 
-        reciterId?.let {
-            currentReciterId = it
+        if (reciterId != null) {
+            currentReciterId = reciterId
             // Update selected reciter if different
-            audioRepository.getReciterById(it)?.let { reciter ->
-                _selectedReciter.value = reciter
+            viewModelScope.launch {
+                audioRepository.getReciterById(reciterId)?.let { reciter ->
+                    _selectedReciter.value = reciter
+                }
             }
+            MushafLibrary.logger.info("Configured player for chapter $chapterNumber with reciter $currentReciterId")
+        } else {
+            // If no reciter specified, loadReciters() will set the default reciter
+            MushafLibrary.logger.info("Configured player for chapter $chapterNumber (waiting for reciter to load)")
         }
-
-        MushafLibrary.logger.info("Configured player for chapter $chapterNumber with reciter $currentReciterId")
     }
 
     /**
@@ -132,11 +149,17 @@ internal class QuranPlayerViewModel(
      * @param autoPlay Whether to start playing immediately
      */
     fun loadChapter(autoPlay: Boolean = false) {
-        if (chapterNumber <= 0 || currentReciterId <= 0) {
-            MushafLibrary.logger.error("Cannot load: invalid configuration")
+        if (chapterNumber <= 0) {
+            MushafLibrary.logger.error("Cannot load: chapter not configured")
             return
         }
 
+        if (currentReciterId <= 0) {
+            MushafLibrary.logger.error("Cannot load: reciter not set (currentReciterId=$currentReciterId)")
+            return
+        }
+
+        MushafLibrary.logger.info("Loading chapter $chapterNumber with reciter $currentReciterId")
         audioRepository.loadChapter(chapterNumber, currentReciterId, autoPlay)
     }
 
@@ -252,6 +275,9 @@ internal class QuranPlayerViewModel(
     fun selectReciter(reciter: ReciterInfo, reloadAudio: Boolean = true) {
         _selectedReciter.value = reciter
         currentReciterId = reciter.id
+
+        // Persist the selection
+        audioRepository.saveSelectedReciter(reciter)
 
         if (reloadAudio && chapterNumber > 0) {
             val wasPlaying = _playbackState.value == PlaybackState.PLAYING

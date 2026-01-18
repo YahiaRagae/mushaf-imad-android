@@ -1,15 +1,16 @@
 package com.mushafimad.core.data.audio
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.ReciterInfo
+import com.mushafimad.core.domain.repository.ReciterPreferencesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -20,10 +21,9 @@ import kotlinx.coroutines.launch
 internal class ReciterService(
     private val context: Context,
     private val ayahTimingService: AyahTimingService,
-    private val prefs: SharedPreferences
+    private val reciterPreferencesRepository: ReciterPreferencesRepository
 ) {
     companion object {
-        private const val KEY_SELECTED_RECITER_ID = "selected_reciter_id"
         private const val DEFAULT_RECITER_ID = 1 // Ibrahim Al-Akdar
     }
 
@@ -44,6 +44,15 @@ internal class ReciterService(
         serviceScope.launch {
             loadAvailableReciters()
         }
+    }
+
+    /**
+     * Wait for initialization to complete
+     * Any request to this service should call this first to ensure data is loaded
+     */
+    suspend fun awaitInitialization() {
+        // Wait until isLoading becomes false
+        isLoading.first { !it }
     }
 
     /**
@@ -88,7 +97,7 @@ internal class ReciterService(
             MushafLibrary.logger.info("Loaded ${reciters.count()} reciters")
 
             // Load saved reciter or use default
-            val savedReciterId = prefs.getInt(KEY_SELECTED_RECITER_ID, DEFAULT_RECITER_ID)
+            val savedReciterId = reciterPreferencesRepository.getSelectedReciterId()
             val savedReciter = reciters.find { it.id == savedReciterId }
 
             if (savedReciter != null) {
@@ -128,7 +137,8 @@ internal class ReciterService(
      * @param reciterId The reciter ID
      * @return ReciterInfo if found, null otherwise
      */
-    fun getReciterById(reciterId: Int): ReciterInfo? {
+    suspend fun getReciterById(reciterId: Int): ReciterInfo? {
+        awaitInitialization()
         return _availableReciters.value.find { it.id == reciterId }
     }
 
@@ -164,7 +174,8 @@ internal class ReciterService(
      * @param languageCode Language code ("ar" for Arabic, "en" for English)
      * @return List of matching reciters
      */
-    fun searchReciters(query: String, languageCode: String = "en"): List<ReciterInfo> {
+    suspend fun searchReciters(query: String, languageCode: String = "en"): List<ReciterInfo> {
+        awaitInitialization()
         val normalizedQuery = query.trim().lowercase()
         return _availableReciters.value.filter { reciter ->
             when (languageCode) {
@@ -179,7 +190,8 @@ internal class ReciterService(
      * @param rewaya The rewaya name (e.g., "حفص", "hafs")
      * @return List of reciters with matching rewaya
      */
-    fun getRecitersByRewaya(rewaya: String): List<ReciterInfo> {
+    suspend fun getRecitersByRewaya(rewaya: String): List<ReciterInfo> {
+        awaitInitialization()
         val normalizedRewaya = rewaya.trim().lowercase()
         return _availableReciters.value.filter { reciter ->
             reciter.rewaya.lowercase().contains(normalizedRewaya)
@@ -189,15 +201,18 @@ internal class ReciterService(
     /**
      * Get all Hafs reciters
      */
-    fun getHafsReciters(): List<ReciterInfo> {
+    suspend fun getHafsReciters(): List<ReciterInfo> {
+        awaitInitialization()
         return _availableReciters.value.filter { it.isHafs }
     }
 
     /**
-     * Save selected reciter ID to SharedPreferences
+     * Save selected reciter ID to preferences
      */
     private fun saveSelectedReciterId(reciterId: Int) {
-        prefs.edit().putInt(KEY_SELECTED_RECITER_ID, reciterId).apply()
+        serviceScope.launch {
+            reciterPreferencesRepository.setSelectedReciterId(reciterId)
+        }
     }
 
     /**

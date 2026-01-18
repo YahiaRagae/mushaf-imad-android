@@ -7,8 +7,10 @@ import com.mushafimad.core.data.audio.MediaSessionManager
 import com.mushafimad.core.data.audio.ReciterService
 import com.mushafimad.core.data.cache.ChaptersDataCache
 import com.mushafimad.core.data.cache.QuranDataCacheService
+import com.mushafimad.core.data.repository.DefaultReciterPreferencesRepository
 import com.mushafimad.core.data.repository.RealmService
 import com.mushafimad.core.data.repository.DefaultRealmService
+import com.mushafimad.core.domain.repository.ReciterPreferencesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,6 +34,7 @@ internal object ServiceRegistry {
     @Volatile private var _ayahTimingService: AyahTimingService? = null
     @Volatile private var _mediaSessionManager: MediaSessionManager? = null
     @Volatile private var _sharedPreferences: SharedPreferences? = null
+    @Volatile private var _reciterPreferencesRepository: ReciterPreferencesRepository? = null
     @Volatile private var _chaptersCache: ChaptersDataCache? = null
     @Volatile private var _quranCacheService: QuranDataCacheService? = null
 
@@ -98,6 +101,16 @@ internal object ServiceRegistry {
     }
 
     /**
+     * Get ReciterPreferencesRepository singleton.
+     * Thread-safe lazy initialization.
+     */
+    fun getReciterPreferencesRepository(): ReciterPreferencesRepository = _reciterPreferencesRepository ?: synchronized(lock) {
+        _reciterPreferencesRepository ?: DefaultReciterPreferencesRepository(getContext()).also {
+            _reciterPreferencesRepository = it
+        }
+    }
+
+    /**
      * Get ReciterService singleton.
      * Thread-safe lazy initialization with dependencies.
      */
@@ -105,7 +118,7 @@ internal object ServiceRegistry {
         _reciterService ?: ReciterService(
             getContext(),
             getAyahTimingService(),
-            getSharedPreferences()
+            getReciterPreferencesRepository()
         ).also { _reciterService = it }
     }
 
