@@ -112,7 +112,7 @@ class ReadingHistoryRepositoryTest {
         }
 
         val limited = repository.getRecentHistory(limit = 2)
-        assertThat(limited.size).isAtMost(2)
+        assertThat(limited.size).isEqualTo(2)
     }
 
     // ──────────────────────────── TC-7.6 ────────────────────────────
@@ -130,18 +130,14 @@ class ReadingHistoryRepositoryTest {
     // ──────────────────────────── TC-7.7 ────────────────────────────
 
     @Test
-    fun deleteHistoryOlderThan_removesOnlyOldRecords() = runTest {
-        // Record a session, then mark it as "old" by using a future cutoff
+    fun deleteHistoryOlderThan_removesSessionsBeforeCutoff() = runTest {
         repository.recordReadingSession(1, 1, 1, 60, MushafType.HAFS_1441)
 
-        // Record another session 1 ms later (will survive the cutoff below)
-        val cutoff = System.currentTimeMillis()
-
+        // 1 ms ahead guarantees the recorded session is always "older than" this cutoff
+        val cutoff = System.currentTimeMillis() + 1
         repository.deleteHistoryOlderThan(cutoff)
 
-        // Sessions recorded before `cutoff` should be gone
-        val remaining = repository.getRecentHistory()
-        assertThat(remaining.all { it.timestamp >= cutoff }).isTrue()
+        assertThat(repository.getRecentHistory()).isEmpty()
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -155,7 +151,7 @@ class ReadingHistoryRepositoryTest {
         repository.recordReadingSession(1, 1, 1, 300, MushafType.HAFS_1441)
 
         val stats = repository.getReadingStats()
-        assertThat(stats.totalReadingTimeSeconds).isGreaterThan(0L)
+        assertThat(stats.totalReadingTimeSeconds).isEqualTo(300L)
     }
 
     // ──────────────────────────── TC-7.9 ────────────────────────────
@@ -166,7 +162,7 @@ class ReadingHistoryRepositoryTest {
         repository.recordReadingSession(2, 1, 50, 120, MushafType.HAFS_1441)
 
         val total = repository.getTotalReadingTime()
-        assertThat(total).isAtLeast(300L)   // at least 300 seconds combined
+        assertThat(total).isEqualTo(300L)
     }
 
     // ──────────────────────────── TC-7.10 ────────────────────────────
@@ -218,8 +214,7 @@ class ReadingHistoryRepositoryTest {
             pageNumber = 42,
             scrollPosition = 0.5f
         )
-        // Reaching here means no exception was thrown
-        assertThat(true).isTrue()
+        assertThat(repository.getLastReadPosition(MushafType.HAFS_1441)).isNotNull()
     }
 
     // ──────────────────────────── TC-7.14 ────────────────────────────
