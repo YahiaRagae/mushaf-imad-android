@@ -6,7 +6,9 @@ import com.google.common.truth.Truth.assertThat
 import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.repository.AudioRepository
 import com.mushafimad.core.util.LibraryTestSetup
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,6 +42,12 @@ class AudioRepositoryRecitersTest {
     fun setUp() {
         LibraryTestSetup.ensureInitialized()
         repository = MushafLibrary.getAudioRepository()
+    }
+
+    @After
+    fun tearDown() {
+        // Restore the default reciter so DataStore state doesn't bleed across tests.
+        runBlocking { repository.saveSelectedReciter(repository.getDefaultReciter()) }
     }
 
     // ──────────────────────────── TC-8.1 ────────────────────────────
@@ -92,7 +100,7 @@ class AudioRepositoryRecitersTest {
 
     @Test
     fun searchReciters_arabicNameQuery_returnsMatchingReciters() = runTest {
-        val results = repository.searchReciters("مشاري")
+        val results = repository.searchReciters("مشاري", languageCode = "ar")
 
         assertThat(results).isNotEmpty()
         assertThat(results.any { it.nameArabic.contains("مشاري") }).isTrue()
@@ -140,7 +148,7 @@ class AudioRepositoryRecitersTest {
     @Test
     fun saveSelectedReciter_thenObserveFlow_emitsSavedReciter() = runTest {
         val reciters = repository.getAllReciters()
-        val targetReciter = reciters[2] // pick any non-default reciter
+        val targetReciter = reciters.last() // pick a non-default reciter by position
 
         repository.getSelectedReciterFlow().test {
             awaitItem() // skip initial/default emission
@@ -164,6 +172,9 @@ class AudioRepositoryRecitersTest {
 
         assertThat(url).endsWith("001.mp3")
         assertThat(url).startsWith("http")
+        // No accidental double-slash outside the schema separator
+        val pathPart = url.substringAfter("://")
+        assertThat(pathPart).doesNotContain("//")
     }
 
     @Test
