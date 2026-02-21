@@ -10,7 +10,6 @@ import com.mushafimad.core.domain.models.ThemeMode
 import com.mushafimad.core.domain.repository.PreferencesRepository
 import com.mushafimad.core.util.LibraryTestSetup
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,8 +22,8 @@ import org.junit.runner.RunWith
  * TC-7.19  setMushafType → getMushafTypeFlow emits correct value
  * TC-7.20  setCurrentPage → getCurrentPageFlow emits correct value
  * TC-7.21  setFontSizeMultiplier(1.5) → flow emits 1.5
- * TC-7.22  setFontSizeMultiplier(3.0) → clamped to max (2.0)
- * TC-7.23  setFontSizeMultiplier(0.1) → clamped to min (0.5)
+ * TC-7.22  setFontSizeMultiplier(3.0) → clamped to exactly 2.0
+ * TC-7.23  setFontSizeMultiplier(0.1) → clamped to exactly 0.5
  * TC-7.24  setSelectedReciterId / getSelectedReciterId round-trip
  * TC-7.25  setPlaybackSpeed / getPlaybackSpeed round-trip
  * TC-7.26  setRepeatMode / getRepeatMode round-trip
@@ -34,7 +33,7 @@ import org.junit.runner.RunWith
  * TC-7.30  setColorScheme(SEPIA) → getThemeConfig().colorScheme == SEPIA
  * TC-7.31  setAmoledMode(true) → getThemeConfig().useAmoled == true
  * TC-7.32  getThemeConfigFlow emits updates on each change
- * TC-7.34  clearAll() resets preferences to defaults
+ * TC-7.34  clearAll() resets all dirtied preference groups to defaults
  *
  * Note: TC-7.33 (persistence across process death) requires manual testing on device.
  */
@@ -47,11 +46,6 @@ class PreferencesRepositoryTest {
     fun setUp() = runTest {
         LibraryTestSetup.ensureInitialized()
         repository = MushafLibrary.getPreferencesRepository()
-        repository.clearAll()
-    }
-
-    @After
-    fun tearDown() = runTest {
         repository.clearAll()
     }
 
@@ -110,12 +104,12 @@ class PreferencesRepositoryTest {
     // ──────────────────────────── TC-7.22 ────────────────────────────
 
     @Test
-    fun setFontSizeMultiplier_aboveMax_clampedToMaximum() = runTest {
+    fun setFontSizeMultiplier_aboveMax_clampedToExactMaximum() = runTest {
         repository.setFontSizeMultiplier(3.0f)
 
         repository.getFontSizeMultiplierFlow().test {
             val value = awaitItem()
-            assertThat(value).isAtMost(2.0f)
+            assertThat(value).isWithin(0.001f).of(2.0f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -123,12 +117,12 @@ class PreferencesRepositoryTest {
     // ──────────────────────────── TC-7.23 ────────────────────────────
 
     @Test
-    fun setFontSizeMultiplier_belowMin_clampedToMinimum() = runTest {
+    fun setFontSizeMultiplier_belowMin_clampedToExactMinimum() = runTest {
         repository.setFontSizeMultiplier(0.1f)
 
         repository.getFontSizeMultiplierFlow().test {
             val value = awaitItem()
-            assertThat(value).isAtLeast(0.5f)
+            assertThat(value).isWithin(0.001f).of(0.5f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -224,9 +218,11 @@ class PreferencesRepositoryTest {
             repository.setThemeMode(ThemeMode.LIGHT)
             val afterLight = awaitItem()
             assertThat(afterLight.mode).isEqualTo(ThemeMode.LIGHT)
+            assertThat(afterLight.colorScheme).isEqualTo(ColorScheme.DEFAULT)
 
             repository.setColorScheme(ColorScheme.WARM)
             val afterWarm = awaitItem()
+            assertThat(afterWarm.mode).isEqualTo(ThemeMode.LIGHT)
             assertThat(afterWarm.colorScheme).isEqualTo(ColorScheme.WARM)
 
             cancelAndIgnoreRemainingEvents()
@@ -240,8 +236,8 @@ class PreferencesRepositoryTest {
     // ──────────────────────────── TC-7.34 ────────────────────────────
 
     @Test
-    fun clearAll_resetsPreferencesToDefaults() = runTest {
-        // Set several non-default values
+    fun clearAll_resetsAllPreferenceGroupsToDefaults() = runTest {
+        // Dirty all four preference groups
         repository.setMushafType(MushafType.HAFS_1405)
         repository.setCurrentPage(300)
         repository.setThemeMode(ThemeMode.DARK)
@@ -249,11 +245,25 @@ class PreferencesRepositoryTest {
 
         repository.clearAll()
 
-        // After clear, mushaf type should be back to the default (HAFS_1441)
+        // Mushaf type must revert to HAFS_1441
         repository.getMushafTypeFlow().test {
-            val defaultType = awaitItem()
-            assertThat(defaultType).isEqualTo(MushafType.HAFS_1441)
+            assertThat(awaitItem()).isEqualTo(MushafType.HAFS_1441)
             cancelAndIgnoreRemainingEvents()
         }
+
+        // Current page must revert to 1
+        repository.getCurrentPageFlow().test {
+            assertThat(awaitItem()).isEqualTo(1)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        // Theme mode must revert to SYSTEM
+        repository.getThemeConfigFlow().test {
+            assertThat(awaitItem().mode).isEqualTo(ThemeMode.SYSTEM)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        // Repeat mode must revert to false
+        assertThat(repository.getRepeatMode()).isFalse()
     }
 }
