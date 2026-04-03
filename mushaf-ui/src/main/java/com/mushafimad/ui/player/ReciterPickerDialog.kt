@@ -95,7 +95,7 @@ fun ReciterPickerDialog(
  * Single reciter item in the list
  */
 @Composable
-private fun ReciterItem(
+fun ReciterItem(
     reciter: ReciterInfo,
     isSelected: Boolean,
     onClick: () -> Unit
