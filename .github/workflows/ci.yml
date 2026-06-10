@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: the sample-freeze check needs a merge base with
+          # the PR base branch (three-dot diff fails on shallow clones)
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -26,9 +30,11 @@ jobs:
       - name: Verify sample app sources are unchanged
         if: github.event_name == 'pull_request'
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          if ! git diff --quiet origin/${{ github.base_ref }}...HEAD -- sample/src; then
+          git fetch origin ${{ github.base_ref }}
+          changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- sample/src)
+          if [ -n "$changed" ]; then
             echo "::error::sample/src was modified. The sample app is frozen as the API-compatibility oracle."
+            echo "$changed"
             exit 1
           fi
 
