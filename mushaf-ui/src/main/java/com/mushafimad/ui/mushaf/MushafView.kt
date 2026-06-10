@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
+import com.mushafimad.ui.internal.mushafViewModel
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
 import com.mushafimad.ui.theme.*
@@ -64,7 +64,7 @@ fun MushafView(
     onVerseSelected: ((Verse) -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    viewModel: MushafViewModel = koinViewModel()
+    viewModel: MushafViewModel = mushafViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

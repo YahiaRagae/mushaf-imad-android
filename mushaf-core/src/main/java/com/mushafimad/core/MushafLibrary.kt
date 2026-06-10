@@ -1,11 +1,14 @@
 package com.mushafimad.core
 
 import android.content.Context
+import com.mushafimad.core.data.repository.RealmService
 import com.mushafimad.core.domain.repository.*
+import com.mushafimad.core.internal.MushafKoin
 import com.mushafimad.core.logging.DefaultMushafLogger
 import com.mushafimad.core.logging.MushafAnalytics
 import com.mushafimad.core.logging.MushafLogger
 import com.mushafimad.core.logging.NoOpMushafAnalytics
+import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -42,6 +45,12 @@ object MushafLibrary : KoinComponent {
     private var isInitialized = false
     private var applicationContext: Context? = null
 
+    /**
+     * Resolve from the library's isolated Koin context instead of the global
+     * one, so the library never interferes with a host app that uses Koin.
+     */
+    override fun getKoin(): Koin = MushafKoin.koin
+
     var logger: MushafLogger = DefaultMushafLogger()
         private set
 
@@ -59,6 +68,11 @@ object MushafLibrary : KoinComponent {
         if (isInitialized) return
 
         applicationContext = context.applicationContext
+        MushafKoin.start(context.applicationContext)
+
+        // Instantiating the service kicks off the asynchronous database open
+        // so it is usually ready by the time the UI first needs it.
+        MushafKoin.koin.get<RealmService>()
 
         isInitialized = true
         logger.info("MushafLibrary auto-initialized via ContentProvider")

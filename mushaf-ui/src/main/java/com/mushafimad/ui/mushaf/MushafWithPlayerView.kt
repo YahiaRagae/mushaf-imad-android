@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
+import com.mushafimad.ui.internal.mushafViewModel
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
 import com.mushafimad.ui.player.QuranPlayerView
@@ -43,8 +43,8 @@ fun MushafWithPlayerView(
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val mushafViewModel: MushafViewModel = koinViewModel()
-    val playerViewModel: QuranPlayerViewModel = koinViewModel()
+    val mushafViewModel: MushafViewModel = mushafViewModel()
+    val playerViewModel: QuranPlayerViewModel = mushafViewModel()
 
     val mushafUiState by mushafViewModel.uiState.collectAsState()
 

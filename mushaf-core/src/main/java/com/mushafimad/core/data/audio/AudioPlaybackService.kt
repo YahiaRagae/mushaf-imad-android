@@ -27,6 +27,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import com.mushafimad.core.internal.MushafKoin
+import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -56,6 +58,12 @@ private const val ARG_SPEED = "speed"
  */
 @OptIn(UnstableApi::class)
 class AudioPlaybackService : MediaSessionService(), KoinComponent {
+
+    /**
+     * Resolve from the library's isolated Koin context, never the global one.
+     * @suppress Not part of the public API.
+     */
+    override fun getKoin(): Koin = MushafKoin.koin
 
     // Inject dependencies via Koin
     private val chapterRepository: ChapterRepository by inject()

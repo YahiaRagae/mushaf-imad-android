@@ -4,19 +4,24 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.ui.di.uiModule
-import org.koin.core.context.loadKoinModules
 
 /**
- * ContentProvider that automatically loads the UI module into Koin.
- * Runs after mushaf-core's provider to ensure Koin is initialized.
+ * ContentProvider that automatically loads the UI module into the library's
+ * isolated Koin context. Runs after mushaf-core's provider.
  *
  * @internal This class is not part of the public API.
  */
 internal class MushafUiInitProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
-        loadKoinModules(uiModule)
+        // Defensive: initialize the core library first if provider ordering
+        // ever changes (initialize is idempotent).
+        if (!MushafLibrary.isInitialized()) {
+            context?.applicationContext?.let { MushafLibrary.initialize(it) }
+        }
+        MushafLibrary.getKoin().loadModules(listOf(uiModule))
         return true
     }
 
