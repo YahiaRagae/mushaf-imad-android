@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import com.mushafimad.core.MushafLibrary
+import com.mushafimad.core.data.repository.RealmService
 import com.mushafimad.core.di.coreModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -36,6 +37,9 @@ internal class MushafInitProvider : ContentProvider() {
                 androidContext(context.applicationContext)
                 modules(coreModule)
             }
+            // Instantiating the service kicks off the asynchronous database
+            // open so it is usually ready by the time the UI first needs it.
+            GlobalContext.get().get<RealmService>()
         }
 
         return true

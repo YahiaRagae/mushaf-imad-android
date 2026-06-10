@@ -2,7 +2,6 @@ package com.mushafimad.core
 
 import android.content.Context
 import com.mushafimad.core.domain.repository.*
-import com.mushafimad.core.internal.ServiceRegistry
 import com.mushafimad.core.logging.DefaultMushafLogger
 import com.mushafimad.core.logging.MushafAnalytics
 import com.mushafimad.core.logging.MushafLogger
@@ -60,7 +59,6 @@ object MushafLibrary : KoinComponent {
         if (isInitialized) return
 
         applicationContext = context.applicationContext
-        ServiceRegistry.initialize(context.applicationContext)
 
         isInitialized = true
         logger.info("MushafLibrary auto-initialized via ContentProvider")

@@ -24,7 +24,7 @@
             android:name=".internal.MushafInitProvider"
             android:authorities="${applicationId}.mushaf-initializer"
             android:exported="false"
-            android:multiprocess="true" />
+            android:multiprocess="false" />
     </application>
 
 </manifest>

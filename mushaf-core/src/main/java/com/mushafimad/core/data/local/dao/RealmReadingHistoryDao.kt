@@ -21,7 +21,7 @@ internal class RealmReadingHistoryDao(
 ) : ReadingHistoryDao {
 
     private val realm: Realm
-        get() = realmService.getRealm()
+        get() = realmService.getUserRealm()
 
     // Last Read Position operations
 

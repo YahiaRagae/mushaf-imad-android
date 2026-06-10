@@ -21,7 +21,7 @@ internal class RealmSearchHistoryDao(
 ) : SearchHistoryDao {
 
     private val realm: Realm
-        get() = realmService.getRealm()
+        get() = realmService.getUserRealm()
 
     override fun getRecentSearchesFlow(limit: Int): Flow<List<SearchHistoryEntity>> {
         return realm.query<SearchHistoryEntity>()
