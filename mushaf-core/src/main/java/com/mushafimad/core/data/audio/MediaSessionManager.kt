@@ -14,6 +14,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.mushafimad.core.MushafLibrary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,6 +75,7 @@ internal class MediaSessionManager(
 ) {
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
+    private var positionTickerJob: Job? = null
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -109,7 +111,6 @@ internal class MediaSessionManager(
                     mediaController = controllerFuture?.get()
                     _isConnected.value = true
                     setupPlayerListener()
-                    startStatePolling()
                     MushafLibrary.logger.info("MediaController connected successfully")
                 } catch (e: Exception) {
                     MushafLibrary.logger.error("Failed to connect MediaController", e)
@@ -121,7 +122,11 @@ internal class MediaSessionManager(
     }
 
     /**
-     * Setup listener for player state changes
+     * Setup listener for player state changes.
+     *
+     * All state transitions arrive via Player.Listener events; a lightweight
+     * ticker runs only while audio is actually playing to advance the seek
+     * bar position.
      */
     private fun setupPlayerListener() {
         mediaController?.addListener(object : Player.Listener {
@@ -130,6 +135,28 @@ internal class MediaSessionManager(
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (isPlaying) startPositionTicker() else stopPositionTicker()
+                updatePlayerState()
+            }
+
+            override fun onMediaItemTransition(
+                mediaItem: androidx.media3.common.MediaItem?,
+                reason: Int
+            ) {
+                updatePlayerState()
+            }
+
+            override fun onPositionDiscontinuity(
+                oldPosition: Player.PositionInfo,
+                newPosition: Player.PositionInfo,
+                reason: Int
+            ) {
+                updatePlayerState()
+            }
+
+            override fun onPlaybackParametersChanged(
+                playbackParameters: androidx.media3.common.PlaybackParameters
+            ) {
                 updatePlayerState()
             }
 
@@ -140,19 +167,33 @@ internal class MediaSessionManager(
                     errorMessage = error.message ?: "Unknown error"
                 )
             }
+
+            override fun onPlayerErrorChanged(error: androidx.media3.common.PlaybackException?) {
+                if (error == null) updatePlayerState()
+            }
         })
+
+        // Initial snapshot so observers don't wait for the first event
+        updatePlayerState()
     }
 
     /**
-     * Start polling for player state updates
+     * Advance the playback position while audio is playing.
+     * Started/stopped from onIsPlayingChanged; never runs while idle/paused.
      */
-    private fun startStatePolling() {
-        scope.launch {
+    private fun startPositionTicker() {
+        if (positionTickerJob?.isActive == true) return
+        positionTickerJob = scope.launch {
             while (isActive) {
                 updatePlayerState()
-                delay(100) // Update every 100ms
+                delay(POSITION_TICK_MS)
             }
         }
+    }
+
+    private fun stopPositionTicker() {
+        positionTickerJob?.cancel()
+        positionTickerJob = null
     }
 
     /**
@@ -161,10 +202,12 @@ internal class MediaSessionManager(
     private fun updatePlayerState() {
         val controller = mediaController ?: return
 
-        val playbackState = when {
-            controller.isPlaying -> PlaybackState.PLAYING
-            controller.currentPosition > 0 || controller.duration > 0 -> PlaybackState.PAUSED
-            else -> PlaybackState.IDLE
+        val playbackState = when (controller.playbackState) {
+            Player.STATE_BUFFERING -> PlaybackState.LOADING
+            Player.STATE_READY ->
+                if (controller.playWhenReady) PlaybackState.PLAYING else PlaybackState.PAUSED
+            Player.STATE_ENDED -> PlaybackState.STOPPED
+            else -> if (controller.playerError != null) PlaybackState.ERROR else PlaybackState.IDLE
         }
 
         _playerState.value = _playerState.value.copy(
@@ -172,7 +215,8 @@ internal class MediaSessionManager(
             currentPositionMs = controller.currentPosition,
             durationMs = controller.duration.let { if (it < 0) 0 else it },
             currentChapter = currentChapter,
-            currentReciterId = currentReciterId
+            currentReciterId = currentReciterId,
+            isBuffering = controller.playbackState == Player.STATE_BUFFERING
         )
     }
 
@@ -311,6 +355,8 @@ internal class MediaSessionManager(
     fun release() {
         MushafLibrary.logger.info("Releasing MediaSessionManager")
 
+        stopPositionTicker()
+
         mediaController?.release()
         mediaController = null
 
@@ -320,3 +366,5 @@ internal class MediaSessionManager(
         _isConnected.value = false
     }
 }
+
+private const val POSITION_TICK_MS = 500L
