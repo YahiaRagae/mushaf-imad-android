@@ -27,8 +27,73 @@ class MushafViewModel(
     private val _uiState = MutableStateFlow(MushafUiState())
     val uiState: StateFlow<MushafUiState> = _uiState.asStateFlow()
 
+    // Per-page content for the pager; bounded so swiping through the whole
+    // mushaf can't grow memory without limit
+    private val pageCache = android.util.LruCache<Int, PageContent>(PAGE_CACHE_SIZE)
+
     init {
         loadPreferences()
+    }
+
+    /**
+     * Cache lookup without loading; lets the pager render a neighbouring page
+     * instantly when it was already prefetched.
+     */
+    internal fun peekPageContent(pageNumber: Int): PageContent? = pageCache.get(pageNumber)
+
+    /**
+     * Load (or fetch from cache) the content of a single page without
+     * touching the shared UI state. Used by the pager for off-screen pages.
+     */
+    internal suspend fun pageContent(pageNumber: Int): PageContent? {
+        if (pageNumber < 1 || pageNumber > TOTAL_PAGES) return null
+        pageCache.get(pageNumber)?.let { return it }
+
+        return try {
+            val mushafType = _uiState.value.mushafType
+            val verses = verseRepository.getVersesForPage(pageNumber, mushafType)
+            if (verses.isEmpty()) return null
+
+            val chapters = verses.map { it.chapterNumber }.distinct().mapNotNull { chapterNum ->
+                try {
+                    chapterRepository.getChapter(chapterNum)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+
+            PageContent(verses, chapters).also { pageCache.put(pageNumber, it) }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Commit a page the user swiped to once the pager settles on it.
+     * Unlike [loadPage], never flips isLoading: the pager has already
+     * rendered the page, so a full-screen spinner here would flash.
+     */
+    internal fun onPageSettled(pageNumber: Int) {
+        val state = _uiState.value
+        if (pageNumber == state.currentPage && state.verses.isNotEmpty()) return
+
+        viewModelScope.launch {
+            val content = pageContent(pageNumber) ?: return@launch
+            _uiState.update {
+                it.copy(
+                    currentPage = pageNumber,
+                    verses = content.verses,
+                    chapters = content.chapters,
+                    isLoading = false,
+                    error = null
+                )
+            }
+            try {
+                preferencesRepository.setCurrentPage(pageNumber)
+            } catch (e: Exception) {
+                // Silent failure for preference persistence
+            }
+        }
     }
 
     /**
@@ -68,21 +133,22 @@ class MushafViewModel(
      * Load a specific page
      */
     fun loadPage(pageNumber: Int) {
-        if (pageNumber < 1 || pageNumber > 604) {
+        if (pageNumber < 1 || pageNumber > TOTAL_PAGES) {
             _uiState.update { it.copy(error = "Invalid page number: $pageNumber") }
             return
         }
 
-        _uiState.update { it.copy(isLoading = true, error = null) }
+        // Only show the full-screen loader when there is nothing on screen
+        // yet; programmatic navigation animates the pager instead.
+        if (_uiState.value.verses.isEmpty()) {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+        }
 
         viewModelScope.launch {
             try {
-                val mushafType = _uiState.value.mushafType
-                println("MushafViewModel: Loading page $pageNumber with mushafType $mushafType")
-                val verses = verseRepository.getVersesForPage(pageNumber, mushafType)
-                println("MushafViewModel: Got ${verses.size} verses for page $pageNumber")
+                val content = pageContent(pageNumber)
 
-                if (verses.isEmpty()) {
+                if (content == null) {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -92,21 +158,11 @@ class MushafViewModel(
                     return@launch
                 }
 
-                // Get chapter info for page header
-                val chapterNumbers = verses.map { it.chapterNumber }.distinct()
-                val chapters = chapterNumbers.mapNotNull { chapterNum ->
-                    try {
-                        chapterRepository.getChapter(chapterNum)
-                    } catch (e: Exception) {
-                        null
-                    }
-                }
-
                 _uiState.update {
                     it.copy(
                         currentPage = pageNumber,
-                        verses = verses,
-                        chapters = chapters,
+                        verses = content.verses,
+                        chapters = content.chapters,
                         isLoading = false,
                         error = null
                     )
@@ -130,7 +186,7 @@ class MushafViewModel(
      */
     fun nextPage() {
         val nextPage = _uiState.value.currentPage + 1
-        if (nextPage <= 604) {
+        if (nextPage <= TOTAL_PAGES) {
             loadPage(nextPage)
         }
     }
@@ -149,7 +205,7 @@ class MushafViewModel(
      * Go to specific chapter
      */
     fun goToChapter(chapterNumber: Int, verseNumber: Int = 1) {
-        if (chapterNumber < 1 || chapterNumber > 114) {
+        if (chapterNumber < 1 || chapterNumber > TOTAL_CHAPTERS) {
             _uiState.update { it.copy(error = "Invalid chapter number: $chapterNumber") }
             return
         }
@@ -244,6 +300,9 @@ class MushafViewModel(
                 preferencesRepository.setMushafType(type)
                 _uiState.update { it.copy(mushafType = type) }
 
+                // Cached pages were rendered for the previous layout
+                pageCache.evictAll()
+
                 // Reload current page with new mushaf type
                 loadPage(_uiState.value.currentPage)
             } catch (e: Exception) {
@@ -315,10 +374,10 @@ class MushafViewModel(
         val state = _uiState.value
         return PageInfo(
             pageNumber = state.currentPage,
-            totalPages = 604,
+            totalPages = TOTAL_PAGES,
             chapterName = state.chapters.firstOrNull()?.arabicTitle ?: "",
             juzNumber = calculateJuzNumber(state.currentPage),
-            progress = (state.currentPage.toFloat() / 604 * 100).toInt()
+            progress = (state.currentPage.toFloat() / TOTAL_PAGES * 100).toInt()
         )
     }
 
@@ -361,3 +420,18 @@ data class PageInfo(
     val juzNumber: Int,
     val progress: Int
 )
+
+/**
+ * Verses and chapter metadata of a single mushaf page, as consumed by the
+ * pager in MushafView.
+ *
+ * @internal Not part of the public API.
+ */
+internal data class PageContent(
+    val verses: List<Verse>,
+    val chapters: List<Chapter>
+)
+
+internal const val TOTAL_PAGES = 604
+internal const val TOTAL_CHAPTERS = 114
+private const val PAGE_CACHE_SIZE = 8
