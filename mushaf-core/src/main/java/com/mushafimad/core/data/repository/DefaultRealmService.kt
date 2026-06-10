@@ -268,7 +268,7 @@ internal class DefaultRealmService(
 
     override suspend fun getTotalPages(): Int = withContext(Dispatchers.IO) {
         ensureInitialized()
-        val realmInstance = realm ?: return@withContext 604
+        val realmInstance = realm ?: return@withContext com.mushafimad.core.utils.QuranUtils.TOTAL_PAGES
         realmInstance.query<PageEntity>().count().find().toInt()
     }
 

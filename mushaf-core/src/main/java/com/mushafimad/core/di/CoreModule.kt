@@ -1,7 +1,5 @@
 package com.mushafimad.core.di
 
-import android.content.Context
-import android.content.SharedPreferences
 import com.mushafimad.core.data.audio.AyahTimingService
 import com.mushafimad.core.data.audio.MediaSessionManager
 import com.mushafimad.core.data.audio.ReciterService
@@ -32,11 +30,6 @@ val coreModule = module {
 
     // Context (provided by ContentProvider during initialization)
     // No definition needed here - will be provided via androidContext()
-
-    // SharedPreferences
-    single<SharedPreferences> {
-        get<Context>().getSharedPreferences("mushaf_preferences", Context.MODE_PRIVATE)
-    }
 
     // Realm service (useInMemory = false for production, can be overridden in tests)
     single<RealmService> {

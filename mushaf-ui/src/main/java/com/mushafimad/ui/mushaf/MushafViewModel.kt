@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mushafimad.core.domain.models.*
 import com.mushafimad.core.domain.repository.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +32,12 @@ class MushafViewModel(
     // Per-page content for the pager; bounded so swiping through the whole
     // mushaf can't grow memory without limit
     private val pageCache = android.util.LruCache<Int, PageContent>(PAGE_CACHE_SIZE)
+
+    // True once the consumer (initialPage) or the user navigated somewhere;
+    // the async last-position restore must not override that
+    private var navigationRequested = false
+
+    private var savePositionJob: Job? = null
 
     init {
         loadPreferences()
@@ -77,11 +85,15 @@ class MushafViewModel(
         val state = _uiState.value
         if (pageNumber == state.currentPage && state.verses.isNotEmpty()) return
 
+        navigationRequested = true
+
         viewModelScope.launch {
             val content = pageContent(pageNumber) ?: return@launch
             _uiState.update {
                 it.copy(
                     currentPage = pageNumber,
+                    currentChapter = content.verses.first().chapterNumber,
+                    currentVerse = content.verses.first().number,
                     verses = content.verses,
                     chapters = content.chapters,
                     isLoading = false,
@@ -93,6 +105,20 @@ class MushafViewModel(
             } catch (e: Exception) {
                 // Silent failure for preference persistence
             }
+            schedulePositionSave()
+        }
+    }
+
+    /**
+     * Persist the reading position shortly after it stabilises. Debounced so
+     * fast consecutive swipes write once; replaces the old 30-second timer,
+     * which lost the position on process death.
+     */
+    private fun schedulePositionSave() {
+        savePositionJob?.cancel()
+        savePositionJob = viewModelScope.launch {
+            delay(SAVE_POSITION_DEBOUNCE_MS)
+            saveReadingPosition()
         }
     }
 
@@ -108,6 +134,10 @@ class MushafViewModel(
 
                 // Get last read position
                 val lastPosition = readingHistoryRepository.getLastReadPosition(mushafType)
+
+                // A consumer-provided initialPage (or early user navigation)
+                // takes precedence over the restored position
+                if (navigationRequested) return@launch
 
                 _uiState.update {
                     it.copy(
@@ -138,6 +168,8 @@ class MushafViewModel(
             return
         }
 
+        navigationRequested = true
+
         // Only show the full-screen loader when there is nothing on screen
         // yet; programmatic navigation animates the pager instead.
         if (_uiState.value.verses.isEmpty()) {
@@ -161,6 +193,8 @@ class MushafViewModel(
                 _uiState.update {
                     it.copy(
                         currentPage = pageNumber,
+                        currentChapter = content.verses.first().chapterNumber,
+                        currentVerse = content.verses.first().number,
                         verses = content.verses,
                         chapters = content.chapters,
                         isLoading = false,
@@ -170,6 +204,7 @@ class MushafViewModel(
 
                 // Update preferences
                 preferencesRepository.setCurrentPage(pageNumber)
+                schedulePositionSave()
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -318,6 +353,7 @@ class MushafViewModel(
      */
     fun updateScrollPosition(position: Float) {
         _uiState.update { it.copy(scrollPosition = position) }
+        schedulePositionSave()
     }
 
     /**
@@ -432,6 +468,7 @@ internal data class PageContent(
     val chapters: List<Chapter>
 )
 
-internal const val TOTAL_PAGES = 604
-internal const val TOTAL_CHAPTERS = 114
+internal val TOTAL_PAGES = com.mushafimad.core.utils.QuranUtils.TOTAL_PAGES
+internal val TOTAL_CHAPTERS = com.mushafimad.core.utils.QuranUtils.TOTAL_CHAPTERS
 private const val PAGE_CACHE_SIZE = 8
+private const val SAVE_POSITION_DEBOUNCE_MS = 1000L

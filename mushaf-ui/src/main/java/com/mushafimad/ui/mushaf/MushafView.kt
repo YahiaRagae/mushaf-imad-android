@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.mushafimad.ui.internal.mushafViewModel
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.mushafimad.ui.theme.*
-import kotlinx.coroutines.delay
 
 /**
  * MushafView - Main composable for displaying Quran pages using images
@@ -75,12 +75,15 @@ fun MushafView(
         }
     }
 
-    // Load initial page if provided
+    // Apply a consumer-provided initial page exactly once per composition
+    // lifetime, so a static value doesn't keep forcing the page back after
+    // the user navigates away. initialPage = null means: restore the last
+    // read position.
+    var initialPageApplied by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(initialPage) {
-        initialPage?.let { page ->
-            if (page != uiState.currentPage) {
-                viewModel.goToPage(page)
-            }
+        if (!initialPageApplied) {
+            initialPageApplied = true
+            initialPage?.let { viewModel.goToPage(it) }
         }
     }
 
@@ -89,15 +92,8 @@ fun MushafView(
         onPageChanged?.invoke(uiState.currentPage)
     }
 
-    // Auto-save reading position periodically
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(30000) // Save every 30 seconds
-            viewModel.saveReadingPosition()
-        }
-    }
-
-    // Save on disposal
+    // Save on disposal (page changes already persist via the ViewModel's
+    // debounced save)
     DisposableEffect(Unit) {
         onDispose {
             viewModel.saveReadingPosition()
