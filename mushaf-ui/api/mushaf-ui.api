@@ -1,0 +1,624 @@
+public final class com/mushafimad/ui/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public static final field VERSION_CODE I
+	public static final field VERSION_NAME Ljava/lang/String;
+	public fun <init> ()V
+}
+
+public final class com/mushafimad/ui/bookmarks/BookmarksUiState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Bookmark;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Bookmark;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Lcom/mushafimad/core/domain/models/Bookmark;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Z
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Bookmark;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)Lcom/mushafimad/ui/bookmarks/BookmarksUiState;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/bookmarks/BookmarksUiState;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Bookmark;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/bookmarks/BookmarksUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAvailableTags ()Ljava/util/List;
+	public final fun getBookmarks ()Ljava/util/List;
+	public final fun getError ()Ljava/lang/String;
+	public final fun getFilteredBookmarks ()Ljava/util/List;
+	public final fun getSearchQuery ()Ljava/lang/String;
+	public final fun getSelectedBookmark ()Lcom/mushafimad/core/domain/models/Bookmark;
+	public final fun getSelectedTag ()Ljava/lang/String;
+	public final fun getSuccessMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isLoading ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/di/UiModuleKt {
+	public static final fun getUiModule ()Lorg/koin/core/module/Module;
+}
+
+public final class com/mushafimad/ui/history/ProgressSummary {
+	public static final field $stable I
+	public fun <init> (IIJII)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()J
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun copy (IIJII)Lcom/mushafimad/ui/history/ProgressSummary;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/history/ProgressSummary;IIJIIILjava/lang/Object;)Lcom/mushafimad/ui/history/ProgressSummary;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAverageSessionMinutes ()I
+	public final fun getProgressPercentage ()I
+	public final fun getTotalSessions ()I
+	public final fun getTotalTimeMinutes ()J
+	public final fun getUniqueChaptersRead ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/history/ReadingHistoryUiState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lcom/mushafimad/core/domain/models/ReadingStats;Ljava/util/Map;Lcom/mushafimad/core/domain/models/LastReadPosition;ZLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/mushafimad/core/domain/models/ReadingStats;Ljava/util/Map;Lcom/mushafimad/core/domain/models/LastReadPosition;ZLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/domain/models/ReadingStats;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun component3 ()Lcom/mushafimad/core/domain/models/LastReadPosition;
+	public final fun component4 ()Z
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Lcom/mushafimad/core/domain/models/ReadingStats;Ljava/util/Map;Lcom/mushafimad/core/domain/models/LastReadPosition;ZLjava/lang/String;Ljava/lang/String;)Lcom/mushafimad/ui/history/ReadingHistoryUiState;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/history/ReadingHistoryUiState;Lcom/mushafimad/core/domain/models/ReadingStats;Ljava/util/Map;Lcom/mushafimad/core/domain/models/LastReadPosition;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/history/ReadingHistoryUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ljava/lang/String;
+	public final fun getLastReadPositions ()Ljava/util/Map;
+	public final fun getSelectedPosition ()Lcom/mushafimad/core/domain/models/LastReadPosition;
+	public final fun getStatistics ()Lcom/mushafimad/core/domain/models/ReadingStats;
+	public final fun getSuccessMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isLoading ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/history/StreakInfo {
+	public static final field $stable I
+	public fun <init> (IIZI)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Z
+	public final fun component4 ()I
+	public final fun copy (IIZI)Lcom/mushafimad/ui/history/StreakInfo;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/history/StreakInfo;IIZIILjava/lang/Object;)Lcom/mushafimad/ui/history/StreakInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCurrentStreak ()I
+	public final fun getDaysToNextMilestone ()I
+	public final fun getLongestStreak ()I
+	public fun hashCode ()I
+	public final fun isOnStreak ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/mushaf/ComposableSingletons$MushafViewKt {
+	public static final field INSTANCE Lcom/mushafimad/ui/mushaf/ComposableSingletons$MushafViewKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
+	public static field lambda-2 Lkotlin/jvm/functions/Function3;
+	public static field lambda-3 Lkotlin/jvm/functions/Function3;
+	public static field lambda-4 Lkotlin/jvm/functions/Function2;
+	public static field lambda-5 Lkotlin/jvm/functions/Function2;
+	public fun <init> ()V
+	public final fun getLambda-1$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-2$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-3$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-4$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-5$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class com/mushafimad/ui/mushaf/ComposableSingletons$VerseFaselKt {
+	public static final field INSTANCE Lcom/mushafimad/ui/mushaf/ComposableSingletons$VerseFaselKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function2;
+	public static field lambda-2 Lkotlin/jvm/functions/Function2;
+	public static field lambda-3 Lkotlin/jvm/functions/Function2;
+	public fun <init> ()V
+	public final fun getLambda-1$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-2$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-3$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class com/mushafimad/ui/mushaf/MushafUiState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lcom/mushafimad/core/domain/models/MushafType;IIIFLjava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Ljava/util/Set;ZLjava/lang/String;)V
+	public synthetic fun <init> (Lcom/mushafimad/core/domain/models/MushafType;IIIFLjava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Ljava/util/Set;ZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun component10 ()Z
+	public final fun component11 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()F
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun component9 ()Ljava/util/Set;
+	public final fun copy (Lcom/mushafimad/core/domain/models/MushafType;IIIFLjava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Ljava/util/Set;ZLjava/lang/String;)Lcom/mushafimad/ui/mushaf/MushafUiState;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/mushaf/MushafUiState;Lcom/mushafimad/core/domain/models/MushafType;IIIFLjava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Ljava/util/Set;ZLjava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/mushaf/MushafUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapters ()Ljava/util/List;
+	public final fun getCurrentChapter ()I
+	public final fun getCurrentPage ()I
+	public final fun getCurrentVerse ()I
+	public final fun getError ()Ljava/lang/String;
+	public final fun getMushafType ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun getScrollPosition ()F
+	public final fun getSelectedVerse ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun getSelectedVerses ()Ljava/util/Set;
+	public final fun getVerses ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isLoading ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/mushaf/MushafViewKt {
+	public static final fun MushafView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/mushafimad/ui/mushaf/MushafViewModel;Landroidx/compose/runtime/Composer;III)V
+}
+
+public final class com/mushafimad/ui/mushaf/MushafViewModel : androidx/lifecycle/ViewModel {
+	public static final field $stable I
+	public fun <init> (Lcom/mushafimad/core/domain/repository/VerseRepository;Lcom/mushafimad/core/domain/repository/ChapterRepository;Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Lcom/mushafimad/core/domain/repository/PreferencesRepository;)V
+	public final fun clearAllSelections ()V
+	public final fun clearError ()V
+	public final fun clearSelection ()V
+	public final fun getPageInfo ()Lcom/mushafimad/ui/mushaf/PageInfo;
+	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun goToChapter (II)V
+	public static synthetic fun goToChapter$default (Lcom/mushafimad/ui/mushaf/MushafViewModel;IIILjava/lang/Object;)V
+	public final fun goToPage (I)V
+	public final fun goToVerse (II)V
+	public final fun loadPage (I)V
+	public final fun nextPage ()V
+	public final fun previousPage ()V
+	public final fun recordReadingSession (I)V
+	public final fun saveReadingPosition ()V
+	public final fun selectVerse (Lcom/mushafimad/core/domain/models/Verse;)V
+	public final fun setMushafType (Lcom/mushafimad/core/domain/models/MushafType;)V
+	public final fun toggleVerseSelection (Lcom/mushafimad/core/domain/models/Verse;)V
+	public final fun updateScrollPosition (F)V
+}
+
+public final class com/mushafimad/ui/mushaf/MushafWithPlayerViewKt {
+	public static final fun MushafWithPlayerView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;ZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mushafimad/ui/mushaf/PageInfo {
+	public static final field $stable I
+	public fun <init> (IILjava/lang/String;II)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun copy (IILjava/lang/String;II)Lcom/mushafimad/ui/mushaf/PageInfo;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/mushaf/PageInfo;IILjava/lang/String;IIILjava/lang/Object;)Lcom/mushafimad/ui/mushaf/PageInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterName ()Ljava/lang/String;
+	public final fun getJuzNumber ()I
+	public final fun getPageNumber ()I
+	public final fun getProgress ()I
+	public final fun getTotalPages ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/mushaf/QuranLineImageViewKt {
+	public static final fun QuranLineImageView (IILcom/mushafimad/core/domain/models/MushafType;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mushafimad/ui/mushaf/QuranPageViewKt {
+	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;IILcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mushafimad/ui/mushaf/VerseFaselKt {
+	public static final fun VerseFasel (IFLjava/lang/Float;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mushafimad/ui/player/ChapterInfo {
+	public static final field $stable I
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;)Lcom/mushafimad/ui/player/ChapterInfo;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/player/ChapterInfo;ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/player/ChapterInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNumber ()I
+	public final fun getReciterName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/player/ComposableSingletons$ReciterPickerDialogKt {
+	public static final field INSTANCE Lcom/mushafimad/ui/player/ComposableSingletons$ReciterPickerDialogKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function3;
+	public fun <init> ()V
+	public final fun getLambda-1$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+}
+
+public final class com/mushafimad/ui/player/QuranPlayerViewKt {
+	public static final fun QuranPlayerView (ILjava/lang/String;Ljava/lang/Integer;ZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mushafimad/ui/player/ReciterPickerDialogKt {
+	public static final fun ReciterPickerDialog (Ljava/util/List;Lcom/mushafimad/core/domain/models/ReciterInfo;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/mushafimad/ui/search/ComposableSingletons$SearchViewKt {
+	public static final field INSTANCE Lcom/mushafimad/ui/search/ComposableSingletons$SearchViewKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function2;
+	public static field lambda-2 Lkotlin/jvm/functions/Function2;
+	public static field lambda-3 Lkotlin/jvm/functions/Function2;
+	public static field lambda-4 Lkotlin/jvm/functions/Function2;
+	public static field lambda-5 Lkotlin/jvm/functions/Function2;
+	public static field lambda-6 Lkotlin/jvm/functions/Function2;
+	public static field lambda-7 Lkotlin/jvm/functions/Function3;
+	public static field lambda-8 Lkotlin/jvm/functions/Function3;
+	public static field lambda-9 Lkotlin/jvm/functions/Function3;
+	public fun <init> ()V
+	public final fun getLambda-1$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-2$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-3$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-4$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-5$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-6$mushaf_ui_release ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda-7$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-8$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda-9$mushaf_ui_release ()Lkotlin/jvm/functions/Function3;
+}
+
+public final class com/mushafimad/ui/search/SearchResults {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lcom/mushafimad/ui/search/SearchResults;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/search/SearchResults;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/ui/search/SearchResults;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBookmarkResults ()Ljava/util/List;
+	public final fun getChapterResults ()Ljava/util/List;
+	public final fun getTotalCount ()I
+	public final fun getVerseResults ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isEmpty ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/search/SearchUiState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Lcom/mushafimad/ui/search/SearchResults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/SearchType;ZZLjava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/mushafimad/ui/search/SearchResults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/SearchType;ZZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/mushafimad/ui/search/SearchResults;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Lcom/mushafimad/core/domain/models/SearchType;
+	public final fun component7 ()Z
+	public final fun component8 ()Z
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Lcom/mushafimad/ui/search/SearchResults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/SearchType;ZZLjava/lang/String;)Lcom/mushafimad/ui/search/SearchUiState;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/search/SearchUiState;Ljava/lang/String;Lcom/mushafimad/ui/search/SearchResults;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/SearchType;ZZLjava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/search/SearchUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActiveFilter ()Lcom/mushafimad/core/domain/models/SearchType;
+	public final fun getError ()Ljava/lang/String;
+	public final fun getHasSearched ()Z
+	public final fun getPopularSearches ()Ljava/util/List;
+	public final fun getQuery ()Ljava/lang/String;
+	public final fun getResults ()Lcom/mushafimad/ui/search/SearchResults;
+	public final fun getSearchHistory ()Ljava/util/List;
+	public final fun getSuggestions ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isSearching ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/search/SearchViewKt {
+	public static final fun SearchView (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Lcom/mushafimad/ui/search/SearchViewModel;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/mushafimad/ui/search/SearchViewModel : androidx/lifecycle/ViewModel {
+	public static final field $stable I
+	public fun <init> (Lcom/mushafimad/core/domain/repository/VerseRepository;Lcom/mushafimad/core/domain/repository/ChapterRepository;Lcom/mushafimad/core/domain/repository/BookmarkRepository;Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;)V
+	public final fun clearError ()V
+	public final fun clearSearch ()V
+	public final fun clearSearchHistory ()V
+	public final fun deleteSearchHistoryEntry (Ljava/lang/String;)V
+	public final fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun loadPopularSearches ()V
+	public final fun loadSearchSuggestions (Ljava/lang/String;)V
+	public static synthetic fun loadSearchSuggestions$default (Lcom/mushafimad/ui/search/SearchViewModel;Ljava/lang/String;ILjava/lang/Object;)V
+	public final fun search (Ljava/lang/String;Lcom/mushafimad/core/domain/models/SearchType;)V
+	public static synthetic fun search$default (Lcom/mushafimad/ui/search/SearchViewModel;Ljava/lang/String;Lcom/mushafimad/core/domain/models/SearchType;ILjava/lang/Object;)V
+	public final fun setSearchFilter (Lcom/mushafimad/core/domain/models/SearchType;)V
+}
+
+public final class com/mushafimad/ui/settings/SettingsUiState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lcom/mushafimad/core/domain/models/MushafType;IFLjava/lang/String;Lcom/mushafimad/core/domain/models/UserDataBackup;Lcom/mushafimad/core/domain/repository/ImportResult;ZZZLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/mushafimad/core/domain/models/MushafType;IFLjava/lang/String;Lcom/mushafimad/core/domain/models/UserDataBackup;Lcom/mushafimad/core/domain/repository/ImportResult;ZZZLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun component10 ()Ljava/lang/String;
+	public final fun component11 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lcom/mushafimad/core/domain/models/UserDataBackup;
+	public final fun component6 ()Lcom/mushafimad/core/domain/repository/ImportResult;
+	public final fun component7 ()Z
+	public final fun component8 ()Z
+	public final fun component9 ()Z
+	public final fun copy (Lcom/mushafimad/core/domain/models/MushafType;IFLjava/lang/String;Lcom/mushafimad/core/domain/models/UserDataBackup;Lcom/mushafimad/core/domain/repository/ImportResult;ZZZLjava/lang/String;Ljava/lang/String;)Lcom/mushafimad/ui/settings/SettingsUiState;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/settings/SettingsUiState;Lcom/mushafimad/core/domain/models/MushafType;IFLjava/lang/String;Lcom/mushafimad/core/domain/models/UserDataBackup;Lcom/mushafimad/core/domain/repository/ImportResult;ZZZLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/settings/SettingsUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBackupData ()Lcom/mushafimad/core/domain/models/UserDataBackup;
+	public final fun getCurrentPage ()I
+	public final fun getError ()Ljava/lang/String;
+	public final fun getExportedData ()Ljava/lang/String;
+	public final fun getFontSizeMultiplier ()F
+	public final fun getImportResult ()Lcom/mushafimad/core/domain/repository/ImportResult;
+	public final fun getMushafType ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun getSuccessMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isClearing ()Z
+	public final fun isExporting ()Z
+	public final fun isImporting ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/theme/ColorSchemeType : java/lang/Enum {
+	public static final field COOL Lcom/mushafimad/ui/theme/ColorSchemeType;
+	public static final field DEFAULT Lcom/mushafimad/ui/theme/ColorSchemeType;
+	public static final field SEPIA Lcom/mushafimad/ui/theme/ColorSchemeType;
+	public static final field WARM Lcom/mushafimad/ui/theme/ColorSchemeType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/ui/theme/ColorSchemeType;
+	public static fun values ()[Lcom/mushafimad/ui/theme/ColorSchemeType;
+}
+
+public final class com/mushafimad/ui/theme/ColorSchemes {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/ColorSchemes;
+}
+
+public final class com/mushafimad/ui/theme/ColorSchemes$Cool {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/ColorSchemes$Cool;
+	public final fun getBackground-0d7_KjU ()J
+	public final fun getError-0d7_KjU ()J
+	public final fun getErrorContainer-0d7_KjU ()J
+	public final fun getOnBackground-0d7_KjU ()J
+	public final fun getOnError-0d7_KjU ()J
+	public final fun getOnErrorContainer-0d7_KjU ()J
+	public final fun getOnPrimary-0d7_KjU ()J
+	public final fun getOnPrimaryContainer-0d7_KjU ()J
+	public final fun getOnSecondary-0d7_KjU ()J
+	public final fun getOnSecondaryContainer-0d7_KjU ()J
+	public final fun getOnSurface-0d7_KjU ()J
+	public final fun getOnSurfaceVariant-0d7_KjU ()J
+	public final fun getOnTertiary-0d7_KjU ()J
+	public final fun getOnTertiaryContainer-0d7_KjU ()J
+	public final fun getOutline-0d7_KjU ()J
+	public final fun getPrimary-0d7_KjU ()J
+	public final fun getPrimaryContainer-0d7_KjU ()J
+	public final fun getSecondary-0d7_KjU ()J
+	public final fun getSecondaryContainer-0d7_KjU ()J
+	public final fun getSurface-0d7_KjU ()J
+	public final fun getSurfaceVariant-0d7_KjU ()J
+	public final fun getTertiary-0d7_KjU ()J
+	public final fun getTertiaryContainer-0d7_KjU ()J
+}
+
+public final class com/mushafimad/ui/theme/ColorSchemes$Default {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/ColorSchemes$Default;
+	public final fun getBackground-0d7_KjU ()J
+	public final fun getError-0d7_KjU ()J
+	public final fun getErrorContainer-0d7_KjU ()J
+	public final fun getOnBackground-0d7_KjU ()J
+	public final fun getOnError-0d7_KjU ()J
+	public final fun getOnErrorContainer-0d7_KjU ()J
+	public final fun getOnPrimary-0d7_KjU ()J
+	public final fun getOnPrimaryContainer-0d7_KjU ()J
+	public final fun getOnSecondary-0d7_KjU ()J
+	public final fun getOnSecondaryContainer-0d7_KjU ()J
+	public final fun getOnSurface-0d7_KjU ()J
+	public final fun getOnSurfaceVariant-0d7_KjU ()J
+	public final fun getOnTertiary-0d7_KjU ()J
+	public final fun getOnTertiaryContainer-0d7_KjU ()J
+	public final fun getOutline-0d7_KjU ()J
+	public final fun getPrimary-0d7_KjU ()J
+	public final fun getPrimaryContainer-0d7_KjU ()J
+	public final fun getSecondary-0d7_KjU ()J
+	public final fun getSecondaryContainer-0d7_KjU ()J
+	public final fun getSurface-0d7_KjU ()J
+	public final fun getSurfaceVariant-0d7_KjU ()J
+	public final fun getTertiary-0d7_KjU ()J
+	public final fun getTertiaryContainer-0d7_KjU ()J
+}
+
+public final class com/mushafimad/ui/theme/ColorSchemes$Sepia {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/ColorSchemes$Sepia;
+	public final fun getBackground-0d7_KjU ()J
+	public final fun getError-0d7_KjU ()J
+	public final fun getErrorContainer-0d7_KjU ()J
+	public final fun getOnBackground-0d7_KjU ()J
+	public final fun getOnError-0d7_KjU ()J
+	public final fun getOnErrorContainer-0d7_KjU ()J
+	public final fun getOnPrimary-0d7_KjU ()J
+	public final fun getOnPrimaryContainer-0d7_KjU ()J
+	public final fun getOnSecondary-0d7_KjU ()J
+	public final fun getOnSecondaryContainer-0d7_KjU ()J
+	public final fun getOnSurface-0d7_KjU ()J
+	public final fun getOnSurfaceVariant-0d7_KjU ()J
+	public final fun getOnTertiary-0d7_KjU ()J
+	public final fun getOnTertiaryContainer-0d7_KjU ()J
+	public final fun getOutline-0d7_KjU ()J
+	public final fun getPrimary-0d7_KjU ()J
+	public final fun getPrimaryContainer-0d7_KjU ()J
+	public final fun getSecondary-0d7_KjU ()J
+	public final fun getSecondaryContainer-0d7_KjU ()J
+	public final fun getSurface-0d7_KjU ()J
+	public final fun getSurfaceVariant-0d7_KjU ()J
+	public final fun getTertiary-0d7_KjU ()J
+	public final fun getTertiaryContainer-0d7_KjU ()J
+}
+
+public final class com/mushafimad/ui/theme/ColorSchemes$Warm {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/ColorSchemes$Warm;
+	public final fun getBackground-0d7_KjU ()J
+	public final fun getError-0d7_KjU ()J
+	public final fun getErrorContainer-0d7_KjU ()J
+	public final fun getOnBackground-0d7_KjU ()J
+	public final fun getOnError-0d7_KjU ()J
+	public final fun getOnErrorContainer-0d7_KjU ()J
+	public final fun getOnPrimary-0d7_KjU ()J
+	public final fun getOnPrimaryContainer-0d7_KjU ()J
+	public final fun getOnSecondary-0d7_KjU ()J
+	public final fun getOnSecondaryContainer-0d7_KjU ()J
+	public final fun getOnSurface-0d7_KjU ()J
+	public final fun getOnSurfaceVariant-0d7_KjU ()J
+	public final fun getOnTertiary-0d7_KjU ()J
+	public final fun getOnTertiaryContainer-0d7_KjU ()J
+	public final fun getOutline-0d7_KjU ()J
+	public final fun getPrimary-0d7_KjU ()J
+	public final fun getPrimaryContainer-0d7_KjU ()J
+	public final fun getSecondary-0d7_KjU ()J
+	public final fun getSecondaryContainer-0d7_KjU ()J
+	public final fun getSurface-0d7_KjU ()J
+	public final fun getSurfaceVariant-0d7_KjU ()J
+	public final fun getTertiary-0d7_KjU ()J
+	public final fun getTertiaryContainer-0d7_KjU ()J
+}
+
+public final class com/mushafimad/ui/theme/MushafColorSet {
+	public static final field $stable I
+	public synthetic fun <init> (JJJJJJLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-0d7_KjU ()J
+	public final fun component2-0d7_KjU ()J
+	public final fun component3-0d7_KjU ()J
+	public final fun component4-0d7_KjU ()J
+	public final fun component5-0d7_KjU ()J
+	public final fun component6-0d7_KjU ()J
+	public final fun copy-tNS2XkQ (JJJJJJ)Lcom/mushafimad/ui/theme/MushafColorSet;
+	public static synthetic fun copy-tNS2XkQ$default (Lcom/mushafimad/ui/theme/MushafColorSet;JJJJJJILjava/lang/Object;)Lcom/mushafimad/ui/theme/MushafColorSet;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBismillahTint-0d7_KjU ()J
+	public final fun getChapterHeaderBackground-0d7_KjU ()J
+	public final fun getDivider-0d7_KjU ()J
+	public final fun getScrim-0d7_KjU ()J
+	public final fun getSelection-0d7_KjU ()J
+	public final fun getVerseHighlight-0d7_KjU ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/theme/MushafColors {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/MushafColors;
+	public final fun getBismillahTint-0d7_KjU ()J
+	public final fun getBismillahTintDark-0d7_KjU ()J
+	public final fun getChapterHeaderBackground-0d7_KjU ()J
+	public final fun getChapterHeaderBackgroundDark-0d7_KjU ()J
+	public final fun getDivider-0d7_KjU ()J
+	public final fun getDividerDark-0d7_KjU ()J
+	public final fun getScrimDark-0d7_KjU ()J
+	public final fun getScrimLight-0d7_KjU ()J
+	public final fun getSelectionDark-0d7_KjU ()J
+	public final fun getSelectionLight-0d7_KjU ()J
+	public final fun getVerseHighlightDark-0d7_KjU ()J
+	public final fun getVerseHighlightLight-0d7_KjU ()J
+}
+
+public final class com/mushafimad/ui/theme/MushafTypography {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/MushafTypography;
+	public final fun getBismillah ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getBody ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getChapterName ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getChapterTitle ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getJuzMarker ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getLabel ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getPageNumber ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getTranslation ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getVerseNumber ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getVerseText ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getVerseTextLarge ()Landroidx/compose/ui/text/TextStyle;
+	public final fun getVerseTextSmall ()Landroidx/compose/ui/text/TextStyle;
+}
+
+public final class com/mushafimad/ui/theme/QuranFonts {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/mushafimad/ui/theme/QuranFonts;
+	public final fun getAlQuranAlKareem ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getHafsSmart ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getKitab ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getQuranNumbers ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getQuranTitles ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getUthmanTaha ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getUthmanicHafs ()Landroidx/compose/ui/text/font/SystemFontFamily;
+}
+
+public final class com/mushafimad/ui/theme/ReadingTheme : java/lang/Enum {
+	public static final field CALM Lcom/mushafimad/ui/theme/ReadingTheme;
+	public static final field COMFORTABLE Lcom/mushafimad/ui/theme/ReadingTheme;
+	public static final field NIGHT Lcom/mushafimad/ui/theme/ReadingTheme;
+	public static final field WHITE Lcom/mushafimad/ui/theme/ReadingTheme;
+	public final fun getBackgroundColor-0d7_KjU ()J
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getTextColor-0d7_KjU ()J
+	public final fun isDark ()Z
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/ui/theme/ReadingTheme;
+	public static fun values ()[Lcom/mushafimad/ui/theme/ReadingTheme;
+}
+
+public final class com/mushafimad/ui/theme/ThemeKt {
+	public static final fun MushafTheme (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getLocalMushafColors ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun getLocalReadingTheme ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun getMushafColors (Landroidx/compose/material3/MaterialTheme;Landroidx/compose/runtime/Composer;I)Lcom/mushafimad/ui/theme/MushafColorSet;
+	public static final fun getReadingTheme (Landroidx/compose/material3/MaterialTheme;Landroidx/compose/runtime/Composer;I)Lcom/mushafimad/ui/theme/ReadingTheme;
+}
+
+public final class com/mushafimad/ui/theme/ThemeUiState {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lcom/mushafimad/core/domain/models/ThemeConfig;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/mushafimad/core/domain/models/ThemeConfig;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/domain/models/ThemeConfig;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Lcom/mushafimad/core/domain/models/ThemeConfig;Ljava/lang/String;Ljava/lang/String;)Lcom/mushafimad/ui/theme/ThemeUiState;
+	public static synthetic fun copy$default (Lcom/mushafimad/ui/theme/ThemeUiState;Lcom/mushafimad/core/domain/models/ThemeConfig;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/ui/theme/ThemeUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ljava/lang/String;
+	public final fun getSuccessMessage ()Ljava/lang/String;
+	public final fun getThemeConfig ()Lcom/mushafimad/core/domain/models/ThemeConfig;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/ui/theme/TypographyKt {
+	public static final fun getMushafMaterialTypography ()Landroidx/compose/material3/Typography;
+}
+

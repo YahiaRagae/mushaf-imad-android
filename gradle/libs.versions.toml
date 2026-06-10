@@ -64,6 +64,7 @@ robolectric = "4.13"
 # Gradle Plugins
 androidGradlePlugin = "8.7.3"
 ksp = "1.9.25-1.0.20"
+binaryCompatibilityValidator = "0.16.3"
 
 [libraries]
 # Kotlin
@@ -163,3 +164,4 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 realm = { id = "io.realm.kotlin", version.ref = "realm" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompatibilityValidator" }
