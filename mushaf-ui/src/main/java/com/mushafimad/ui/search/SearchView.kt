@@ -85,7 +85,10 @@ fun SearchView(
                 .fillMaxWidth()
         ) {
             when {
-                uiState.isSearching -> {
+                // Full-screen spinner only when there is nothing to show yet;
+                // while refining a query, previous results stay on screen and
+                // clickable (swapping them out mid-tap broke selection).
+                uiState.isSearching && uiState.results.isEmpty -> {
                     // Loading state
                     Box(
                         modifier = Modifier.fillMaxSize(),
