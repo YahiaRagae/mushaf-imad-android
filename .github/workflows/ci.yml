@@ -9,20 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Full history: the sample-freeze check needs a merge base with
           # the PR base branch (three-dot diff fails on shallow clones)
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       # The sample app is the public-API compatibility oracle: it must build
       # against the libraries without any source changes. Fail fast if a PR
@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-reports
           path: '**/build/reports/tests/'
