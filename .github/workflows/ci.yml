@@ -24,19 +24,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      # The sample app is the public-API compatibility oracle: it must build
-      # against the libraries without any source changes. Fail fast if a PR
-      # modifies it.
-      - name: Verify sample app sources are unchanged
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch origin ${{ github.base_ref }}
-          changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- sample/src)
-          if [ -n "$changed" ]; then
-            echo "::error::sample/src was modified. The sample app is frozen as the API-compatibility oracle."
-            echo "$changed"
-            exit 1
-          fi
+      # Source-compatibility oracle: V01ApiCompatibilityFixture is a frozen
+      # snapshot of how a v0.1 consumer calls the library. If any public
+      # signature changes shape, it stops compiling and this fails. It lets the
+      # sample app evolve its demos while keeping the API contract honest.
+      - name: v0.1 consumer source-compatibility (frozen fixture must compile)
+        run: ./gradlew :sample:compileDebugAndroidTestKotlin
 
       - name: Public API check (binary-compatibility-validator)
         run: ./gradlew apiCheck
