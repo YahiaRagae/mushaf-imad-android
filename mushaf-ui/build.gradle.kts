@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     `maven-publish`
 }
 
@@ -47,10 +48,6 @@ android {
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -94,6 +91,10 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Compose pulls graphics-path in transitively at a version whose
+    // libandroidx.graphics.path.so is not 16 KB page aligned; force a fixed one.
+    implementation(libs.androidx.graphics.path)
 
     // Koin Compose
     implementation(libs.koin.androidx.compose)

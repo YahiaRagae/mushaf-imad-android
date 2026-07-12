@@ -5,7 +5,9 @@ minSdk = "24"
 targetSdk = "35"
 
 # Kotlin
-kotlin = "1.9.25"
+# Pinned to the 2.0 line: realm-kotlin's compiler plugin is built against Kotlin
+# 2.0.20, and Kotlin compiler-plugin APIs are not stable across minor versions.
+kotlin = "2.0.21"
 kotlinxCoroutines = "1.9.0"
 kotlinxSerialization = "1.6.3"
 
@@ -19,9 +21,14 @@ androidxFragment = "1.8.5"
 androidxLifecycle = "2.8.7"
 
 # Compose
+# From Kotlin 2.0 the Compose compiler ships with Kotlin itself and is applied as
+# the org.jetbrains.kotlin.plugin.compose plugin, so there is no separate
+# compiler version to keep in step any more.
 composeBom = "2024.12.01"
-composeCompiler = "1.5.15"
 composeNavigation = "2.8.5"
+# Forced over the version Compose pulls in transitively: earlier releases ship a
+# libandroidx.graphics.path.so that is not 16 KB page aligned.
+androidxGraphicsPath = "1.1.0"
 
 # Hilt
 hilt = "2.54"
@@ -30,8 +37,9 @@ hiltNavigationCompose = "1.2.0"
 # Koin
 koin = "3.5.6"
 
-# Realm - Using 1.16.0 for Kotlin 1.9.x compatibility
-realm = "1.16.0"
+# Realm - 3.0.0 is the final release of the (now deprecated) SDK and the first
+# to ship 16 KB page-aligned native libraries. It requires Kotlin >= 2.0.20.
+realm = "3.0.0"
 
 # Media3 (Audio playback)
 media3 = "1.5.0"
@@ -43,8 +51,9 @@ coil = "2.7.0"
 gson = "2.11.0"
 kotlinxSerializationJson = "1.6.3"
 
-# DataStore
-datastore = "1.1.1"
+# DataStore - 1.1.1 ships a libdatastore_shared_counter.so that is not 16 KB
+# page aligned
+datastore = "1.1.7"
 
 # Accompanist (Compose utilities)
 accompanist = "0.36.0"
@@ -100,6 +109,7 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
+androidx-graphics-path = { group = "androidx.graphics", name = "graphics-path", version.ref = "androidxGraphicsPath" }
 
 # Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -162,6 +172,7 @@ hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testi
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

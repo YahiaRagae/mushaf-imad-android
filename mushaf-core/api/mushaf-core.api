@@ -146,9 +146,9 @@ public final class com/mushafimad/core/data/local/entities/ChapterEntity$Compani
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/ChapterHeaderEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -177,9 +177,9 @@ public final class com/mushafimad/core/data/local/entities/ChapterHeaderEntity$C
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/PageEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -216,9 +216,9 @@ public final class com/mushafimad/core/data/local/entities/PageEntity$Companion 
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/PageHeaderEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -243,9 +243,9 @@ public final class com/mushafimad/core/data/local/entities/PageHeaderEntity$Comp
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/PartEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -278,9 +278,9 @@ public final class com/mushafimad/core/data/local/entities/PartEntity$Companion 
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/QuarterEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -313,9 +313,9 @@ public final class com/mushafimad/core/data/local/entities/QuarterEntity$Compani
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/QuranSectionEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -338,9 +338,9 @@ public final class com/mushafimad/core/data/local/entities/QuranSectionEntity$Co
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/VerseEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -395,9 +395,9 @@ public final class com/mushafimad/core/data/local/entities/VerseEntity$Companion
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/VerseHighlightEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -422,9 +422,9 @@ public final class com/mushafimad/core/data/local/entities/VerseHighlightEntity$
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public class com/mushafimad/core/data/local/entities/VerseMarkerEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
@@ -451,9 +451,9 @@ public final class com/mushafimad/core/data/local/entities/VerseMarkerEntity$Com
 	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
 	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
 	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
-	public fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
 	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
-	public fun io_realm_kotlin_schema ()Ljava/lang/Object;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
 }
 
 public final class com/mushafimad/core/di/CoreModuleKt {
@@ -476,13 +476,13 @@ public final class com/mushafimad/core/domain/models/AyahTiming {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/AyahTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/AyahTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/AyahTiming$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/AyahTiming;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/AyahTiming;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/AyahTiming;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/AyahTiming;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -541,13 +541,13 @@ public final class com/mushafimad/core/domain/models/BookmarkData {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/BookmarkData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/BookmarkData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/BookmarkData$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/BookmarkData;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/BookmarkData;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/BookmarkData;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/BookmarkData;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -619,13 +619,13 @@ public final class com/mushafimad/core/domain/models/ChapterTiming {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/ChapterTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/ChapterTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/ChapterTiming$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/ChapterTiming;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/ChapterTiming;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/ChapterTiming;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/ChapterTiming;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -788,13 +788,13 @@ public final class com/mushafimad/core/domain/models/LastReadPositionData {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/LastReadPositionData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/LastReadPositionData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/LastReadPositionData$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/LastReadPositionData;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/LastReadPositionData;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/LastReadPositionData;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/LastReadPositionData;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -901,13 +901,13 @@ public final class com/mushafimad/core/domain/models/PreferencesData {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/PreferencesData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/PreferencesData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/PreferencesData$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/PreferencesData;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/PreferencesData;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/PreferencesData;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/PreferencesData;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -1039,13 +1039,13 @@ public final class com/mushafimad/core/domain/models/ReciterTiming {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/ReciterTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/ReciterTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/ReciterTiming$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/ReciterTiming;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/ReciterTiming;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/ReciterTiming;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/ReciterTiming;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -1127,13 +1127,13 @@ public final class com/mushafimad/core/domain/models/SearchHistoryData {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/SearchHistoryData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/SearchHistoryData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/SearchHistoryData$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/SearchHistoryData;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/SearchHistoryData;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/SearchHistoryData;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/SearchHistoryData;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
@@ -1236,13 +1236,13 @@ public final class com/mushafimad/core/domain/models/UserDataBackup {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/mushafimad/core/domain/models/UserDataBackup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public synthetic class com/mushafimad/core/domain/models/UserDataBackup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/mushafimad/core/domain/models/UserDataBackup$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/UserDataBackup;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/UserDataBackup;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/UserDataBackup;)V
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/UserDataBackup;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
