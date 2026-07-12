@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.androidx.compose.koinViewModel
+import com.mushafimad.ui.internal.mushafViewModel
 import com.mushafimad.core.domain.models.Chapter
 import com.mushafimad.core.domain.models.SearchHistoryEntry
 import com.mushafimad.core.domain.models.SearchType
@@ -45,25 +45,26 @@ fun SearchView(
     onChapterSelected: ((Chapter) -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel = koinViewModel()
+    viewModel: SearchViewModel = mushafViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var searchQuery by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Search bar
+        // Search bar. The query is rendered straight from the ViewModel rather
+        // than from a local remember: the composable is torn down whenever the
+        // host navigates to a result (or the device rotates), and a local copy
+        // would reset to "" while the results kept showing - an empty box above
+        // stale results.
         SearchBar(
-            query = searchQuery,
+            query = uiState.query,
             onQueryChange = { query ->
-                searchQuery = query
                 viewModel.search(query, uiState.activeFilter ?: SearchType.GENERAL)
             },
             onClear = {
-                searchQuery = ""
                 viewModel.clearSearch()
             },
             modifier = Modifier.fillMaxWidth()
@@ -85,7 +86,10 @@ fun SearchView(
                 .fillMaxWidth()
         ) {
             when {
-                uiState.isSearching -> {
+                // Full-screen spinner only when there is nothing to show yet;
+                // while refining a query, previous results stay on screen and
+                // clickable (swapping them out mid-tap broke selection).
+                uiState.isSearching && uiState.results.isEmpty -> {
                     // Loading state
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -136,7 +140,6 @@ fun SearchView(
                     SearchHistoryView(
                         history = uiState.searchHistory,
                         onHistoryItemClick = { entry: SearchHistoryEntry ->
-                            searchQuery = entry.query
                             viewModel.search(entry.query, entry.searchType)
                         },
                         onClearHistory = {

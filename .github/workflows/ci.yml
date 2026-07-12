@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Full history: the sample-freeze check needs a merge base with
+          # the PR base branch (three-dot diff fails on shallow clones)
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      # Source-compatibility oracle: V01ApiCompatibilityFixture is a frozen
+      # snapshot of how a v0.1 consumer calls the library. If any public
+      # signature changes shape, it stops compiling and this fails. It lets the
+      # sample app evolve its demos while keeping the API contract honest.
+      - name: v0.1 consumer source-compatibility (frozen fixture must compile)
+        run: ./gradlew :sample:compileDebugAndroidTestKotlin
+
+      - name: Public API check (binary-compatibility-validator)
+        run: ./gradlew apiCheck
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Build sample (debug + minified release)
+        run: ./gradlew :sample:assembleDebug :sample:assembleRelease -x lint
+
+      - name: Publish to Maven local (JitPack dry run)
+        run: ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal -x lint
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'

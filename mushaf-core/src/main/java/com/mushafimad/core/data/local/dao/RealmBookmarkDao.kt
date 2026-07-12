@@ -21,7 +21,7 @@ internal class RealmBookmarkDao(
 ) : BookmarkDao {
 
     private val realm: Realm
-        get() = realmService.getRealm()
+        get() = realmService.getUserRealm()
 
     override fun getAllFlow(): Flow<List<BookmarkEntity>> {
         return realm.query<BookmarkEntity>()

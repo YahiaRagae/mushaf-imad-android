@@ -1,8 +1,10 @@
 package com.mushafimad.core.data.repository
 
 import android.content.Context
+import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.data.local.entities.*
 import com.mushafimad.core.domain.models.*
+import com.mushafimad.core.logging.MushafLogger.LogCategory
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
@@ -19,6 +21,13 @@ import java.io.File
  * Implementation of RealmService that provides access to the Quran database
  * Internal API - not exposed to library consumers
  *
+ * Two separate Realm files are used:
+ * - The content realm (copied from assets, read-only data): safe to delete and
+ *   recopy if it ever fails to open.
+ * - The user realm (bookmarks, reading history, last position, search history):
+ *   created on device, never deleted, so user data survives app restarts and
+ *   library upgrades.
+ *
  * @param context Application context
  * @param useInMemory If true, uses in-memory Realm for testing (no file I/O). Default is false.
  */
@@ -28,13 +37,50 @@ internal class DefaultRealmService(
 ) : RealmService {
 
     private var realm: Realm? = null
-    private var configuration: RealmConfiguration? = null
+    @Volatile private var userRealm: Realm? = null
     private val initMutex = Mutex()
+    private val userRealmLock = Any()
     private val initScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private val logger get() = MushafLibrary.logger
+
     companion object {
-        private const val REALM_FILE_NAME = "quran.realm"
-        private const val SCHEMA_VERSION = 24L
+        private const val REALM_ASSET_NAME = "quran.realm"
+
+        // Bump together with a new bundled asset so the on-device copy from an
+        // older release never collides with the new one.
+        private const val CONTENT_ASSET_VERSION = 1
+        private const val CONTENT_REALM_NAME = "quran-v$CONTENT_ASSET_VERSION.realm"
+        private const val CONTENT_SCHEMA_VERSION = 24L
+
+        private const val USER_REALM_NAME = "userdata.realm"
+        private const val USER_SCHEMA_VERSION = 1L
+
+        // On-device file name used by releases <= 0.1, which mixed content and
+        // user data and wiped the file on every launch.
+        private const val LEGACY_REALM_NAME = "quran.realm"
+
+        // Must match the tables stored in the bundled asset (shared with iOS,
+        // entity names mapped via @PersistedName).
+        private val CONTENT_SCHEMA = setOf(
+            ChapterEntity::class,
+            VerseEntity::class,
+            PageEntity::class,
+            PartEntity::class,
+            QuarterEntity::class,
+            VerseHighlightEntity::class,
+            VerseMarkerEntity::class,
+            PageHeaderEntity::class,
+            ChapterHeaderEntity::class,
+            QuranSectionEntity::class
+        )
+
+        private val USER_SCHEMA = setOf(
+            BookmarkEntity::class,
+            ReadingHistoryEntity::class,
+            LastReadPositionEntity::class,
+            SearchHistoryEntity::class
+        )
     }
 
     init {
@@ -57,109 +103,63 @@ internal class DefaultRealmService(
         if (realm != null) return@withLock
 
         withContext(Dispatchers.IO) {
-            initializeRealm()
+            openContentRealm()
         }
     }
 
     /**
-     * Initialize Realm - must be called on background thread
+     * Open the content realm - must be called on background thread
      */
-    private fun initializeRealm() {
+    private fun openContentRealm() {
         // Skip if already initialized
         if (realm != null) return
 
-        println("RealmService: Initializing Realm (useInMemory=$useInMemory)...")
+        logger.debug("Opening content realm (useInMemory=$useInMemory)", LogCategory.REALM)
 
-        // Define schema for all Realm configurations
-        val schema = setOf(
-            // Core Quran entities
-            ChapterEntity::class,
-            VerseEntity::class,
-            PageEntity::class,
-            PartEntity::class,
-            QuarterEntity::class,
-            VerseHighlightEntity::class,
-            VerseMarkerEntity::class,
-            PageHeaderEntity::class,
-            ChapterHeaderEntity::class,
-            QuranSectionEntity::class,
-            // User data entities
-            BookmarkEntity::class,
-            ReadingHistoryEntity::class,
-            LastReadPositionEntity::class,
-            // Search history entities
-            SearchHistoryEntity::class
-        )
-
-        val config = if (useInMemory) {
-            // In-memory configuration for tests - no file I/O
-            println("RealmService: Using in-memory configuration (for tests)")
-            RealmConfiguration.Builder(schema = schema)
-                .inMemory()
-                .build()
-        } else {
-            // File-based configuration for production
-            println("RealmService: Using file-based configuration (production)")
-
-            // Get the bundled Realm file from assets
-            val assetManager = context.assets
-            val realmInputStream = try {
-                assetManager.open(REALM_FILE_NAME)
-            } catch (e: Exception) {
-                println("RealmService: ERROR - Could not find $REALM_FILE_NAME in assets")
-                throw IllegalStateException("Could not find $REALM_FILE_NAME in assets", e)
-            }
-
-            // Get app's internal storage directory
-            val appFilesDir = context.filesDir
-            val realmFile = File(appFilesDir, REALM_FILE_NAME)
-
-            println("RealmService: Realm file path: ${realmFile.absolutePath}")
-            println("RealmService: Realm file exists: ${realmFile.exists()}, size: ${if (realmFile.exists()) realmFile.length() else 0} bytes")
-
-            // TEMPORARY: Force fresh copy from assets to fix schema mismatch
-            // Delete existing file if it exists
-            if (realmFile.exists()) {
-                println("RealmService: Deleting existing realm file to force fresh copy...")
-                realmFile.delete()
-                // Also delete lock files
-                File(appFilesDir, "$REALM_FILE_NAME.lock").delete()
-                File(appFilesDir, "$REALM_FILE_NAME.management").delete()
-            }
-
-            // Copy the bundled Realm file from assets
-            println("RealmService: Copying realm file from assets...")
-            realmInputStream.use { input ->
-                realmFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            println("RealmService: Copied realm file, new size: ${realmFile.length()} bytes")
-
-            RealmConfiguration.Builder(schema = schema)
-                .name(REALM_FILE_NAME)
-                .schemaVersion(SCHEMA_VERSION)
-                .directory(appFilesDir.absolutePath)
-                .build()
+        if (useInMemory) {
+            realm = Realm.open(
+                RealmConfiguration.Builder(schema = CONTENT_SCHEMA)
+                    .name("$CONTENT_REALM_NAME.in-memory")
+                    .inMemory()
+                    .build()
+            )
+            return
         }
 
-        configuration = config
-        realm = Realm.open(config)
+        deleteRealmFiles(LEGACY_REALM_NAME)
 
-        println("RealmService: Realm opened successfully")
-
-        if (!useInMemory) {
-            // Only test queries for file-based Realm (in-memory starts empty)
-            println("RealmService: Testing query - chapter count...")
-            try {
-                val chapterCount = realm?.query<ChapterEntity>()?.count()?.find()
-                println("RealmService: Found $chapterCount chapters in database")
-                val verseCount = realm?.query<VerseEntity>()?.count()?.find()
-                println("RealmService: Found $verseCount verses in database")
-            } catch (e: Exception) {
-                println("RealmService: ERROR querying database: ${e.message}")
-            }
+        realm = try {
+            Realm.open(contentConfig())
+        } catch (first: Exception) {
+            // The on-device copy holds no user data, so an incompatible or
+            // corrupt file can simply be recopied from assets. One retry only;
+            // if the bundled asset itself is unusable, fail loudly.
+            logger.error(
+                "Content realm failed to open; recopying from assets",
+                first,
+                LogCategory.REALM
+            )
+            deleteRealmFiles(CONTENT_REALM_NAME)
+            Realm.open(contentConfig())
         }
+
+        logger.info("Content realm opened", LogCategory.REALM)
+    }
+
+    private fun contentConfig(): RealmConfiguration =
+        RealmConfiguration.Builder(schema = CONTENT_SCHEMA)
+            .name(CONTENT_REALM_NAME)
+            .directory(context.filesDir.absolutePath)
+            .schemaVersion(CONTENT_SCHEMA_VERSION)
+            .initialRealmFile(REALM_ASSET_NAME)
+            .build()
+
+    private fun deleteRealmFiles(name: String) {
+        val dir = context.filesDir
+        File(dir, name).delete()
+        File(dir, "$name.lock").delete()
+        File(dir, "$name.note").delete()
+        File(dir, "$name.management").deleteRecursively()
     }
 
     /**
@@ -171,6 +171,39 @@ internal class DefaultRealmService(
 
     override fun getRealm(): Realm {
         return realm ?: throw IllegalStateException("Realm not initialized. Call initialize() first.")
+    }
+
+    override fun getUserRealm(): Realm {
+        userRealm?.let { return it }
+        synchronized(userRealmLock) {
+            userRealm?.let { return it }
+
+            val config = if (useInMemory) {
+                RealmConfiguration.Builder(schema = USER_SCHEMA)
+                    .name("$USER_REALM_NAME.in-memory")
+                    .inMemory()
+                    .build()
+            } else {
+                RealmConfiguration.Builder(schema = USER_SCHEMA)
+                    .name(USER_REALM_NAME)
+                    .directory(context.filesDir.absolutePath)
+                    .schemaVersion(USER_SCHEMA_VERSION)
+                    .build()
+            }
+
+            // Opening is fast (small or empty file) and must never be subject
+            // to the content realm's delete-and-recopy self-healing.
+            return Realm.open(config).also { userRealm = it }
+        }
+    }
+
+    override fun close() {
+        realm?.close()
+        realm = null
+        synchronized(userRealmLock) {
+            userRealm?.close()
+            userRealm = null
+        }
     }
 
     // MARK: - Chapter Operations
@@ -235,7 +268,7 @@ internal class DefaultRealmService(
 
     override suspend fun getTotalPages(): Int = withContext(Dispatchers.IO) {
         ensureInitialized()
-        val realmInstance = realm ?: return@withContext 604
+        val realmInstance = realm ?: return@withContext com.mushafimad.core.utils.QuranUtils.TOTAL_PAGES
         realmInstance.query<PageEntity>().count().find().toInt()
     }
 
@@ -280,30 +313,19 @@ internal class DefaultRealmService(
     override suspend fun getVersesForPage(pageNumber: Int, mushafType: MushafType): List<Verse> =
         withContext(Dispatchers.IO) {
             ensureInitialized()
-            println("RealmService: getVersesForPage($pageNumber, $mushafType)")
             val page = getPageEntity(pageNumber)
 
             if (page == null) {
-                println("RealmService: ERROR - Page $pageNumber not found!")
+                logger.warning("Page $pageNumber not found", LogCategory.REALM)
                 return@withContext emptyList()
             }
 
-            println("RealmService: Found page ${page.number}")
-
             val verses = when (mushafType) {
-                MushafType.HAFS_1441 -> {
-                    println("RealmService: Getting verses1441, count: ${page.verses1441.size}")
-                    page.verses1441
-                }
-                MushafType.HAFS_1405 -> {
-                    println("RealmService: Getting verses1405, count: ${page.verses1405.size}")
-                    page.verses1405
-                }
+                MushafType.HAFS_1441 -> page.verses1441
+                MushafType.HAFS_1405 -> page.verses1405
             }
 
-            val result = verses.map { it.toDomain() }
-            println("RealmService: Returning ${result.size} verses")
-            result
+            verses.map { it.toDomain() }
         }
 
     override suspend fun getVersesForChapter(chapterNumber: Int): List<Verse> = withContext(Dispatchers.IO) {
@@ -331,11 +353,11 @@ internal class DefaultRealmService(
         ensureInitialized()
         val realmInstance = realm ?: return@withContext emptyList()
 
-        // Known sajda verse IDs
+        // Known sajda verse IDs (humanReadableID format: "chapter_verse")
         val sajdaVerseKeys = listOf(
-            "7:206", "13:15", "16:50", "17:109", "19:58",
-            "22:18", "22:77", "25:60", "27:26", "32:15",
-            "38:24", "41:38", "53:62", "84:21", "96:19"
+            "7_206", "13_15", "16_50", "17_109", "19_58",
+            "22_18", "22_77", "25_60", "27_26", "32_15",
+            "38_24", "41_38", "53_62", "84_21", "96_19"
         )
 
         sajdaVerseKeys.mapNotNull { key ->

@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mushafimad.core.domain.models.*
 import com.mushafimad.core.domain.repository.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,15 +30,23 @@ class SearchViewModel(
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private var searchJob: Job? = null
+
     init {
         loadSearchHistory()
         loadSearchSuggestions()
     }
 
     /**
-     * Perform a unified search across all types
+     * Perform a unified search across all types.
+     *
+     * Debounced: each call cancels the previous in-flight search, so rapid
+     * typing never lets a stale slow query overwrite newer results, and only
+     * queries that actually execute are recorded in history.
      */
     fun search(query: String, searchType: SearchType = SearchType.GENERAL) {
+        searchJob?.cancel()
+
         if (query.isBlank()) {
             clearSearch()
             return
@@ -43,7 +54,8 @@ class SearchViewModel(
 
         _uiState.update { it.copy(query = query, isSearching = true, error = null) }
 
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
             try {
                 val results = when (searchType) {
                     SearchType.VERSE -> searchVerses(query)
@@ -51,14 +63,9 @@ class SearchViewModel(
                     SearchType.GENERAL -> searchAll(query)
                 }
 
-                // Record search in history
-                val totalResults = results.verseResults.size +
-                        results.chapterResults.size +
-                        results.bookmarkResults.size
-
                 searchHistoryRepository.recordSearch(
                     query = query,
-                    resultCount = totalResults,
+                    resultCount = results.totalCount,
                     searchType = searchType
                 )
 
@@ -72,6 +79,9 @@ class SearchViewModel(
 
                 // Refresh suggestions after recording search
                 loadSearchSuggestions()
+            } catch (e: CancellationException) {
+                // A newer query superseded this one; its state update wins
+                throw e
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -203,6 +213,7 @@ class SearchViewModel(
      * Clear current search
      */
     fun clearSearch() {
+        searchJob?.cancel()
         _uiState.update {
             it.copy(
                 query = "",
@@ -231,6 +242,8 @@ class SearchViewModel(
         _uiState.update { it.copy(error = null) }
     }
 }
+
+private const val SEARCH_DEBOUNCE_MS = 300L
 
 /**
  * UI state for search screen

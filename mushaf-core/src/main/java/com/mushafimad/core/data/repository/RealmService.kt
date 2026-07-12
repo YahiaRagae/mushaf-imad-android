@@ -20,10 +20,24 @@ internal interface RealmService {
     val isInitialized: Boolean
 
     /**
-     * Get Realm instance for direct queries
+     * Get Realm instance for direct queries against the bundled Quran content
      * Only use this when repository needs direct Realm access
      */
     fun getRealm(): io.realm.kotlin.Realm
+
+    /**
+     * Get the Realm instance holding user data (bookmarks, reading history,
+     * last read position, search history). Stored in a separate file so user
+     * data is never affected by content database updates or recovery.
+     */
+    fun getUserRealm(): io.realm.kotlin.Realm
+
+    /**
+     * Close all open Realm instances. Primarily for tests that simulate an
+     * app restart; production code keeps the realms open for the process
+     * lifetime.
+     */
+    fun close()
 
     // MARK: - Chapter (Surah) Operations
 

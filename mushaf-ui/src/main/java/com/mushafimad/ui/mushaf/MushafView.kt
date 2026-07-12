@@ -1,8 +1,9 @@
 package com.mushafimad.ui.mushaf
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -11,16 +12,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
+import com.mushafimad.ui.internal.mushafViewModel
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.mushafimad.ui.theme.*
-import kotlinx.coroutines.delay
 
 /**
  * MushafView - Main composable for displaying Quran pages using images
@@ -64,7 +64,7 @@ fun MushafView(
     onVerseSelected: ((Verse) -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    viewModel: MushafViewModel = koinViewModel()
+    viewModel: MushafViewModel = mushafViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -75,12 +75,15 @@ fun MushafView(
         }
     }
 
-    // Load initial page if provided
+    // Apply a consumer-provided initial page exactly once per composition
+    // lifetime, so a static value doesn't keep forcing the page back after
+    // the user navigates away. initialPage = null means: restore the last
+    // read position.
+    var initialPageApplied by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(initialPage) {
-        initialPage?.let { page ->
-            if (page != uiState.currentPage) {
-                viewModel.goToPage(page)
-            }
+        if (!initialPageApplied) {
+            initialPageApplied = true
+            initialPage?.let { viewModel.goToPage(it) }
         }
     }
 
@@ -89,18 +92,13 @@ fun MushafView(
         onPageChanged?.invoke(uiState.currentPage)
     }
 
-    // Auto-save reading position periodically
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(30000) // Save every 30 seconds
-            viewModel.saveReadingPosition()
-        }
-    }
-
-    // Save on disposal
+    // Save on disposal (page changes already persist via the ViewModel's
+    // debounced save), and close out the reading session for the page the
+    // reader was last on.
     DisposableEffect(Unit) {
         onDispose {
             viewModel.saveReadingPosition()
+            viewModel.flushReadingSession()
         }
     }
 
@@ -114,7 +112,7 @@ fun MushafView(
                 .background(readingTheme.backgroundColor)
         ) {
             when {
-                uiState.isLoading -> {
+                uiState.isLoading && uiState.verses.isEmpty() -> {
                     LoadingView()
                 }
 
@@ -127,37 +125,44 @@ fun MushafView(
                 }
 
                 uiState.verses.isNotEmpty() -> {
-                    var swipeOffset by remember { mutableStateOf(0f) }
+                    val pagerState = rememberPagerState(
+                        initialPage = uiState.currentPage - 1
+                    ) { TOTAL_PAGES }
 
-                    QuranPageView(
-                        verses = uiState.verses,
-                        chapters = uiState.chapters,
-                        pageNumber = uiState.currentPage,
-                        juzNumber = viewModel.getPageInfo().juzNumber,
-                        mushafType = uiState.mushafType,
-                        selectedVerse = uiState.selectedVerse,
-                        highlightedVerse = highlightedVerse,
-                        onVerseClick = { verse ->
-                            viewModel.selectVerse(verse)
-                            onVerseSelected?.invoke(verse)
-                        },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .pointerInput(Unit) {
-                                detectHorizontalDragGestures(
-                                    onDragEnd = {
-                                        when {
-                                            swipeOffset > 100 -> viewModel.previousPage()
-                                            swipeOffset < -100 -> viewModel.nextPage()
-                                        }
-                                        swipeOffset = 0f
-                                    },
-                                    onHorizontalDrag = { _, dragAmount ->
-                                        swipeOffset += dragAmount
-                                    }
-                                )
-                            }
-                    )
+                    // Programmatic navigation (buttons, goToPage/goToChapter)
+                    // animates the pager to the new page
+                    LaunchedEffect(uiState.currentPage) {
+                        val target = uiState.currentPage - 1
+                        if (pagerState.currentPage != target && !pagerState.isScrollInProgress) {
+                            pagerState.animateScrollToPage(target)
+                        }
+                    }
+
+                    // Commit user swipes once the pager settles on a page
+                    LaunchedEffect(pagerState) {
+                        snapshotFlow { pagerState.settledPage }
+                            .collect { index -> viewModel.onPageSettled(index + 1) }
+                    }
+
+                    HorizontalPager(
+                        state = pagerState,
+                        // Pre-compose neighbours so their content is already
+                        // loaded when the swipe starts (issue #70)
+                        beyondViewportPageCount = 1,
+                        modifier = Modifier.fillMaxSize()
+                    ) { index ->
+                        MushafPagerPage(
+                            pageNumber = index + 1,
+                            mushafType = uiState.mushafType,
+                            selectedVerse = uiState.selectedVerse,
+                            highlightedVerse = highlightedVerse,
+                            onVerseClick = { verse ->
+                                viewModel.selectVerse(verse)
+                                onVerseSelected?.invoke(verse)
+                            },
+                            viewModel = viewModel
+                        )
+                    }
 
                     // Navigation controls overlay
                     if (showNavigationControls) {
@@ -187,6 +192,54 @@ fun MushafView(
                     )
                 }
             }
+        }
+    }
+}
+
+/**
+ * One page inside the pager. Renders from the ViewModel's page cache,
+ * loading on first composition; pre-composed neighbours load before they
+ * become visible, which is what makes swiping feel instant.
+ */
+@Composable
+private fun MushafPagerPage(
+    pageNumber: Int,
+    mushafType: MushafType,
+    selectedVerse: Verse?,
+    highlightedVerse: Verse?,
+    onVerseClick: (Verse) -> Unit,
+    viewModel: MushafViewModel,
+    modifier: Modifier = Modifier
+) {
+    var content by remember(pageNumber, mushafType) {
+        mutableStateOf(viewModel.peekPageContent(pageNumber))
+    }
+
+    LaunchedEffect(pageNumber, mushafType) {
+        if (content == null) {
+            content = viewModel.pageContent(pageNumber)
+        }
+    }
+
+    val pageContent = content
+    if (pageContent != null) {
+        QuranPageView(
+            verses = pageContent.verses,
+            chapters = pageContent.chapters,
+            pageNumber = pageNumber,
+            juzNumber = ((pageNumber - 1) / 20) + 1,
+            mushafType = mushafType,
+            selectedVerse = selectedVerse,
+            highlightedVerse = highlightedVerse,
+            onVerseClick = onVerseClick,
+            modifier = modifier.fillMaxSize()
+        )
+    } else {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
     }
 }

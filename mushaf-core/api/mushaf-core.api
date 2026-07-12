@@ -1,0 +1,1715 @@
+public final class com/mushafimad/core/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public static final field VERSION_CODE I
+	public static final field VERSION_NAME Ljava/lang/String;
+	public fun <init> ()V
+}
+
+public final class com/mushafimad/core/MushafInitializer {
+	public static final field Companion Lcom/mushafimad/core/MushafInitializer$Companion;
+	public synthetic fun <init> (Landroid/content/Context;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun initializeAsync (Lcom/mushafimad/core/domain/repository/QuranRepository;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun initializeAsync$default (Lcom/mushafimad/core/MushafInitializer;Lcom/mushafimad/core/domain/repository/QuranRepository;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public final fun isDatabaseInitialized ()Z
+}
+
+public final class com/mushafimad/core/MushafInitializer$Companion {
+	public final fun getInstance (Landroid/content/Context;)Lcom/mushafimad/core/MushafInitializer;
+}
+
+public final class com/mushafimad/core/MushafLibrary : org/koin/core/component/KoinComponent {
+	public static final field INSTANCE Lcom/mushafimad/core/MushafLibrary;
+	public static final fun getAudioRepository ()Lcom/mushafimad/core/domain/repository/AudioRepository;
+	public static final fun getBookmarkRepository ()Lcom/mushafimad/core/domain/repository/BookmarkRepository;
+	public static final fun getChapterRepository ()Lcom/mushafimad/core/domain/repository/ChapterRepository;
+	public static final fun getDataExportRepository ()Lcom/mushafimad/core/domain/repository/DataExportRepository;
+	public fun getKoin ()Lorg/koin/core/Koin;
+	public final fun getLogger ()Lcom/mushafimad/core/logging/MushafLogger;
+	public static final fun getPageRepository ()Lcom/mushafimad/core/domain/repository/PageRepository;
+	public static final fun getPreferencesRepository ()Lcom/mushafimad/core/domain/repository/PreferencesRepository;
+	public static final fun getQuranRepository ()Lcom/mushafimad/core/domain/repository/QuranRepository;
+	public static final fun getReadingHistoryRepository ()Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;
+	public static final fun getSearchHistoryRepository ()Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;
+	public static final fun getVerseRepository ()Lcom/mushafimad/core/domain/repository/VerseRepository;
+	public static final fun initialize (Landroid/content/Context;Lcom/mushafimad/core/logging/MushafLogger;Lcom/mushafimad/core/logging/MushafAnalytics;)V
+	public static synthetic fun initialize$default (Landroid/content/Context;Lcom/mushafimad/core/logging/MushafLogger;Lcom/mushafimad/core/logging/MushafAnalytics;ILjava/lang/Object;)V
+	public static final fun isInitialized ()Z
+	public static final fun setAnalytics (Lcom/mushafimad/core/logging/MushafAnalytics;)V
+	public static final fun setLogger (Lcom/mushafimad/core/logging/MushafLogger;)V
+}
+
+public final class com/mushafimad/core/data/audio/AudioPlaybackService : androidx/media3/session/MediaSessionService, org/koin/core/component/KoinComponent {
+	public fun <init> ()V
+	public fun getKoin ()Lorg/koin/core/Koin;
+	public fun onCreate ()V
+	public fun onDestroy ()V
+	public fun onGetSession (Landroidx/media3/session/MediaSession$ControllerInfo;)Landroidx/media3/session/MediaSession;
+	public fun onTaskRemoved (Landroid/content/Intent;)V
+}
+
+public final class com/mushafimad/core/data/audio/AudioPlayerState {
+	public fun <init> ()V
+	public fun <init> (Lcom/mushafimad/core/data/audio/PlaybackState;JJLjava/lang/Integer;Ljava/lang/Integer;ZZLjava/lang/String;)V
+	public synthetic fun <init> (Lcom/mushafimad/core/data/audio/PlaybackState;JJLjava/lang/Integer;Ljava/lang/Integer;ZZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/data/audio/PlaybackState;
+	public final fun component2 ()J
+	public final fun component3 ()J
+	public final fun component4 ()Ljava/lang/Integer;
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Ljava/lang/String;
+	public final fun copy (Lcom/mushafimad/core/data/audio/PlaybackState;JJLjava/lang/Integer;Ljava/lang/Integer;ZZLjava/lang/String;)Lcom/mushafimad/core/data/audio/AudioPlayerState;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/data/audio/AudioPlayerState;Lcom/mushafimad/core/data/audio/PlaybackState;JJLjava/lang/Integer;Ljava/lang/Integer;ZZLjava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/data/audio/AudioPlayerState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCurrentChapter ()Ljava/lang/Integer;
+	public final fun getCurrentPositionMs ()J
+	public final fun getCurrentReciterId ()Ljava/lang/Integer;
+	public final fun getDurationMs ()J
+	public final fun getErrorMessage ()Ljava/lang/String;
+	public final fun getPlaybackState ()Lcom/mushafimad/core/data/audio/PlaybackState;
+	public final fun getProgressPercentage ()F
+	public final fun getRemainingTimeMs ()J
+	public fun hashCode ()I
+	public final fun isBuffering ()Z
+	public final fun isPlaying ()Z
+	public final fun isRepeatEnabled ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/audio/PlaybackState : java/lang/Enum {
+	public static final field ERROR Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static final field IDLE Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static final field LOADING Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static final field PAUSED Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static final field PLAYING Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static final field STOPPED Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/data/audio/PlaybackState;
+	public static fun values ()[Lcom/mushafimad/core/data/audio/PlaybackState;
+}
+
+public final class com/mushafimad/core/data/cache/CacheStats {
+	public fun <init> (III)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (III)Lcom/mushafimad/core/data/cache/CacheStats;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/data/cache/CacheStats;IIIILjava/lang/Object;)Lcom/mushafimad/core/data/cache/CacheStats;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCachedChaptersCount ()I
+	public final fun getCachedPagesCount ()I
+	public final fun getTotalVersesCached ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public class com/mushafimad/core/data/local/entities/ChapterEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/ChapterEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getHeader1405 ()Lcom/mushafimad/core/data/local/entities/ChapterHeaderEntity;
+	public final fun getHeader1441 ()Lcom/mushafimad/core/data/local/entities/ChapterHeaderEntity;
+	public final fun getIdentifier ()I
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getNumber ()I
+	public final fun getSearchableKeywords ()Ljava/lang/String;
+	public final fun getSearchableText ()Ljava/lang/String;
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getTitleCodePoint ()Ljava/lang/String;
+	public final fun getVerses ()Lio/realm/kotlin/types/RealmList;
+	public fun hashCode ()I
+	public final fun isMeccan ()Z
+	public final fun setArabicTitle (Ljava/lang/String;)V
+	public final fun setEnglishTitle (Ljava/lang/String;)V
+	public final fun setHeader1405 (Lcom/mushafimad/core/data/local/entities/ChapterHeaderEntity;)V
+	public final fun setHeader1441 (Lcom/mushafimad/core/data/local/entities/ChapterHeaderEntity;)V
+	public final fun setIdentifier (I)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setMeccan (Z)V
+	public final fun setNumber (I)V
+	public final fun setSearchableKeywords (Ljava/lang/String;)V
+	public final fun setSearchableText (Ljava/lang/String;)V
+	public final fun setTitle (Ljava/lang/String;)V
+	public final fun setTitleCodePoint (Ljava/lang/String;)V
+	public final fun setVerses (Lio/realm/kotlin/types/RealmList;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/ChapterEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/ChapterHeaderEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/ChapterHeaderEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCenterX ()F
+	public final fun getCenterY ()F
+	public final fun getChapter ()Lcom/mushafimad/core/data/local/entities/ChapterEntity;
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getLine ()I
+	public final fun getPage ()Lcom/mushafimad/core/data/local/entities/PageEntity;
+	public fun hashCode ()I
+	public final fun setCenterX (F)V
+	public final fun setCenterY (F)V
+	public final fun setChapter (Lcom/mushafimad/core/data/local/entities/ChapterEntity;)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setLine (I)V
+	public final fun setPage (Lcom/mushafimad/core/data/local/entities/PageEntity;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/ChapterHeaderEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/PageEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/PageEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterHeaders1405 ()Lio/realm/kotlin/types/RealmList;
+	public final fun getChapterHeaders1441 ()Lio/realm/kotlin/types/RealmList;
+	public final fun getHeader1405 ()Lcom/mushafimad/core/data/local/entities/PageHeaderEntity;
+	public final fun getHeader1441 ()Lcom/mushafimad/core/data/local/entities/PageHeaderEntity;
+	public final fun getIdentifier ()I
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getNumber ()I
+	public final fun getVerses1405 ()Lio/realm/kotlin/types/RealmList;
+	public final fun getVerses1441 ()Lio/realm/kotlin/types/RealmList;
+	public fun hashCode ()I
+	public final fun isRight ()Z
+	public final fun setChapterHeaders1405 (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setChapterHeaders1441 (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setHeader1405 (Lcom/mushafimad/core/data/local/entities/PageHeaderEntity;)V
+	public final fun setHeader1441 (Lcom/mushafimad/core/data/local/entities/PageHeaderEntity;)V
+	public final fun setIdentifier (I)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setNumber (I)V
+	public final fun setRight (Z)V
+	public final fun setVerses1405 (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setVerses1441 (Lio/realm/kotlin/types/RealmList;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/PageEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/PageHeaderEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/PageHeaderEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapters ()Lio/realm/kotlin/types/RealmList;
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getPart ()Lcom/mushafimad/core/data/local/entities/PartEntity;
+	public final fun getQuarter ()Lcom/mushafimad/core/data/local/entities/QuarterEntity;
+	public fun hashCode ()I
+	public final fun setChapters (Lio/realm/kotlin/types/RealmList;)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setPart (Lcom/mushafimad/core/data/local/entities/PartEntity;)V
+	public final fun setQuarter (Lcom/mushafimad/core/data/local/entities/QuarterEntity;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/PageHeaderEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/PartEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/PartEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getChapters ()Lio/realm/kotlin/types/RealmList;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getIdentifier ()I
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getNumber ()I
+	public final fun getQuarters ()Lio/realm/kotlin/types/RealmList;
+	public final fun getVerses ()Lio/realm/kotlin/types/RealmList;
+	public fun hashCode ()I
+	public final fun setArabicTitle (Ljava/lang/String;)V
+	public final fun setChapters (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setEnglishTitle (Ljava/lang/String;)V
+	public final fun setIdentifier (I)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setNumber (I)V
+	public final fun setQuarters (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setVerses (Lio/realm/kotlin/types/RealmList;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/PartEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/QuarterEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/QuarterEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getHizbFraction ()I
+	public final fun getHizbNumber ()I
+	public final fun getIdentifier ()I
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getPart ()Lcom/mushafimad/core/data/local/entities/PartEntity;
+	public final fun getVerses ()Lio/realm/kotlin/types/RealmList;
+	public fun hashCode ()I
+	public final fun setArabicTitle (Ljava/lang/String;)V
+	public final fun setEnglishTitle (Ljava/lang/String;)V
+	public final fun setHizbFraction (I)V
+	public final fun setHizbNumber (I)V
+	public final fun setIdentifier (I)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setPart (Lcom/mushafimad/core/data/local/entities/PartEntity;)V
+	public final fun setVerses (Lio/realm/kotlin/types/RealmList;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/QuarterEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/QuranSectionEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/QuranSectionEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIdentifier ()I
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getVerses ()Lio/realm/kotlin/types/RealmList;
+	public fun hashCode ()I
+	public final fun setIdentifier (I)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setVerses (Lio/realm/kotlin/types/RealmList;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/QuranSectionEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/VerseEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/VerseEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapter ()Lcom/mushafimad/core/data/local/entities/ChapterEntity;
+	public final fun getHafsSmartText ()Ljava/lang/String;
+	public final fun getHighlights1405 ()Lio/realm/kotlin/types/RealmList;
+	public final fun getHighlights1441 ()Lio/realm/kotlin/types/RealmList;
+	public final fun getHumanReadableID ()Ljava/lang/String;
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getMarker1405 ()Lcom/mushafimad/core/data/local/entities/VerseMarkerEntity;
+	public final fun getMarker1441 ()Lcom/mushafimad/core/data/local/entities/VerseMarkerEntity;
+	public final fun getNumber ()I
+	public final fun getPage1405 ()Lcom/mushafimad/core/data/local/entities/PageEntity;
+	public final fun getPage1441 ()Lcom/mushafimad/core/data/local/entities/PageEntity;
+	public final fun getPart ()Lcom/mushafimad/core/data/local/entities/PartEntity;
+	public final fun getQuarter ()Lcom/mushafimad/core/data/local/entities/QuarterEntity;
+	public final fun getSearchableText ()Ljava/lang/String;
+	public final fun getSection ()Lcom/mushafimad/core/data/local/entities/QuranSectionEntity;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getTextWithoutTashkil ()Ljava/lang/String;
+	public final fun getUthmanicHafsText ()Ljava/lang/String;
+	public final fun getVerseID ()I
+	public fun hashCode ()I
+	public final fun setChapter (Lcom/mushafimad/core/data/local/entities/ChapterEntity;)V
+	public final fun setHafsSmartText (Ljava/lang/String;)V
+	public final fun setHighlights1405 (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setHighlights1441 (Lio/realm/kotlin/types/RealmList;)V
+	public final fun setHumanReadableID (Ljava/lang/String;)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setMarker1405 (Lcom/mushafimad/core/data/local/entities/VerseMarkerEntity;)V
+	public final fun setMarker1441 (Lcom/mushafimad/core/data/local/entities/VerseMarkerEntity;)V
+	public final fun setNumber (I)V
+	public final fun setPage1405 (Lcom/mushafimad/core/data/local/entities/PageEntity;)V
+	public final fun setPage1441 (Lcom/mushafimad/core/data/local/entities/PageEntity;)V
+	public final fun setPart (Lcom/mushafimad/core/data/local/entities/PartEntity;)V
+	public final fun setQuarter (Lcom/mushafimad/core/data/local/entities/QuarterEntity;)V
+	public final fun setSearchableText (Ljava/lang/String;)V
+	public final fun setSection (Lcom/mushafimad/core/data/local/entities/QuranSectionEntity;)V
+	public final fun setText (Ljava/lang/String;)V
+	public final fun setTextWithoutTashkil (Ljava/lang/String;)V
+	public final fun setUthmanicHafsText (Ljava/lang/String;)V
+	public final fun setVerseID (I)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/VerseEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/VerseHighlightEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/VerseHighlightEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getLeft ()F
+	public final fun getLine ()I
+	public final fun getRight ()F
+	public fun hashCode ()I
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setLeft (F)V
+	public final fun setLine (I)V
+	public final fun setRight (F)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/VerseHighlightEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public class com/mushafimad/core/data/local/entities/VerseMarkerEntity : io/realm/kotlin/internal/RealmObjectInternal, io/realm/kotlin/types/RealmObject {
+	public static final field Companion Lcom/mushafimad/core/data/local/entities/VerseMarkerEntity$Companion;
+	public fun <init> ()V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCenterX ()F
+	public final fun getCenterY ()F
+	public fun getIo_realm_kotlin_objectReference ()Lio/realm/kotlin/internal/RealmObjectReference;
+	public final fun getLine ()I
+	public final fun getNumberCodePoint ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun setCenterX (F)V
+	public final fun setCenterY (F)V
+	public fun setIo_realm_kotlin_objectReference (Lio/realm/kotlin/internal/RealmObjectReference;)V
+	public final fun setLine (I)V
+	public final fun setNumberCodePoint (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/data/local/entities/VerseMarkerEntity$Companion : io/realm/kotlin/internal/RealmObjectCompanion {
+	public final fun getIo_realm_kotlin_class ()Lkotlin/reflect/KClass;
+	public final fun getIo_realm_kotlin_classKind ()Lio/realm/kotlin/schema/RealmClassKind;
+	public final fun getIo_realm_kotlin_className ()Ljava/lang/String;
+	public final fun getIo_realm_kotlin_fields ()Ljava/util/Map;
+	public final fun getIo_realm_kotlin_primaryKey ()Lkotlin/reflect/KMutableProperty1;
+	public final fun io_realm_kotlin_newInstance ()Ljava/lang/Object;
+	public synthetic fun io_realm_kotlin_schema ()Lio/realm/kotlin/internal/schema/RealmClassImpl;
+	public final fun io_realm_kotlin_schema ()Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/di/CoreModuleKt {
+	public static final fun getCoreModule ()Lorg/koin/core/module/Module;
+}
+
+public final class com/mushafimad/core/domain/models/AyahTiming {
+	public static final field Companion Lcom/mushafimad/core/domain/models/AyahTiming$Companion;
+	public fun <init> (III)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (III)Lcom/mushafimad/core/domain/models/AyahTiming;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/AyahTiming;IIIILjava/lang/Object;)Lcom/mushafimad/core/domain/models/AyahTiming;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAyah ()I
+	public final fun getEndTime ()I
+	public final fun getStartTime ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/AyahTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/AyahTiming$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/AyahTiming;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/AyahTiming;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/AyahTiming$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/Bookmark {
+	public fun <init> (Ljava/lang/String;IIIJLjava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;IIIJLjava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()J
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;IIIJLjava/lang/String;Ljava/util/List;)Lcom/mushafimad/core/domain/models/Bookmark;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Bookmark;Ljava/lang/String;IIIJLjava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Bookmark;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterNumber ()I
+	public final fun getCreatedAt ()J
+	public final fun getHasNote ()Z
+	public final fun getHasTags ()Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getNote ()Ljava/lang/String;
+	public final fun getPageNumber ()I
+	public final fun getTags ()Ljava/util/List;
+	public final fun getVerseNumber ()I
+	public final fun getVerseReference ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/BookmarkData {
+	public static final field Companion Lcom/mushafimad/core/domain/models/BookmarkData$Companion;
+	public fun <init> (IIIJLjava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (IIIJLjava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()J
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (IIIJLjava/lang/String;Ljava/util/List;)Lcom/mushafimad/core/domain/models/BookmarkData;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/BookmarkData;IIIJLjava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/BookmarkData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterNumber ()I
+	public final fun getCreatedAt ()J
+	public final fun getNote ()Ljava/lang/String;
+	public final fun getPageNumber ()I
+	public final fun getTags ()Ljava/util/List;
+	public final fun getVerseNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/BookmarkData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/BookmarkData$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/BookmarkData;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/BookmarkData;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/BookmarkData$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/Chapter {
+	public fun <init> (IIZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+	public synthetic fun <init> (IIZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component10 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Z
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (IIZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)Lcom/mushafimad/core/domain/models/Chapter;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Chapter;IIZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Chapter;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getDisplayTitle (Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getDisplayTitle$default (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getIdentifier ()I
+	public final fun getNumber ()I
+	public final fun getSearchableKeywords ()Ljava/lang/String;
+	public final fun getSearchableText ()Ljava/lang/String;
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getTitleCodePoint ()Ljava/lang/String;
+	public final fun getVersesCount ()I
+	public fun hashCode ()I
+	public final fun isMeccan ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ChapterInfo {
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;)Lcom/mushafimad/core/domain/models/ChapterInfo;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChapterInfo;ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChapterInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ChapterTiming {
+	public static final field Companion Lcom/mushafimad/core/domain/models/ChapterTiming$Companion;
+	public fun <init> (ILjava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (ILjava/lang/String;Ljava/util/List;)Lcom/mushafimad/core/domain/models/ChapterTiming;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChapterTiming;ILjava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChapterTiming;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAyaTiming ()Ljava/util/List;
+	public final fun getId ()I
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/ChapterTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/ChapterTiming$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/ChapterTiming;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/ChapterTiming;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/ChapterTiming$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/ChaptersByHizb {
+	public fun <init> (IILjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (IILjava/util/List;)Lcom/mushafimad/core/domain/models/ChaptersByHizb;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChaptersByHizb;IILjava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChaptersByHizb;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHizbNumber ()I
+	public final fun getHizbTitle ()Ljava/lang/String;
+	public final fun getId ()I
+	public final fun getQuarters ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ChaptersByPart {
+	public fun <init> (IILjava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/lang/Integer;
+	public final fun component7 ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun copy (IILjava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;)Lcom/mushafimad/core/domain/models/ChaptersByPart;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChaptersByPart;IILjava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChaptersByPart;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getChapters ()Ljava/util/List;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getFirstPage ()Ljava/lang/Integer;
+	public final fun getFirstVerse ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun getId ()I
+	public final fun getPartNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ChaptersByQuarter {
+	public fun <init> (IIIILjava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/util/List;
+	public final fun component8 ()Ljava/lang/Integer;
+	public final fun component9 ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun copy (IIIILjava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;)Lcom/mushafimad/core/domain/models/ChaptersByQuarter;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChaptersByQuarter;IIIILjava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChaptersByQuarter;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getChapters ()Ljava/util/List;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getFirstPage ()Ljava/lang/Integer;
+	public final fun getFirstVerse ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun getHizbFraction ()I
+	public final fun getHizbNumber ()I
+	public final fun getId ()I
+	public final fun getQuarterNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ChaptersByType {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;)Lcom/mushafimad/core/domain/models/ChaptersByType;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChaptersByType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChaptersByType;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicType ()Ljava/lang/String;
+	public final fun getChapters ()Ljava/util/List;
+	public final fun getFirstPage ()Ljava/lang/Integer;
+	public final fun getFirstVerse ()Lcom/mushafimad/core/domain/models/Verse;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isMeccan ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ColorScheme : java/lang/Enum {
+	public static final field COOL Lcom/mushafimad/core/domain/models/ColorScheme;
+	public static final field DEFAULT Lcom/mushafimad/core/domain/models/ColorScheme;
+	public static final field SEPIA Lcom/mushafimad/core/domain/models/ColorScheme;
+	public static final field WARM Lcom/mushafimad/core/domain/models/ColorScheme;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/domain/models/ColorScheme;
+	public static fun values ()[Lcom/mushafimad/core/domain/models/ColorScheme;
+}
+
+public final class com/mushafimad/core/domain/models/HizbQuarterProgress : java/lang/Enum {
+	public static final field HALF Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+	public static final field QUARTER Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+	public static final field THREE_QUARTERS Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+	public static fun values ()[Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+}
+
+public final class com/mushafimad/core/domain/models/LastReadPosition {
+	public fun <init> (Lcom/mushafimad/core/domain/models/MushafType;IIIJF)V
+	public synthetic fun <init> (Lcom/mushafimad/core/domain/models/MushafType;IIIJFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()J
+	public final fun component6 ()F
+	public final fun copy (Lcom/mushafimad/core/domain/models/MushafType;IIIJF)Lcom/mushafimad/core/domain/models/LastReadPosition;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/LastReadPosition;Lcom/mushafimad/core/domain/models/MushafType;IIIJFILjava/lang/Object;)Lcom/mushafimad/core/domain/models/LastReadPosition;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterNumber ()I
+	public final fun getLastReadAt ()J
+	public final fun getMushafType ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun getPageNumber ()I
+	public final fun getScrollPosition ()F
+	public final fun getVerseNumber ()I
+	public final fun getVerseReference ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isRecent ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/LastReadPositionData {
+	public static final field Companion Lcom/mushafimad/core/domain/models/LastReadPositionData$Companion;
+	public fun <init> (Ljava/lang/String;IIIJF)V
+	public synthetic fun <init> (Ljava/lang/String;IIIJFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()J
+	public final fun component6 ()F
+	public final fun copy (Ljava/lang/String;IIIJF)Lcom/mushafimad/core/domain/models/LastReadPositionData;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/LastReadPositionData;Ljava/lang/String;IIIJFILjava/lang/Object;)Lcom/mushafimad/core/domain/models/LastReadPositionData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterNumber ()I
+	public final fun getLastReadAt ()J
+	public final fun getMushafType ()Ljava/lang/String;
+	public final fun getPageNumber ()I
+	public final fun getScrollPosition ()F
+	public final fun getVerseNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/LastReadPositionData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/LastReadPositionData$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/LastReadPositionData;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/LastReadPositionData;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/LastReadPositionData$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/MushafType : java/lang/Enum {
+	public static final field HAFS_1405 Lcom/mushafimad/core/domain/models/MushafType;
+	public static final field HAFS_1441 Lcom/mushafimad/core/domain/models/MushafType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/domain/models/MushafType;
+	public static fun values ()[Lcom/mushafimad/core/domain/models/MushafType;
+}
+
+public final class com/mushafimad/core/domain/models/Page {
+	public fun <init> (IIZ)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Z
+	public final fun copy (IIZ)Lcom/mushafimad/core/domain/models/Page;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Page;IIZILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Page;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIdentifier ()I
+	public final fun getNumber ()I
+	public fun hashCode ()I
+	public final fun isRight ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/PageHeaderInfo {
+	public fun <init> (Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/Integer;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/Integer;
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lcom/mushafimad/core/domain/models/PageHeaderInfo;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/PageHeaderInfo;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/PageHeaderInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapters ()Ljava/util/List;
+	public final fun getHizbDisplay ()Ljava/lang/String;
+	public final fun getHizbFraction ()Ljava/lang/Integer;
+	public final fun getHizbNumber ()Ljava/lang/Integer;
+	public final fun getHizbQuarterProgress ()Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+	public final fun getJuzDisplay ()Ljava/lang/String;
+	public final fun getPartArabicTitle ()Ljava/lang/String;
+	public final fun getPartEnglishTitle ()Ljava/lang/String;
+	public final fun getPartNumber ()Ljava/lang/Integer;
+	public final fun getQuarterArabicTitle ()Ljava/lang/String;
+	public final fun getQuarterEnglishTitle ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/Part {
+	public fun <init> (IILjava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (IILjava/lang/String;Ljava/lang/String;)Lcom/mushafimad/core/domain/models/Part;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Part;IILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Part;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getDisplayTitle (Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getDisplayTitle$default (Lcom/mushafimad/core/domain/models/Part;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getIdentifier ()I
+	public final fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/PreferencesData {
+	public static final field Companion Lcom/mushafimad/core/domain/models/PreferencesData$Companion;
+	public fun <init> (Ljava/lang/String;IFIFZLjava/lang/String;Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()I
+	public final fun component5 ()F
+	public final fun component6 ()Z
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Z
+	public final fun copy (Ljava/lang/String;IFIFZLjava/lang/String;Ljava/lang/String;Z)Lcom/mushafimad/core/domain/models/PreferencesData;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/PreferencesData;Ljava/lang/String;IFIFZLjava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/mushafimad/core/domain/models/PreferencesData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColorScheme ()Ljava/lang/String;
+	public final fun getCurrentPage ()I
+	public final fun getFontSizeMultiplier ()F
+	public final fun getMushafType ()Ljava/lang/String;
+	public final fun getPlaybackSpeed ()F
+	public final fun getRepeatMode ()Z
+	public final fun getSelectedReciterId ()I
+	public final fun getThemeMode ()Ljava/lang/String;
+	public final fun getUseAmoled ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/PreferencesData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/PreferencesData$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/PreferencesData;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/PreferencesData;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/PreferencesData$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/Quarter {
+	public fun <init> (IIILjava/lang/String;Ljava/lang/String;I)V
+	public synthetic fun <init> (IIILjava/lang/String;Ljava/lang/String;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()I
+	public final fun copy (IIILjava/lang/String;Ljava/lang/String;I)Lcom/mushafimad/core/domain/models/Quarter;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Quarter;IIILjava/lang/String;Ljava/lang/String;IILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Quarter;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArabicTitle ()Ljava/lang/String;
+	public final fun getDisplayTitle (Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getDisplayTitle$default (Lcom/mushafimad/core/domain/models/Quarter;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun getEnglishTitle ()Ljava/lang/String;
+	public final fun getHizbFraction ()I
+	public final fun getHizbNumber ()I
+	public final fun getIdentifier ()I
+	public final fun getPartNumber ()I
+	public final fun getProgressFraction ()Lcom/mushafimad/core/domain/models/HizbQuarterProgress;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ReadingHistory {
+	public fun <init> (Ljava/lang/String;IIIJILcom/mushafimad/core/domain/models/MushafType;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()J
+	public final fun component6 ()I
+	public final fun component7 ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun copy (Ljava/lang/String;IIIJILcom/mushafimad/core/domain/models/MushafType;)Lcom/mushafimad/core/domain/models/ReadingHistory;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ReadingHistory;Ljava/lang/String;IIIJILcom/mushafimad/core/domain/models/MushafType;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ReadingHistory;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterNumber ()I
+	public final fun getDurationMinutes ()I
+	public final fun getDurationSeconds ()I
+	public final fun getId ()Ljava/lang/String;
+	public final fun getMushafType ()Lcom/mushafimad/core/domain/models/MushafType;
+	public final fun getPageNumber ()I
+	public final fun getTimestamp ()J
+	public final fun getVerseNumber ()I
+	public final fun getVerseReference ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ReadingStats {
+	public fun <init> (JIIILjava/lang/Integer;III)V
+	public final fun component1 ()J
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()I
+	public final fun component7 ()I
+	public final fun component8 ()I
+	public final fun copy (JIIILjava/lang/Integer;III)Lcom/mushafimad/core/domain/models/ReadingStats;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ReadingStats;JIIILjava/lang/Integer;IIIILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ReadingStats;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAverageDailyMinutes ()I
+	public final fun getCurrentStreak ()I
+	public final fun getLongestStreak ()I
+	public final fun getMostReadChapter ()Ljava/lang/Integer;
+	public final fun getTotalChaptersRead ()I
+	public final fun getTotalPagesRead ()I
+	public final fun getTotalReadingTimeHours ()J
+	public final fun getTotalReadingTimeMinutes ()J
+	public final fun getTotalReadingTimeSeconds ()J
+	public final fun getTotalVersesRead ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ReciterInfo {
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/mushafimad/core/domain/models/ReciterInfo;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ReciterInfo;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ReciterInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAudioUrl (I)Ljava/lang/String;
+	public final fun getDisplayName (Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getDisplayName$default (Lcom/mushafimad/core/domain/models/ReciterInfo;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public final fun getFolderUrl ()Ljava/lang/String;
+	public final fun getId ()I
+	public final fun getNameArabic ()Ljava/lang/String;
+	public final fun getNameEnglish ()Ljava/lang/String;
+	public final fun getRewaya ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isHafs ()Z
+	public final fun isWarsh ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ReciterTiming {
+	public static final field Companion Lcom/mushafimad/core/domain/models/ReciterTiming$Companion;
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lcom/mushafimad/core/domain/models/ReciterTiming;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ReciterTiming;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ReciterTiming;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapters ()Ljava/util/List;
+	public final fun getFolderUrl ()Ljava/lang/String;
+	public final fun getId ()I
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNameEn ()Ljava/lang/String;
+	public final fun getRewaya ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/ReciterTiming$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/ReciterTiming$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/ReciterTiming;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/ReciterTiming;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/ReciterTiming$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract class com/mushafimad/core/domain/models/Result {
+	public static final field Companion Lcom/mushafimad/core/domain/models/Result$Companion;
+	public final fun flatMap (Lkotlin/jvm/functions/Function1;)Lcom/mushafimad/core/domain/models/Result;
+	public final fun getOrDefault (Ljava/lang/Object;)Ljava/lang/Object;
+	public final fun getOrNull ()Ljava/lang/Object;
+	public final fun getOrThrow ()Ljava/lang/Object;
+	public final fun isError ()Z
+	public final fun isLoading ()Z
+	public final fun isSuccess ()Z
+	public final fun map (Lkotlin/jvm/functions/Function1;)Lcom/mushafimad/core/domain/models/Result;
+	public final fun onError (Lkotlin/jvm/functions/Function1;)Lcom/mushafimad/core/domain/models/Result;
+	public final fun onLoading (Lkotlin/jvm/functions/Function0;)Lcom/mushafimad/core/domain/models/Result;
+	public final fun onSuccess (Lkotlin/jvm/functions/Function1;)Lcom/mushafimad/core/domain/models/Result;
+}
+
+public final class com/mushafimad/core/domain/models/Result$Companion {
+	public final fun error (Ljava/lang/Throwable;Ljava/lang/String;)Lcom/mushafimad/core/domain/models/Result;
+	public static synthetic fun error$default (Lcom/mushafimad/core/domain/models/Result$Companion;Ljava/lang/Throwable;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Result;
+	public final fun loading ()Lcom/mushafimad/core/domain/models/Result;
+	public final fun runCatching (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun success (Ljava/lang/Object;)Lcom/mushafimad/core/domain/models/Result;
+}
+
+public final class com/mushafimad/core/domain/models/Result$Error : com/mushafimad/core/domain/models/Result {
+	public fun <init> (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Throwable;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Throwable;Ljava/lang/String;)Lcom/mushafimad/core/domain/models/Result$Error;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Result$Error;Ljava/lang/Throwable;Ljava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Result$Error;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getException ()Ljava/lang/Throwable;
+	public final fun getMessage ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/Result$Loading : com/mushafimad/core/domain/models/Result {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/Result$Loading;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/Result$Success : com/mushafimad/core/domain/models/Result {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Lcom/mushafimad/core/domain/models/Result$Success;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Result$Success;Ljava/lang/Object;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Result$Success;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getData ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/SearchHistoryData {
+	public static final field Companion Lcom/mushafimad/core/domain/models/SearchHistoryData$Companion;
+	public fun <init> (Ljava/lang/String;JILjava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;JILjava/lang/String;)Lcom/mushafimad/core/domain/models/SearchHistoryData;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/SearchHistoryData;Ljava/lang/String;JILjava/lang/String;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/SearchHistoryData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getQuery ()Ljava/lang/String;
+	public final fun getResultCount ()I
+	public final fun getSearchType ()Ljava/lang/String;
+	public final fun getTimestamp ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/SearchHistoryData$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/SearchHistoryData$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/SearchHistoryData;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/SearchHistoryData;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/SearchHistoryData$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/SearchHistoryEntry {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;JILcom/mushafimad/core/domain/models/SearchType;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()J
+	public final fun component4 ()I
+	public final fun component5 ()Lcom/mushafimad/core/domain/models/SearchType;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;JILcom/mushafimad/core/domain/models/SearchType;)Lcom/mushafimad/core/domain/models/SearchHistoryEntry;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/SearchHistoryEntry;Ljava/lang/String;Ljava/lang/String;JILcom/mushafimad/core/domain/models/SearchType;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/SearchHistoryEntry;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getQuery ()Ljava/lang/String;
+	public final fun getResultCount ()I
+	public final fun getSearchType ()Lcom/mushafimad/core/domain/models/SearchType;
+	public final fun getTimestamp ()J
+	public fun hashCode ()I
+	public final fun isRecent ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/SearchSuggestion {
+	public fun <init> (Ljava/lang/String;IJ)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()J
+	public final fun copy (Ljava/lang/String;IJ)Lcom/mushafimad/core/domain/models/SearchSuggestion;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/SearchSuggestion;Ljava/lang/String;IJILjava/lang/Object;)Lcom/mushafimad/core/domain/models/SearchSuggestion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrequency ()I
+	public final fun getLastSearched ()J
+	public final fun getQuery ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/SearchType : java/lang/Enum {
+	public static final field CHAPTER Lcom/mushafimad/core/domain/models/SearchType;
+	public static final field GENERAL Lcom/mushafimad/core/domain/models/SearchType;
+	public static final field VERSE Lcom/mushafimad/core/domain/models/SearchType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/domain/models/SearchType;
+	public static fun values ()[Lcom/mushafimad/core/domain/models/SearchType;
+}
+
+public final class com/mushafimad/core/domain/models/ThemeConfig {
+	public fun <init> ()V
+	public fun <init> (Lcom/mushafimad/core/domain/models/ThemeMode;Lcom/mushafimad/core/domain/models/ColorScheme;Z)V
+	public synthetic fun <init> (Lcom/mushafimad/core/domain/models/ThemeMode;Lcom/mushafimad/core/domain/models/ColorScheme;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/mushafimad/core/domain/models/ThemeMode;
+	public final fun component2 ()Lcom/mushafimad/core/domain/models/ColorScheme;
+	public final fun component3 ()Z
+	public final fun copy (Lcom/mushafimad/core/domain/models/ThemeMode;Lcom/mushafimad/core/domain/models/ColorScheme;Z)Lcom/mushafimad/core/domain/models/ThemeConfig;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ThemeConfig;Lcom/mushafimad/core/domain/models/ThemeMode;Lcom/mushafimad/core/domain/models/ColorScheme;ZILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ThemeConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColorScheme ()Lcom/mushafimad/core/domain/models/ColorScheme;
+	public final fun getMode ()Lcom/mushafimad/core/domain/models/ThemeMode;
+	public final fun getUseAmoled ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/ThemeMode : java/lang/Enum {
+	public static final field DARK Lcom/mushafimad/core/domain/models/ThemeMode;
+	public static final field LIGHT Lcom/mushafimad/core/domain/models/ThemeMode;
+	public static final field SYSTEM Lcom/mushafimad/core/domain/models/ThemeMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/domain/models/ThemeMode;
+	public static fun values ()[Lcom/mushafimad/core/domain/models/ThemeMode;
+}
+
+public final class com/mushafimad/core/domain/models/UserDataBackup {
+	public static final field Companion Lcom/mushafimad/core/domain/models/UserDataBackup$Companion;
+	public fun <init> ()V
+	public fun <init> (IJLjava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/PreferencesData;)V
+	public synthetic fun <init> (IJLjava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/PreferencesData;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Lcom/mushafimad/core/domain/models/PreferencesData;
+	public final fun copy (IJLjava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/PreferencesData;)Lcom/mushafimad/core/domain/models/UserDataBackup;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/UserDataBackup;IJLjava/util/List;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/PreferencesData;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/UserDataBackup;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBookmarks ()Ljava/util/List;
+	public final fun getLastReadPositions ()Ljava/util/List;
+	public final fun getPreferences ()Lcom/mushafimad/core/domain/models/PreferencesData;
+	public final fun getSearchHistory ()Ljava/util/List;
+	public final fun getTimestamp ()J
+	public final fun getVersion ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/mushafimad/core/domain/models/UserDataBackup$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/mushafimad/core/domain/models/UserDataBackup$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/mushafimad/core/domain/models/UserDataBackup;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/mushafimad/core/domain/models/UserDataBackup;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/UserDataBackup$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/mushafimad/core/domain/models/Verse {
+	public fun <init> (ILjava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILcom/mushafimad/core/domain/models/VerseMarker;Lcom/mushafimad/core/domain/models/VerseMarker;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (ILjava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILcom/mushafimad/core/domain/models/VerseMarker;Lcom/mushafimad/core/domain/models/VerseMarker;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component10 ()I
+	public final fun component11 ()I
+	public final fun component12 ()I
+	public final fun component13 ()Lcom/mushafimad/core/domain/models/VerseMarker;
+	public final fun component14 ()Lcom/mushafimad/core/domain/models/VerseMarker;
+	public final fun component15 ()Ljava/util/List;
+	public final fun component16 ()Ljava/util/List;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()I
+	public final fun copy (ILjava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILcom/mushafimad/core/domain/models/VerseMarker;Lcom/mushafimad/core/domain/models/VerseMarker;Ljava/util/List;Ljava/util/List;)Lcom/mushafimad/core/domain/models/Verse;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/Verse;ILjava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIIILcom/mushafimad/core/domain/models/VerseMarker;Lcom/mushafimad/core/domain/models/VerseMarker;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/models/Verse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChapterNumber ()I
+	public final fun getHafsSmartText ()Ljava/lang/String;
+	public final fun getHighlights1405 ()Ljava/util/List;
+	public final fun getHighlights1441 ()Ljava/util/List;
+	public final fun getHizbNumber ()I
+	public final fun getHumanReadableID ()Ljava/lang/String;
+	public final fun getMarker1405 ()Lcom/mushafimad/core/domain/models/VerseMarker;
+	public final fun getMarker1441 ()Lcom/mushafimad/core/domain/models/VerseMarker;
+	public final fun getNumber ()I
+	public final fun getPageNumber ()I
+	public final fun getPartNumber ()I
+	public final fun getSearchableText ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getTextWithoutTashkil ()Ljava/lang/String;
+	public final fun getUthmanicHafsText ()Ljava/lang/String;
+	public final fun getVerseID ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/VerseHighlight {
+	public fun <init> (IFF)V
+	public final fun component1 ()I
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (IFF)Lcom/mushafimad/core/domain/models/VerseHighlight;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/VerseHighlight;IFFILjava/lang/Object;)Lcom/mushafimad/core/domain/models/VerseHighlight;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLeft ()F
+	public final fun getLine ()I
+	public final fun getRight ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/domain/models/VerseMarker {
+	public fun <init> (Ljava/lang/String;IFF)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (Ljava/lang/String;IFF)Lcom/mushafimad/core/domain/models/VerseMarker;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/VerseMarker;Ljava/lang/String;IFFILjava/lang/Object;)Lcom/mushafimad/core/domain/models/VerseMarker;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCenterX ()F
+	public final fun getCenterY ()F
+	public final fun getLine ()I
+	public final fun getNumberCodePoint ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/AudioRepository {
+	public abstract fun getAllReciters (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAyahTiming (IIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChapterTimings (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getCurrentPosition ()J
+	public abstract fun getCurrentVerse (IIILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getDefaultReciter (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getDuration ()J
+	public abstract fun getHafsReciters (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPlayerStateFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getReciterById (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getSelectedReciterFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun hasTimingForReciter (I)Z
+	public abstract fun isPlaying ()Z
+	public abstract fun isRepeatEnabled ()Z
+	public abstract fun loadChapter (IIZ)V
+	public abstract fun pause ()V
+	public abstract fun play ()V
+	public abstract fun preloadTiming (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun release ()V
+	public abstract fun saveSelectedReciter (Lcom/mushafimad/core/domain/models/ReciterInfo;)V
+	public abstract fun searchReciters (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun seekTo (J)V
+	public abstract fun setPlaybackSpeed (F)V
+	public abstract fun setRepeatMode (Z)V
+	public abstract fun stop ()V
+}
+
+public final class com/mushafimad/core/domain/repository/AudioRepository$DefaultImpls {
+	public static synthetic fun loadChapter$default (Lcom/mushafimad/core/domain/repository/AudioRepository;IIZILjava/lang/Object;)V
+	public static synthetic fun searchReciters$default (Lcom/mushafimad/core/domain/repository/AudioRepository;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/BookmarkRepository {
+	public abstract fun addBookmark (IIILjava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteAllBookmarks (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteBookmark (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteBookmarkForVerse (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAllBookmarks (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAllBookmarksFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getBookmarkById (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getBookmarkForVerse (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getBookmarksForChapter (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun isVerseBookmarked (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun searchBookmarks (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateBookmarkNote (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateBookmarkTags (Ljava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/BookmarkRepository$DefaultImpls {
+	public static synthetic fun addBookmark$default (Lcom/mushafimad/core/domain/repository/BookmarkRepository;IIILjava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/ChapterRepository {
+	public abstract fun clearCache (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAllChapters (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAllChaptersFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getChapter (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChapterForPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChaptersByHizb (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChaptersByPart (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChaptersByType (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChaptersOnPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun loadAndCacheChapters (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun searchChapters (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/ChapterRepository$DefaultImpls {
+	public static synthetic fun loadAndCacheChapters$default (Lcom/mushafimad/core/domain/repository/ChapterRepository;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/DataExportRepository {
+	public abstract fun clearAllUserData (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun exportToJson (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun exportUserData (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun importFromJson (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun importUserData (Lcom/mushafimad/core/domain/models/UserDataBackup;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/DataExportRepository$DefaultImpls {
+	public static synthetic fun exportToJson$default (Lcom/mushafimad/core/domain/repository/DataExportRepository;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun exportUserData$default (Lcom/mushafimad/core/domain/repository/DataExportRepository;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun importFromJson$default (Lcom/mushafimad/core/domain/repository/DataExportRepository;Ljava/lang/String;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun importUserData$default (Lcom/mushafimad/core/domain/repository/DataExportRepository;Lcom/mushafimad/core/domain/models/UserDataBackup;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/ImportResult {
+	public fun <init> (IIIZLjava/util/List;)V
+	public synthetic fun <init> (IIIZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()Z
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (IIIZLjava/util/List;)Lcom/mushafimad/core/domain/repository/ImportResult;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/repository/ImportResult;IIIZLjava/util/List;ILjava/lang/Object;)Lcom/mushafimad/core/domain/repository/ImportResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBookmarksImported ()I
+	public final fun getErrors ()Ljava/util/List;
+	public final fun getHasErrors ()Z
+	public final fun getLastReadPositionsImported ()I
+	public final fun getPreferencesImported ()Z
+	public final fun getSearchHistoryImported ()I
+	public final fun getTotalItemsImported ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/PageRepository {
+	public abstract fun cachePage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun cachePageRange (Lkotlin/ranges/IntRange;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun clearAllPageCache (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun clearPageCache (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPageHeaderInfo (ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getTotalPages (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun isPageCached (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/PageRepository$DefaultImpls {
+	public static synthetic fun getPageHeaderInfo$default (Lcom/mushafimad/core/domain/repository/PageRepository;ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/PreferencesRepository {
+	public abstract fun clearAll (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getCurrentPageFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getFontSizeMultiplierFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getLastAudioChapter (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getLastAudioChapterFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getLastAudioPositionMs (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getLastAudioPositionMsFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getLastAudioVerse (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getLastAudioVerseFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getLastReadChapterFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getLastReadVerseFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getMushafTypeFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getPlaybackSpeed (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPlaybackSpeedFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getRepeatMode (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getRepeatModeFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getSelectedReciterId (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getSelectedReciterIdFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getShowTranslationFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getThemeConfig (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getThemeConfigFlow ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun setAmoledMode (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setColorScheme (Lcom/mushafimad/core/domain/models/ColorScheme;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setCurrentPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setFontSizeMultiplier (FLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setLastAudioChapter (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setLastAudioPositionMs (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setLastAudioVerse (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setLastReadChapter (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setLastReadVerse (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setMushafType (Lcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setPlaybackSpeed (FLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setRepeatMode (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setSelectedReciterId (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setShowTranslation (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun setThemeMode (Lcom/mushafimad/core/domain/models/ThemeMode;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateThemeConfig (Lcom/mushafimad/core/domain/models/ThemeConfig;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/QuranRepository {
+	public abstract fun clearAllCaches (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAllParts (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getAllQuarters (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getCacheStats (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPart (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPartForPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPartForVerse (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getQuarter (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getQuarterForPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getQuarterForVerse (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun initialize (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun isInitialized ()Z
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/ReadingHistoryRepository {
+	public abstract fun deleteAllHistory (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteHistoryOlderThan (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getCurrentStreak (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getHistoryForChapter (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getHistoryForDateRange (JJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getLastReadPosition (Lcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getLastReadPositionFlow (Lcom/mushafimad/core/domain/models/MushafType;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getReadChapters (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getReadingStats (Ljava/lang/Long;Ljava/lang/Long;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getRecentHistory (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getTotalReadingTime (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun recordReadingSession (IIIILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun updateLastReadPosition (Lcom/mushafimad/core/domain/models/MushafType;IIIFLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/ReadingHistoryRepository$DefaultImpls {
+	public static synthetic fun getReadingStats$default (Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Ljava/lang/Long;Ljava/lang/Long;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun getRecentHistory$default (Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun updateLastReadPosition$default (Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Lcom/mushafimad/core/domain/models/MushafType;IIIFLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/SearchHistoryRepository {
+	public abstract fun clearSearchHistory (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteSearch (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteSearchesOlderThan (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPopularSearches (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getRecentSearches (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getRecentSearchesFlow (I)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getSearchSuggestions (Ljava/lang/String;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getSearchesByType (Lcom/mushafimad/core/domain/models/SearchType;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun recordSearch (Ljava/lang/String;ILcom/mushafimad/core/domain/models/SearchType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/SearchHistoryRepository$DefaultImpls {
+	public static synthetic fun getPopularSearches$default (Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun getRecentSearches$default (Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun getRecentSearchesFlow$default (Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;IILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun getSearchSuggestions$default (Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;Ljava/lang/String;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun getSearchesByType$default (Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;Lcom/mushafimad/core/domain/models/SearchType;ILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun recordSearch$default (Lcom/mushafimad/core/domain/repository/SearchHistoryRepository;Ljava/lang/String;ILcom/mushafimad/core/domain/models/SearchType;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class com/mushafimad/core/domain/repository/VerseRepository {
+	public abstract fun getCachedVersesForChapter (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getCachedVersesForPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getSajdaVerses (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getVerse (IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getVersesForChapter (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getVersesForPage (ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun searchVerses (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/domain/repository/VerseRepository$DefaultImpls {
+	public static synthetic fun getVersesForPage$default (Lcom/mushafimad/core/domain/repository/VerseRepository;ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/mushafimad/core/logging/DefaultMushafLogger : com/mushafimad/core/logging/MushafLogger {
+	public fun <init> ()V
+	public fun debug (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public fun error (Ljava/lang/String;Ljava/lang/Throwable;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public fun info (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public fun log (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogLevel;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;Ljava/lang/Throwable;Ljava/util/Map;)V
+	public fun trace (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public fun warning (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+}
+
+public abstract interface class com/mushafimad/core/logging/MushafAnalytics {
+	public abstract fun setUserProperty (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun trackEvent (Ljava/lang/String;Ljava/util/Map;)V
+	public abstract fun trackScreenView (Ljava/lang/String;Ljava/lang/String;)V
+}
+
+public final class com/mushafimad/core/logging/MushafAnalytics$DefaultImpls {
+	public static synthetic fun trackEvent$default (Lcom/mushafimad/core/logging/MushafAnalytics;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)V
+	public static synthetic fun trackScreenView$default (Lcom/mushafimad/core/logging/MushafAnalytics;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+}
+
+public final class com/mushafimad/core/logging/MushafEventParams {
+	public static final field CHAPTER_NUMBER Ljava/lang/String;
+	public static final field INSTANCE Lcom/mushafimad/core/logging/MushafEventParams;
+	public static final field PAGE_NUMBER Ljava/lang/String;
+	public static final field RECITER_ID Ljava/lang/String;
+	public static final field THEME_NAME Ljava/lang/String;
+	public static final field VERSE_NUMBER Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/logging/MushafEvents {
+	public static final field AUDIO_PAUSED Ljava/lang/String;
+	public static final field AUDIO_PLAY_STARTED Ljava/lang/String;
+	public static final field CHAPTER_SELECTED Ljava/lang/String;
+	public static final field INSTANCE Lcom/mushafimad/core/logging/MushafEvents;
+	public static final field PAGE_CHANGED Ljava/lang/String;
+	public static final field RECITER_CHANGED Ljava/lang/String;
+	public static final field THEME_CHANGED Ljava/lang/String;
+	public static final field VERSE_SELECTED Ljava/lang/String;
+}
+
+public abstract interface class com/mushafimad/core/logging/MushafLogger {
+	public abstract fun debug (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public abstract fun error (Ljava/lang/String;Ljava/lang/Throwable;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public abstract fun info (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public abstract fun log (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogLevel;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;Ljava/lang/Throwable;Ljava/util/Map;)V
+	public abstract fun trace (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public abstract fun warning (Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+}
+
+public final class com/mushafimad/core/logging/MushafLogger$DefaultImpls {
+	public static fun debug (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public static synthetic fun debug$default (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;ILjava/lang/Object;)V
+	public static fun error (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Ljava/lang/Throwable;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public static synthetic fun error$default (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Ljava/lang/Throwable;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;ILjava/lang/Object;)V
+	public static fun info (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public static synthetic fun info$default (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;ILjava/lang/Object;)V
+	public static synthetic fun log$default (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogLevel;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;Ljava/lang/Throwable;Ljava/util/Map;ILjava/lang/Object;)V
+	public static fun trace (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public static synthetic fun trace$default (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;ILjava/lang/Object;)V
+	public static fun warning (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;)V
+	public static synthetic fun warning$default (Lcom/mushafimad/core/logging/MushafLogger;Ljava/lang/String;Lcom/mushafimad/core/logging/MushafLogger$LogCategory;ILjava/lang/Object;)V
+}
+
+public final class com/mushafimad/core/logging/MushafLogger$LogCategory : java/lang/Enum {
+	public static final field APP Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field AUDIO Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field DATABASE Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field DOWNLOAD Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field IMAGES Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field MUSHAF Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field NETWORK Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field REALM Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field TIMING Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static final field UI Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+	public static fun values ()[Lcom/mushafimad/core/logging/MushafLogger$LogCategory;
+}
+
+public final class com/mushafimad/core/logging/MushafLogger$LogLevel : java/lang/Enum {
+	public static final field CRITICAL Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static final field DEBUG Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static final field ERROR Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static final field INFO Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static final field NOTICE Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static final field TRACE Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static final field WARNING Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+	public static fun values ()[Lcom/mushafimad/core/logging/MushafLogger$LogLevel;
+}
+
+public final class com/mushafimad/core/logging/NoOpMushafAnalytics : com/mushafimad/core/logging/MushafAnalytics {
+	public fun <init> ()V
+	public fun setUserProperty (Ljava/lang/String;Ljava/lang/String;)V
+	public fun trackEvent (Ljava/lang/String;Ljava/util/Map;)V
+	public fun trackScreenView (Ljava/lang/String;Ljava/lang/String;)V
+}
+
+public final class com/mushafimad/core/utils/ChapterExtensionsKt {
+	public static final fun getFormattedNumber (Lcom/mushafimad/core/domain/models/Chapter;)Ljava/lang/String;
+	public static final fun getListDisplayInfo (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getListDisplayInfo$default (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun getRevelationInfo (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getRevelationInfo$default (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun getTypeDisplayName (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getTypeDisplayName$default (Lcom/mushafimad/core/domain/models/Chapter;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun isLong (Lcom/mushafimad/core/domain/models/Chapter;)Z
+	public static final fun isMedium (Lcom/mushafimad/core/domain/models/Chapter;)Z
+	public static final fun isShort (Lcom/mushafimad/core/domain/models/Chapter;)Z
+}
+
+public final class com/mushafimad/core/utils/QuranUtils {
+	public static final field INSTANCE Lcom/mushafimad/core/utils/QuranUtils;
+	public static final field TOTAL_CHAPTERS I
+	public static final field TOTAL_HIZB I
+	public static final field TOTAL_PAGES I
+	public static final field TOTAL_PARTS I
+	public static final field TOTAL_VERSES I
+	public final fun chapterHasBismillah (I)Z
+	public final fun formatVerseReference (II)Ljava/lang/String;
+	public final fun getBismillah ()Ljava/lang/String;
+	public final fun getCHAPTERS_WITHOUT_BISMILLAH ()Ljava/util/Set;
+	public final fun getJuzForPage (I)I
+	public final fun getSAJDA_VERSES ()Ljava/util/List;
+	public final fun getStartingPageForJuz (I)I
+	public final fun isSajdaVerse (II)Z
+	public final fun isValidChapterNumber (I)Z
+	public final fun isValidHizbNumber (I)Z
+	public final fun isValidPageNumber (I)Z
+	public final fun isValidPartNumber (I)Z
+	public final fun normalizeArabicText (Ljava/lang/String;)Ljava/lang/String;
+	public final fun parseVerseReference (Ljava/lang/String;)Lkotlin/Pair;
+	public final fun removeTashkeel (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class com/mushafimad/core/utils/VerseExtensionsKt {
+	public static final fun containsQuery (Lcom/mushafimad/core/domain/models/Verse;Ljava/lang/String;Z)Z
+	public static synthetic fun containsQuery$default (Lcom/mushafimad/core/domain/models/Verse;Ljava/lang/String;ZILjava/lang/Object;)Z
+	public static final fun getFormattedNumber (Lcom/mushafimad/core/domain/models/Verse;)Ljava/lang/String;
+	public static final fun getPositionInfo (Lcom/mushafimad/core/domain/models/Verse;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getPositionInfo$default (Lcom/mushafimad/core/domain/models/Verse;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun getReference (Lcom/mushafimad/core/domain/models/Verse;)Ljava/lang/String;
+	public static final fun getReferenceArabic (Lcom/mushafimad/core/domain/models/Verse;)Ljava/lang/String;
+	public static final fun getReferenceWithChapterName (Lcom/mushafimad/core/domain/models/Verse;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getReferenceWithChapterName$default (Lcom/mushafimad/core/domain/models/Verse;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun getSearchableContent (Lcom/mushafimad/core/domain/models/Verse;)Ljava/lang/String;
+	public static final fun getTextPreview (Lcom/mushafimad/core/domain/models/Verse;I)Ljava/lang/String;
+	public static synthetic fun getTextPreview$default (Lcom/mushafimad/core/domain/models/Verse;IILjava/lang/Object;)Ljava/lang/String;
+	public static final fun isFirstVerse (Lcom/mushafimad/core/domain/models/Verse;)Z
+}
+

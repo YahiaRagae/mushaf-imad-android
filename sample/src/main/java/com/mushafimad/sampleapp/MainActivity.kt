@@ -1133,7 +1133,9 @@ fun MushafReaderScreen(navController: NavHostController) {
                 readingTheme = ReadingTheme.COMFORTABLE,
                 colorScheme = ColorSchemeType.DEFAULT,
                 mushafType = MushafType.HAFS_1441,
-                initialPage = 1,
+                // null = resume where the reader left off. Pass a page number
+                // instead to always open on that page (see ThemeCustomization).
+                initialPage = null,
                 showNavigationControls = true,
                 showPageInfo = true,
                 modifier = Modifier.fillMaxSize()
@@ -1162,7 +1164,8 @@ fun MushafWithAudioScreen(navController: NavHostController) {
                 readingTheme = ReadingTheme.COMFORTABLE,
                 colorScheme = ColorSchemeType.DEFAULT,
                 mushafType = MushafType.HAFS_1441,
-                initialPage = 1,
+                // null = resume where the reader left off, same as MushafView
+                initialPage = null,
                 showNavigationControls = true,
                 showPageInfo = true,
                 showAudioPlayer = true,
