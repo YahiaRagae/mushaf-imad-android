@@ -48,22 +48,23 @@ fun SearchView(
     viewModel: SearchViewModel = mushafViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var searchQuery by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Search bar
+        // Search bar. The query is rendered straight from the ViewModel rather
+        // than from a local remember: the composable is torn down whenever the
+        // host navigates to a result (or the device rotates), and a local copy
+        // would reset to "" while the results kept showing - an empty box above
+        // stale results.
         SearchBar(
-            query = searchQuery,
+            query = uiState.query,
             onQueryChange = { query ->
-                searchQuery = query
                 viewModel.search(query, uiState.activeFilter ?: SearchType.GENERAL)
             },
             onClear = {
-                searchQuery = ""
                 viewModel.clearSearch()
             },
             modifier = Modifier.fillMaxWidth()
@@ -139,7 +140,6 @@ fun SearchView(
                     SearchHistoryView(
                         history = uiState.searchHistory,
                         onHistoryItemClick = { entry: SearchHistoryEntry ->
-                            searchQuery = entry.query
                             viewModel.search(entry.query, entry.searchType)
                         },
                         onClearHistory = {
