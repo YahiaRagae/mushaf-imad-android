@@ -90,6 +90,24 @@ class MushafViewRestoreTest {
     }
 
     @Test
+    fun mushafWithPlayerView_nullInitialPage_alsoRestoresSavedPosition() {
+        savePosition(page = 250, chapter = 18)
+
+        var pageShown: Int? = null
+        compose.setContent {
+            MushafWithPlayerView(
+                initialPage = null,
+                onPageChanged = { pageShown = it }
+            )
+        }
+
+        // MushafWithPlayerView forwards initialPage to MushafView, so the
+        // reader-with-audio screen resumes exactly like the plain reader
+        compose.waitUntil(timeoutMillis = 15_000) { pageShown == 250 }
+        assertThat(pageShown).isEqualTo(250)
+    }
+
+    @Test
     fun navigatingWritesTheNewPosition() {
         savePosition(page = 100, chapter = 5)
 
