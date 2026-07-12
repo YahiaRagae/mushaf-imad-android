@@ -93,10 +93,12 @@ fun MushafView(
     }
 
     // Save on disposal (page changes already persist via the ViewModel's
-    // debounced save)
+    // debounced save), and close out the reading session for the page the
+    // reader was last on.
     DisposableEffect(Unit) {
         onDispose {
             viewModel.saveReadingPosition()
+            viewModel.flushReadingSession()
         }
     }
 

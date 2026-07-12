@@ -1,5 +1,6 @@
 package com.mushafimad.ui.mushaf
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mushafimad.core.domain.models.*
@@ -38,6 +39,15 @@ class MushafViewModel(
     private var navigationRequested = false
 
     private var savePositionJob: Job? = null
+
+    // The page currently being timed for a reading session, and when the reader
+    // arrived on it. Nothing else in the library records sessions, so without
+    // this every reading statistic (total time, streak, chapters read) stays
+    // empty forever.
+    private var timedPage = 0
+    private var timedChapter = 0
+    private var timedVerse = 1
+    private var pageEnteredAtMs = 0L
 
     init {
         loadPreferences()
@@ -106,6 +116,64 @@ class MushafViewModel(
                 // Silent failure for preference persistence
             }
             schedulePositionSave()
+            beginPageTiming(
+                pageNumber = pageNumber,
+                chapterNumber = content.verses.first().chapterNumber,
+                verseNumber = content.verses.first().number
+            )
+        }
+    }
+
+    /**
+     * Start timing a reading session for the page now on screen, closing out
+     * the session for the page the reader just left.
+     */
+    private fun beginPageTiming(pageNumber: Int, chapterNumber: Int, verseNumber: Int) {
+        if (pageNumber == timedPage) return
+
+        flushReadingSession()
+
+        timedPage = pageNumber
+        timedChapter = chapterNumber
+        timedVerse = verseNumber
+        pageEnteredAtMs = SystemClock.elapsedRealtime()
+    }
+
+    /**
+     * Record how long the reader spent on the page currently being timed.
+     *
+     * Called when the page changes and when the reader is dismissed, so that
+     * reading statistics reflect actual reading rather than staying empty.
+     * Pages flicked past in under [MIN_SESSION_SECONDS] are not recorded -
+     * swiping through the mushaf is not reading it.
+     */
+    internal fun flushReadingSession() {
+        val page = timedPage
+        val enteredAt = pageEnteredAtMs
+        if (page <= 0 || enteredAt == 0L) return
+
+        pageEnteredAtMs = 0L
+        timedPage = 0
+
+        val seconds = ((SystemClock.elapsedRealtime() - enteredAt) / 1000L).toInt()
+        if (seconds < MIN_SESSION_SECONDS) return
+
+        val mushafType = _uiState.value.mushafType
+        val chapter = timedChapter
+        val verse = timedVerse
+
+        viewModelScope.launch {
+            try {
+                readingHistoryRepository.recordReadingSession(
+                    chapterNumber = chapter,
+                    verseNumber = verse,
+                    pageNumber = page,
+                    durationSeconds = seconds,
+                    mushafType = mushafType
+                )
+            } catch (e: Exception) {
+                // Statistics are best-effort; never fail a page turn over them
+            }
         }
     }
 
@@ -205,6 +273,11 @@ class MushafViewModel(
                 // Update preferences
                 preferencesRepository.setCurrentPage(pageNumber)
                 schedulePositionSave()
+                beginPageTiming(
+                    pageNumber = pageNumber,
+                    chapterNumber = content.verses.first().chapterNumber,
+                    verseNumber = content.verses.first().number
+                )
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
@@ -472,3 +545,9 @@ internal val TOTAL_PAGES = com.mushafimad.core.utils.QuranUtils.TOTAL_PAGES
 internal val TOTAL_CHAPTERS = com.mushafimad.core.utils.QuranUtils.TOTAL_CHAPTERS
 private const val PAGE_CACHE_SIZE = 8
 private const val SAVE_POSITION_DEBOUNCE_MS = 1000L
+
+/**
+ * Below this, the reader was flicking through pages rather than reading them,
+ * so the page is not recorded as a reading session.
+ */
+private const val MIN_SESSION_SECONDS = 3
