@@ -333,10 +333,26 @@ internal class QuranPlayerViewModel(
             currentTimeMs
         )
 
-        if (verseNumber != null && verseNumber != _currentVerseNumber.value) {
-            _currentVerseNumber.value = verseNumber
-            MushafLibrary.logger.debug("Current verse: $verseNumber")
+        verseNumber?.let { verse ->
+            if (verse != _currentVerseNumber.value) {
+                _currentVerseNumber.value = verse
+                MushafLibrary.logger.debug("Current verse: $verse")
+            }
+            return
         }
+
+        // No verse covers this position. Most reciters' timing data marks the
+        // opening basmala as ayah 0, in which case getCurrentVerse already
+        // returned it above. Where it is missing instead, anything before the
+        // first verse is the chapter opening - report it as such, otherwise
+        // seeking back to the start would leave the previous verse reported and
+        // the reader parked wherever it happened to be.
+        audioRepository.getAyahTiming(currentReciterId, chapterNumber, FIRST_VERSE)
+            ?.takeIf { currentTimeMs < it.startTime && _currentVerseNumber.value != CHAPTER_OPENING }
+            ?.let {
+                _currentVerseNumber.value = CHAPTER_OPENING
+                MushafLibrary.logger.debug("Chapter opening (basmala)")
+            }
     }
 
     /**
@@ -431,3 +447,14 @@ data class ChapterInfo(
     val name: String,
     val reciterName: String
 )
+
+/**
+ * The first numbered verse of a chapter.
+ */
+internal const val FIRST_VERSE = 1
+
+/**
+ * The opening basmala. It is recited before the first verse but is not itself a
+ * verse of the chapter; reciter timing data represents it as ayah 0.
+ */
+internal const val CHAPTER_OPENING = 0

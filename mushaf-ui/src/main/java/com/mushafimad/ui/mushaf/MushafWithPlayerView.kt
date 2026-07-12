@@ -10,6 +10,8 @@ import com.mushafimad.ui.internal.mushafViewModel
 import com.mushafimad.core.MushafLibrary
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
+import com.mushafimad.core.data.audio.PlaybackState
+import com.mushafimad.ui.player.FIRST_VERSE
 import com.mushafimad.ui.player.QuranPlayerView
 import com.mushafimad.ui.player.QuranPlayerViewModel
 import com.mushafimad.ui.theme.ColorSchemeType
@@ -55,10 +57,27 @@ fun MushafWithPlayerView(
         onPageChanged?.let { cb -> { page: Int -> cb(page) } }
     }
 
-    // Get current chapter info for player
-    val currentChapter = mushafUiState.chapters.firstOrNull()
-    val chapterName = currentChapter?.arabicTitle ?: ""
-    val chapterNumber = currentChapter?.number ?: 1
+    // Which surah the player is on. It normally tracks the surah the reader is
+    // looking at, so pressing play recites what you can see. While a recitation
+    // is actually running, though, it stays put: the reader follows the audio
+    // across pages, and letting those page changes feed back into the player
+    // would reconfigure it and restart the chapter from its first verse.
+    val playbackState by playerViewModel.playbackState.collectAsState()
+    val pageChapter = mushafUiState.chapters.firstOrNull()
+
+    var chapterNumber by remember { mutableStateOf(pageChapter?.number ?: 1) }
+    var chapterName by remember { mutableStateOf(pageChapter?.arabicTitle ?: "") }
+
+    LaunchedEffect(pageChapter?.number, playbackState) {
+        val reciting =
+            playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.LOADING
+        pageChapter
+            ?.takeUnless { reciting }
+            ?.let {
+                chapterNumber = it.number
+                chapterName = it.arabicTitle
+            }
+    }
 
     val verses = mushafUiState.verses
     val currentVerseNumber by playerViewModel.currentVerseNumber.collectAsState()
@@ -76,20 +95,26 @@ fun MushafWithPlayerView(
     var recitedVerse by remember { mutableStateOf<Verse?>(null) }
 
     LaunchedEffect(playerViewModel, currentVerseNumber) {
-        val verseNumber = currentVerseNumber
-        if (verseNumber == null || verseNumber <= 0) {
+        val verseNumber = currentVerseNumber ?: run {
             recitedVerse = null
             return@LaunchedEffect
         }
 
-        val recitingChapter = playerViewModel.getChapterInfo().number
-        if (recitingChapter <= 0) return@LaunchedEffect
+        val recitingChapter = playerViewModel.getChapterInfo().number.takeIf { it > 0 }
+            ?: return@LaunchedEffect
 
-        val verse = verseRepository.getVerse(recitingChapter, verseNumber) ?: return@LaunchedEffect
-        recitedVerse = verse
+        // Verse 0 is the opening basmala: it is recited but is not a verse of
+        // the chapter. Take the reader to where the chapter starts, and
+        // highlight nothing until the first verse is actually reached.
+        val isChapterOpening = verseNumber < FIRST_VERSE
+        val target = verseNumber.coerceAtLeast(FIRST_VERSE)
 
-        if (verse.pageNumber > 0 && verse.pageNumber != mushafViewModel.uiState.value.currentPage) {
-            mushafViewModel.goToPage(verse.pageNumber)
+        verseRepository.getVerse(recitingChapter, target)?.let { verse ->
+            recitedVerse = verse.takeUnless { isChapterOpening }
+
+            if (verse.pageNumber > 0 && verse.pageNumber != mushafViewModel.uiState.value.currentPage) {
+                mushafViewModel.goToPage(verse.pageNumber)
+            }
         }
     }
 
