@@ -46,6 +46,7 @@ public final class com/mushafimad/core/data/audio/AudioPlaybackService : android
 	public fun onCreate ()V
 	public fun onDestroy ()V
 	public fun onGetSession (Landroidx/media3/session/MediaSession$ControllerInfo;)Landroidx/media3/session/MediaSession;
+	public fun onTaskRemoved (Landroid/content/Intent;)V
 }
 
 public final class com/mushafimad/core/data/audio/AudioPlayerState {

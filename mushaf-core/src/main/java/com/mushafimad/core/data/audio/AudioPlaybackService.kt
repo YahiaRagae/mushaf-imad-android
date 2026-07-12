@@ -138,6 +138,19 @@ class AudioPlaybackService : MediaSessionService(), KoinComponent {
         return mediaSession
     }
 
+    /**
+     * Stop the recitation when the user swipes the app out of recents.
+     *
+     * MediaSessionService keeps the service - and playback - alive by default,
+     * which suits a music app the user expects to keep streaming. Here it just
+     * leaves a recitation playing with no UI left to control it, so dismissing
+     * the app stops it.
+     */
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        MushafLibrary.logger.info("AudioPlaybackService: app dismissed, stopping playback")
+        pauseAllPlayersAndStopSelf()
+    }
+
     override fun onDestroy() {
         MushafLibrary.logger.info("AudioPlaybackService: onDestroy()")
 
