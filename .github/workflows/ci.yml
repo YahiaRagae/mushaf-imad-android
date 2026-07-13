@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Lets release.yml run these same gates as a reusable workflow before it
+  # tags/publishes anything. Keep this workflow self-contained (no inputs it
+  # needs from the caller) so `uses: ./.github/workflows/ci.yml` just works.
+  workflow_call:
 
 jobs:
   build:
@@ -40,12 +44,153 @@ jobs:
       - name: Build sample (debug + minified release)
         run: ./gradlew :sample:assembleDebug :sample:assembleRelease -x lint
 
-      - name: Publish to Maven local (JitPack dry run)
-        run: ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal -x lint
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: unit-test-reports
+          path: '**/build/reports/tests/'
+
+  instrumented:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      # GitHub's ubuntu-latest runners support nested virtualization but don't
+      # ship the udev rule that makes /dev/kvm group-accessible. Without this,
+      # the emulator falls back to software virtualization and is unusably
+      # slow (tests time out rather than fail).
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-33-google_apis-x86_64
+
+      - name: Create AVD and generate cache
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: false
+          script: echo "AVD created and cached."
+
+      # 23 instrumented tests across mushaf-core and mushaf-ui. These never
+      # ran in CI before this workflow - only unit tests did.
+      - name: Instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: ./gradlew :mushaf-core:connectedDebugAndroidTest :mushaf-ui:connectedDebugAndroidTest -x lint
 
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: test-reports
-          path: '**/build/reports/tests/'
+          name: instrumented-test-reports
+          path: '**/build/reports/androidTests/'
+
+  consumer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-33-google_apis-x86_64
+
+      - name: Create AVD and generate cache
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: false
+          script: echo "AVD created and cached."
+
+      # publishToMavenLocal only proves the publish machinery runs; it says
+      # nothing about what ends up inside the AAR or whether a real third
+      # party can build against it. This job is what would have caught the
+      # WAKE_LOCK and reading-history crashes shipped in 0.2.1.
+      - name: Publish to Maven local
+        run: ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal -x lint
+
+      - name: Verify published AAR contents
+        run: ./scripts/verify-aar.sh
+
+      # consumer-check is a separate Gradle build that resolves the library
+      # from mavenLocal() the way a real third party would - not as a source
+      # module in this build.
+      - name: Build consumer app (debug + release)
+        run: ./gradlew -p consumer-check :app:assembleDebug :app:assembleRelease
+
+      - name: Consumer instrumented test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: ./gradlew -p consumer-check :app:connectedDebugAndroidTest
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: consumer-test-reports
+          path: '**/build/reports/androidTests/'
