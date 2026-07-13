@@ -26,9 +26,11 @@ internal interface ReadingHistoryDao {
     // Reading History operations
     suspend fun insertHistory(
         chapterNumber: Int,
+        verseNumber: Int,
         pageNumber: Int,
         timestamp: Long,
-        durationSeconds: Int
+        durationSeconds: Int,
+        mushafType: String
     )
 
     suspend fun getRecentHistory(limit: Int): List<ReadingHistoryEntity>

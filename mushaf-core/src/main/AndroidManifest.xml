@@ -10,6 +10,15 @@
     <!-- Post notifications permission (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!--
+        Required by AudioPlaybackService, which sets WAKE_MODE_NETWORK on the
+        player so a streamed recitation survives the screen turning off. This is
+        the library's own need, so the library declares it: without it the host
+        app dies with a SecurityException the moment audio starts. It went
+        unnoticed because the bundled sample declared the permission itself.
+    -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application>
         <service
             android:name=".data.audio.AudioPlaybackService"
