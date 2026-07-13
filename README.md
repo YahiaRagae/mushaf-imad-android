@@ -5,11 +5,11 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)](https://android-arsenal.com/api?level=24)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg)](https://kotlinlang.org)
-[![Version](https://img.shields.io/badge/Version-0.2.0-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.2.0)
+[![Version](https://img.shields.io/badge/Version-0.2.1-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.2.1)
 [![JitPack](https://jitpack.io/v/YahiaRagae/mushaf-imad-android.svg)](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
 
-> ✅ **Version 0.2.0:** Supports 16 KB memory pages (required by Google Play for apps targeting Android 15+), and fixes a long list of bugs found during QA — including a startup crash and the loss of all saved user data on every launch. The public API is unchanged, so v0.1 code compiles as-is.
+> ✅ **Version 0.2.1:** Supports 16 KB memory pages (required by Google Play for apps targeting Android 15+), and fixes a long list of bugs found during QA — including a startup crash and the loss of all saved user data on every launch. The public API is unchanged, so v0.1 code compiles as-is.
 
 ## Features
 
@@ -59,14 +59,14 @@ Then add the dependency in your app's `build.gradle.kts`:
 **Option A: Full library (UI + Data) — recommended**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.2.0")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.2.1")
 }
 ```
 
 **Option B: Data layer only (custom UI)**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.2.0")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.2.1")
 }
 ```
 
@@ -388,12 +388,12 @@ A sample app is included in the `sample/` module demonstrating all library featu
 
 ## Project Status
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **Status:** Published on [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 
 ---
 
-## What's new in 0.2.0
+## What's new in 0.2.1
 
 The public API is unchanged — v0.1 code compiles as-is.
 
@@ -495,6 +495,6 @@ Developed with care for the Muslim community.
 ---
 
 **Last Updated:** July 2026
-**Current Version:** 0.2.0
+**Current Version:** 0.2.1
 **Status:** Stable - Production Ready
 **Published:** [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
