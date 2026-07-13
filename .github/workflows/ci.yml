@@ -11,6 +11,12 @@ on:
 
 jobs:
   build:
+    # Skip the release job's own "chore: release X.Y.Z [skip ci]" bump commit. It
+    # is a one-line version bump to a tree CI just went green on, and re-testing
+    # it costs a full emulator run. The guard is scoped to `push` so it cannot
+    # affect pull_request or the workflow_call from release.yml, where
+    # head_commit is absent.
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -64,6 +70,7 @@ jobs:
           path: '**/build/reports/tests/'
 
   instrumented:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -131,6 +138,7 @@ jobs:
           path: '**/build/reports/androidTests/'
 
   consumer:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

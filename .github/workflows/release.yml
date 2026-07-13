@@ -7,6 +7,10 @@ name: Release
 on:
   push:
     branches: [main]
+  # Escape hatch: cut a release by hand when the path filter below decided not
+  # to, or to re-cut after a failure. A burned version still cannot be reused -
+  # bump VERSION_NAME first.
+  workflow_dispatch:
 
 # Never run two releases concurrently - the version-bump/tag logic below is
 # not safe against a second run reading gradle.properties mid-bump.
@@ -35,8 +39,26 @@ jobs:
         id: filter
         run: |
           set -euo pipefail
-          BEFORE_SHA="${{ github.event.before }}"
 
+          # A release publishes the LIBRARY. So only a change that can alter what
+          # ends up inside the published AARs is worth a version. Changes to the
+          # app, the workflows, the docs or the scripts are gated by CI but do not
+          # get a version of their own - cutting one would burn a version number on
+          # bytes identical to the last release and notify everyone about nothing.
+          #
+          # jitpack.yml is included because it decides what JitPack even builds.
+          # gradle.properties is NOT a path here: it also holds GROUP and other
+          # settings that do not change the published bytes. A deliberate
+          # VERSION_NAME bump is handled separately below, by diffing that one line.
+          RELEASE_PATHS='^mushaf-core/|^mushaf-ui/|^gradle/libs\.versions\.toml$|^jitpack\.yml$'
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manually dispatched - releasing regardless of what changed."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BEFORE_SHA="${{ github.event.before }}"
           if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
             echo "No previous commit to diff against (new branch tip) - releasing to be safe."
             echo "release=true" >> "$GITHUB_OUTPUT"
@@ -47,14 +69,23 @@ jobs:
           echo "Files changed by this push:"
           echo "$CHANGED_FILES"
 
-          # Anything outside docs/markdown/workflow config counts as a real change.
-          NON_DOCS="$(echo "$CHANGED_FILES" | grep -v -E '\.md$|^docs/|^\.github/' || true)"
+          LIBRARY_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -E "$RELEASE_PATHS" || true)"
 
-          if [ -n "$NON_DOCS" ]; then
-            echo "Non-docs changes found - releasing."
+          # A human deliberately bumping VERSION_NAME is always a release, however
+          # little else changed. Diff that single line rather than the whole file:
+          # gradle.properties also carries GROUP and JVM args, and editing those
+          # must not cut a version.
+          VERSION_BUMP="$(git diff "$BEFORE_SHA" "${{ github.sha }}" -- gradle.properties \
+            | grep -E '^\+VERSION_NAME=' || true)"
+
+          if [ -n "$LIBRARY_CHANGES" ] || [ -n "$VERSION_BUMP" ]; then
+            echo "Releasing. Reason:"
+            [ -n "$LIBRARY_CHANGES" ] && printf '  library files changed:\n%s\n' "$LIBRARY_CHANGES"
+            [ -n "$VERSION_BUMP" ] && echo "  VERSION_NAME was deliberately changed: ${VERSION_BUMP}"
             echo "release=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Only docs/.github changes - skipping release."
+            echo "Nothing that changes the published library - skipping the release."
+            echo "Run this workflow manually (workflow_dispatch) to force one anyway."
             echo "release=false" >> "$GITHUB_OUTPUT"
           fi
 
