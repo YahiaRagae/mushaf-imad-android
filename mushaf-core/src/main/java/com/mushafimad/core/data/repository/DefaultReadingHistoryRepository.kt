@@ -56,9 +56,11 @@ internal class DefaultReadingHistoryRepository (
     ): Unit = withContext(Dispatchers.IO) {
         readingHistoryDao.insertHistory(
             chapterNumber = chapterNumber,
+            verseNumber = verseNumber,
             pageNumber = pageNumber,
             timestamp = System.currentTimeMillis(),
-            durationSeconds = durationSeconds
+            durationSeconds = durationSeconds,
+            mushafType = mushafType.name
         )
     }
 
@@ -170,8 +172,21 @@ internal class DefaultReadingHistoryRepository (
         return maxOf(longest, current)
     }
 
+    /**
+     * Parse a persisted mushaf type without throwing.
+     *
+     * 0.2.1 wrote reading-history rows without a mushaf type at all, so any
+     * database written by it holds rows with an empty string here. Reading one
+     * back with MushafType.valueOf("") threw, and since 0.2.1 also started
+     * recording sessions automatically, that took down every consumer that
+     * showed reading history. Rows that predate the fix now fall back to the
+     * default rather than crashing the app.
+     */
+    private fun parseMushafType(stored: String): MushafType =
+        MushafType.entries.firstOrNull { it.name == stored } ?: MushafType.HAFS_1441
+
     private fun LastReadPositionEntity.toDomain() = LastReadPosition(
-        mushafType = MushafType.valueOf(mushafType),
+        mushafType = parseMushafType(mushafType),
         chapterNumber = chapterNumber,
         verseNumber = verseNumber,
         pageNumber = pageNumber,
@@ -186,6 +201,6 @@ internal class DefaultReadingHistoryRepository (
         pageNumber = pageNumber,
         timestamp = timestamp,
         durationSeconds = durationSeconds,
-        mushafType = MushafType.valueOf(mushafType)
+        mushafType = parseMushafType(mushafType)
     )
 }

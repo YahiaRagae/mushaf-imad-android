@@ -76,16 +76,20 @@ internal class RealmReadingHistoryDao(
 
     override suspend fun insertHistory(
         chapterNumber: Int,
+        verseNumber: Int,
         pageNumber: Int,
         timestamp: Long,
-        durationSeconds: Int
+        durationSeconds: Int,
+        mushafType: String
     ): Unit = withContext(Dispatchers.IO) {
         realm.write {
             val entity = ReadingHistoryEntity().apply {
                 this.chapterNumber = chapterNumber
+                this.verseNumber = verseNumber
                 this.pageNumber = pageNumber
                 this.timestamp = timestamp
                 this.durationSeconds = durationSeconds
+                this.mushafType = mushafType
             }
             copyToRealm(entity)
         }

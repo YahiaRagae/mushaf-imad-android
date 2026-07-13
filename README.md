@@ -5,7 +5,7 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)](https://android-arsenal.com/api?level=24)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg)](https://kotlinlang.org)
-[![Version](https://img.shields.io/badge/Version-0.2.1-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.2.1)
+[![Version](https://img.shields.io/badge/Version-0.2.2-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.2.2)
 [![JitPack](https://jitpack.io/v/YahiaRagae/mushaf-imad-android.svg)](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
 
@@ -34,7 +34,7 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 - **Target SDK:** 35 (Android 15)
 - **Kotlin:** 2.0.21
 - **Jetpack Compose:** BOM 2024.12.01
-- **Gradle:** 8.7.3
+- **Android Gradle Plugin:** 8.7.3 (Gradle 8.13)
 
 ---
 
@@ -59,14 +59,14 @@ Then add the dependency in your app's `build.gradle.kts`:
 **Option A: Full library (UI + Data) — recommended**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.2.1")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.2.2")
 }
 ```
 
 **Option B: Data layer only (custom UI)**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.2.1")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.2.2")
 }
 ```
 
@@ -104,6 +104,11 @@ class MyApplication : Application() {
 
     <!-- For notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        WAKE_LOCK is declared by the library itself and merged in automatically -
+        you do not need to add it.
+    -->
 
     <application
         android:name=".MyApplication"
@@ -249,24 +254,29 @@ enum class MushafType {
 
 ### Available Reciters (18 total)
 
-- Abdul Basit Abdul Samad (عبد الباسط عبد الصمد)
-- Mohamed Siddiq Al-Minshawi (محمد صديق المنشاوي)
-- Mahmoud Khalil Al-Hussary (محمود خليل الحصري)
-- Mahmoud Khalil Al-Hussary - Mujawwad (محمود خليل الحصري - مجود)
-- Mishari Rashid Al-Afasy (مشاري راشد العفاسي)
-- Saad Al-Ghamdi (سعد الغامدي)
-- Maher Al-Muaiqly (ماهر المعيقلي)
-- Abdul Rahman Al-Sudais (عبد الرحمن السديس)
-- Saud Al-Shuraim (سعود الشريم)
-- Ahmed ibn Ali Al-Ajmi (أحمد بن علي العجمي)
-- Yasser Al-Dosari (ياسر الدوسري)
-- Abdullah Basfar (عبد الله بصفر)
-- Khalifa Al-Tunaiji (خليفة الطنيجي)
-- Nasser Al-Qatami (ناصر القطامي)
-- Abdullah Al-Juhani (عبد الله الجهني)
-- Bandar Baleela (بندر بليلة)
-- Muhammad Ayyub (محمد أيوب)
-- Abdullah Al-Matroud (عبد الله المطرود)
+Read from the bundled verse-timing data, so this is exactly what
+`AudioRepository.getAllReciters()` returns and what the reciter picker shows.
+
+| ID | Reciter | Rewaya |
+|----|---------|--------|
+| 1 | Ibrahim Al-Akdar (إبراهيم الأخضر) | حفص عن عاصم |
+| 5 | Ahmad Al-Ajmy (أحمد بن علي العجمي) | حفص عن عاصم |
+| 9 | Ahmad Nauina (أحمد نعينع) | حفص عن عاصم |
+| 10 | Akram Alalaqmi (أكرم العلاقمي) | حفص عن عاصم |
+| 31 | Saud Al-Shuraim (سعود الشريم) | حفص عن عاصم |
+| 32 | Sahl Yassin (سهل ياسين) | حفص عن عاصم |
+| 51 | Abdulbasit Abdulsamad (عبدالباسط عبدالصمد) | المصحف المجود |
+| 53 | Abdulbasit Abdulsamad (عبدالباسط عبدالصمد) | حفص عن عاصم |
+| 60 | Abdullah Basfer (عبدالله بصفر) | حفص عن عاصم |
+| 62 | Abdullah Al-Johany (عبدالله عواد الجهني) | حفص عن عاصم |
+| 67 | Abdulmohsen Al-Qasim (عبدالمحسن القاسم) | حفص عن عاصم |
+| 74 | Ali Alhuthaifi (علي بن عبدالرحمن الحذيفي) | حفص عن عاصم |
+| 78 | Emad Hafez (عماد زهير حافظ) | حفص عن عاصم |
+| 106 | Mohammad Al-Tablaway (محمد الطبلاوي) | حفص عن عاصم |
+| 112 | Mohammed Siddiq Al-Minshawi (محمد صديق المنشاوي) | حفص عن عاصم |
+| 118 | Mahmoud Khalil Al-Hussary (محمود خليل الحصري) | حفص عن عاصم |
+| 159 | Khalid Almohana (خالد المهنا) | حفص عن عاصم |
+| 256 | Ahmad Shaheen (أحمد خليل شاهين) | حفص عن عاصم |
 
 ### Audio Controls
 
@@ -388,10 +398,30 @@ A sample app is included in the `sample/` module demonstrating all library featu
 
 ## Project Status
 
-**Version:** 0.2.1
+**Version:** 0.2.2
 **Status:** Published on [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 
 ---
+
+## What's new in 0.2.2
+
+Two crashes that only ever hit **consumers of the published library** — never the bundled
+sample app, which is why they survived every internal check. Both were found by building a
+real third-party app against `0.2.1` from JitPack.
+
+- **The app died the instant audio started.** `AudioPlaybackService` sets `WAKE_MODE_NETWORK`
+  on the player, which needs `WAKE_LOCK` — but the library never declared it, so the host
+  crashed with `SecurityException: ... android.permission.WAKE_LOCK`. It went unnoticed
+  because the bundled sample declared the permission itself. The library now declares it and
+  it is merged into the host automatically; **you do not need to add it**.
+- **Reading history always threw.** `recordReadingSession()` silently dropped its `verseNumber`
+  and `mushafType` before writing, so every row was stored with an empty mushaf type, and
+  reading one back did `MushafType.valueOf("")` and threw. This was latent until 0.2.1 — which
+  started recording sessions automatically — at which point any app displaying reading history
+  crashed on its first visit. Rows written by 0.2.1 no longer crash on upgrade.
+
+Also: corrected the reciter list in this README (it named people the library does not actually
+ship), and the Gradle/AGP versions.
 
 ## What's new in 0.2.1
 
@@ -495,6 +525,6 @@ Developed with care for the Muslim community.
 ---
 
 **Last Updated:** July 2026
-**Current Version:** 0.2.1
+**Current Version:** 0.2.2
 **Status:** Stable - Production Ready
 **Published:** [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
