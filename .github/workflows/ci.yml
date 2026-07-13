@@ -1,13 +1,17 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
   # Lets release.yml run these same gates as a reusable workflow before it
   # tags/publishes anything. Keep this workflow self-contained (no inputs it
   # needs from the caller) so `uses: ./.github/workflows/ci.yml` just works.
   workflow_call:
+
+# Deliberately NOT triggered by `push: branches: [main]`. release.yml already runs
+# this workflow on every push to main before it publishes anything, so a push trigger
+# here meant one merge ran the whole gate TWICE - four emulator boots instead of two -
+# and the two runs could not even disagree, since they test the same commit.
+# Merges to main are gated by release.yml; branches are gated by pull_request.
 
 jobs:
   build:
