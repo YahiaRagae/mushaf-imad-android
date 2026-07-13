@@ -52,6 +52,13 @@ jobs:
           # VERSION_NAME bump is handled separately below, by diffing that one line.
           RELEASE_PATHS='^mushaf-core/|^mushaf-ui/|^gradle/libs\.versions\.toml$|^jitpack\.yml$'
 
+          # Test sources do not ship in the AAR, so a change confined to them cannot
+          # alter what a consumer downloads. Releasing on one would spend a version
+          # number on bytes identical to the last release - and version numbers are not
+          # free here: JitPack burns a failed one permanently, so they are worth keeping
+          # for changes that actually change something.
+          TEST_ONLY_PATHS='/src/(test|androidTest)/'
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "Manually dispatched - releasing regardless of what changed."
             echo "release=true" >> "$GITHUB_OUTPUT"
@@ -69,7 +76,9 @@ jobs:
           echo "Files changed by this push:"
           echo "$CHANGED_FILES"
 
-          LIBRARY_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -E "$RELEASE_PATHS" || true)"
+          LIBRARY_CHANGES="$(printf '%s\n' "$CHANGED_FILES" \
+            | grep -E "$RELEASE_PATHS" \
+            | grep -v -E "$TEST_ONLY_PATHS" || true)"
 
           # A human deliberately bumping VERSION_NAME is always a release, however
           # little else changed. Diff that single line rather than the whole file:

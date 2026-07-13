@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -29,6 +30,8 @@ import org.junit.runner.RunWith
  *   - initialPage == null  -> resume the saved position
  *   - initialPage != null  -> the caller wins, saved position is ignored
  */
+private const val NEXT_PAGE = "الصفحة التالية"
+
 @RunWith(AndroidJUnit4::class)
 class MushafViewRestoreTest {
 
@@ -123,19 +126,31 @@ class MushafViewRestoreTest {
         }
         compose.waitUntil(timeoutMillis = 15_000) { pageShown == 100 }
 
-        // Tap "next page" and let the debounced save run.
+        // onPageChanged fires when the pager settles on the page, which is not the same
+        // moment the navigation overlay is laid out on top of it. On a slow emulator the
+        // gap is wide enough to lose a race: the button is in the tree but not yet
+        // placed, so it is not clickable and not hittable. That is what CI kept failing
+        // on - first as "Failed to inject touch input" (performClick resolved a hit
+        // point outside the window), then, once the assertion was explicit, as the
+        // honest "The component is not displayed!".
         //
-        // Deliberately not performClick(). performClick does two things: it checks the
-        // node is displayed and clickable, then injects a real touch event. On a
-        // headless CI emulator that injection is rejected outright - "Failed to inject
-        // touch input" - which fails the build for reasons that have nothing to do with
-        // this library. Waking and unlocking the device first did not fix it.
-        //
-        // The check is the part worth keeping, so it is kept, explicitly. The injection
-        // is not: it was only ever exercising the emulator's input stack. Driving the
-        // click through the semantics action asserts the same thing about the button and
-        // then invokes it deterministically.
-        compose.onNodeWithContentDescription("الصفحة التالية")
+        // So wait for the button to actually be there. The assertion is not dropped - it
+        // must become displayed within the timeout or the test still fails - it just
+        // stops being read at an arbitrary instant.
+        // isPlaced, not merely present: the button enters the semantics tree before the
+        // overlay is laid out, and "in the tree but not placed" is exactly the state that
+        // was failing. Waiting for existence alone would keep the race open.
+        compose.waitUntil(timeoutMillis = 15_000) {
+            compose.onAllNodesWithContentDescription(NEXT_PAGE)
+                .fetchSemanticsNodes()
+                .any { it.layoutInfo.isPlaced }
+        }
+
+        // Then drive the click through the semantics action rather than by injecting a
+        // touch event. What this test is about is that navigating persists the new
+        // position; the emulator's input stack is not the thing under test. The checks
+        // that the button is displayed and clickable are kept, explicitly.
+        compose.onNodeWithContentDescription(NEXT_PAGE)
             .assertIsDisplayed()
             .assertHasClickAction()
             .performSemanticsAction(SemanticsActions.OnClick)
