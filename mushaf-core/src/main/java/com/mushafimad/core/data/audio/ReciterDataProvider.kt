@@ -3,141 +3,157 @@ package com.mushafimad.core.data.audio
 import com.mushafimad.core.domain.models.ReciterInfo
 
 /**
- * Provider for all available Quran reciters
- * Data matches iOS implementation for compatibility
- * Internal implementation - not exposed in public API
+ * Fallback reciter list, used only when not a single timing file can be read.
+ *
+ * The real source of truth is `assets/ayah_timing/read_<id>.json`: each file carries
+ * both the per-ayah timings and the identity of the recitation they were measured
+ * against (name, rewaya, audio folder). ReciterService builds the live list from
+ * those files and only reaches for this table if every one of them fails to load.
+ *
+ * This table therefore duplicates data that already ships in the AAR, and it had
+ * drifted from it completely - all 18 entries named a different reciter than the
+ * timing file with the same id, and pointed at that other reciter's audio. Reciter 1
+ * is Ibrahim Al-Akdar, not Abdul Basit; asking for id 1 handed you Abdul Basit's
+ * audio while read_1.json timed Al-Akdar's, so the highlighted verse would track a
+ * voice nobody was listening to.
+ *
+ * The entries below are generated from the shipped timing files, and
+ * ReciterFallbackMatchesShippedDataTest fails the build if the two ever disagree
+ * again. Do not hand-edit this list: change the assets, then regenerate.
+ *
+ * Internal implementation - not exposed in public API.
  */
 internal object ReciterDataProvider {
 
     /**
-     * List of all available reciters with timing data
+     * All reciters the library ships timing data for, in id order.
      */
     val allReciters: List<ReciterInfo> = listOf(
         ReciterInfo(
             id = 1,
-            nameArabic = "عبد الباسط عبد الصمد",
-            nameEnglish = "Abdul Basit Abdul Samad",
+            nameArabic = "إبراهيم الأخضر",
+            nameEnglish = "Ibrahim Al-Akdar",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server6.mp3quran.net/abas_64/"
+            folderUrl = "https://server6.mp3quran.net/akdr/"
         ),
         ReciterInfo(
             id = 5,
-            nameArabic = "محمد صديق المنشاوي",
-            nameEnglish = "Mohamed Siddiq Al-Minshawi",
+            nameArabic = "أحمد بن علي العجمي",
+            nameEnglish = "Ahmad Al-Ajmy",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server10.mp3quran.net/minsh/Rewayat-Hafs-A-n-Assem/"
+            folderUrl = "https://server10.mp3quran.net/ajm/"
         ),
         ReciterInfo(
             id = 9,
-            nameArabic = "محمود خليل الحصري",
-            nameEnglish = "Mahmoud Khalil Al-Hussary",
+            nameArabic = "أحمد نعينع",
+            nameEnglish = "Ahmad Nauina",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server13.mp3quran.net/husr/"
+            folderUrl = "https://server11.mp3quran.net/ahmad_nu/"
         ),
         ReciterInfo(
             id = 10,
-            nameArabic = "محمود خليل الحصري (مجود)",
-            nameEnglish = "Mahmoud Khalil Al-Hussary (Mujawwad)",
+            nameArabic = "أكرم العلاقمي",
+            nameEnglish = "Akram Alalaqmi",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server13.mp3quran.net/husr/Mujawwad/"
+            folderUrl = "https://server9.mp3quran.net/akrm/"
         ),
         ReciterInfo(
             id = 31,
-            nameArabic = "مشاري راشد العفاسي",
-            nameEnglish = "Mishari Rashid Al-Afasy",
-            rewaya = "حفص عن عاصم",
-            folderUrl = "https://server8.mp3quran.net/afs/"
-        ),
-        ReciterInfo(
-            id = 32,
-            nameArabic = "سعد الغامدي",
-            nameEnglish = "Saad Al-Ghamdi",
-            rewaya = "حفص عن عاصم",
-            folderUrl = "https://server7.mp3quran.net/s_gmd/"
-        ),
-        ReciterInfo(
-            id = 51,
-            nameArabic = "ماهر المعيقلي",
-            nameEnglish = "Maher Al-Muaiqly",
-            rewaya = "حفص عن عاصم",
-            folderUrl = "https://server12.mp3quran.net/maher/"
-        ),
-        ReciterInfo(
-            id = 53,
-            nameArabic = "عبد الرحمن السديس",
-            nameEnglish = "Abdul Rahman Al-Sudais",
-            rewaya = "حفص عن عاصم",
-            folderUrl = "https://server11.mp3quran.net/sds/"
-        ),
-        ReciterInfo(
-            id = 60,
             nameArabic = "سعود الشريم",
             nameEnglish = "Saud Al-Shuraim",
             rewaya = "حفص عن عاصم",
             folderUrl = "https://server7.mp3quran.net/shur/"
         ),
         ReciterInfo(
-            id = 62,
-            nameArabic = "أحمد بن علي العجمي",
-            nameEnglish = "Ahmed ibn Ali Al-Ajmi",
+            id = 32,
+            nameArabic = "سهل ياسين",
+            nameEnglish = "Sahl Yassin",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server10.mp3quran.net/ajm/"
+            folderUrl = "https://server6.mp3quran.net/shl/"
+        ),
+        ReciterInfo(
+            id = 51,
+            nameArabic = "عبدالباسط عبدالصمد",
+            nameEnglish = "Abdulbasit Abdulsamad",
+            rewaya = "المصحف المجود",
+            folderUrl = "https://server7.mp3quran.net/basit/Almusshaf-Al-Mojawwad/"
+        ),
+        ReciterInfo(
+            id = 53,
+            nameArabic = "عبدالباسط عبدالصمد",
+            nameEnglish = "Abdulbasit Abdulsamad",
+            rewaya = "حفص عن عاصم",
+            folderUrl = "https://server7.mp3quran.net/basit/"
+        ),
+        ReciterInfo(
+            id = 60,
+            nameArabic = "عبدالله بصفر",
+            nameEnglish = "Abdullah Basfer",
+            rewaya = "حفص عن عاصم",
+            folderUrl = "https://server6.mp3quran.net/bsfr/"
+        ),
+        ReciterInfo(
+            id = 62,
+            nameArabic = "عبدالله عواد الجهني",
+            nameEnglish = "Abdullah Al-Johany",
+            rewaya = "حفص عن عاصم",
+            folderUrl = "https://server13.mp3quran.net/jhn/"
         ),
         ReciterInfo(
             id = 67,
-            nameArabic = "ياسر الدوسري",
-            nameEnglish = "Yasser Al-Dosari",
+            nameArabic = "عبدالمحسن القاسم",
+            nameEnglish = "Abdulmohsen Al-Qasim",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server11.mp3quran.net/yasser/"
+            folderUrl = "https://server8.mp3quran.net/qasm/"
         ),
         ReciterInfo(
             id = 74,
-            nameArabic = "عبد الله بصفر",
-            nameEnglish = "Abdullah Basfar",
+            nameArabic = "علي بن عبدالرحمن الحذيفي",
+            nameEnglish = "Ali Alhuthaifi",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server11.mp3quran.net/bsfr/"
+            folderUrl = "https://server9.mp3quran.net/hthfi/"
         ),
         ReciterInfo(
             id = 78,
-            nameArabic = "خليفة الطنيجي",
-            nameEnglish = "Khalifa Al-Tunaiji",
+            nameArabic = "عماد زهير حافظ",
+            nameEnglish = "Emad Hafez",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server11.mp3quran.net/taniji/"
+            folderUrl = "https://server6.mp3quran.net/hafz/"
         ),
         ReciterInfo(
             id = 106,
-            nameArabic = "ناصر القطامي",
-            nameEnglish = "Nasser Al-Qatami",
+            nameArabic = "محمد الطبلاوي",
+            nameEnglish = "Mohammad Al-Tablaway",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server6.mp3quran.net/qtm/"
+            folderUrl = "https://server12.mp3quran.net/tblawi/"
         ),
         ReciterInfo(
             id = 112,
-            nameArabic = "عبد الله الجهني",
-            nameEnglish = "Abdullah Al-Juhani",
+            nameArabic = "محمد صديق المنشاوي",
+            nameEnglish = "Mohammed Siddiq Al-Minshawi",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server11.mp3quran.net/jhn/"
+            folderUrl = "https://server10.mp3quran.net/minsh/"
         ),
         ReciterInfo(
             id = 118,
-            nameArabic = "بندر بليلة",
-            nameEnglish = "Bandar Baleela",
+            nameArabic = "محمود خليل الحصري",
+            nameEnglish = "Mahmoud Khalil Al-Hussary",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server10.mp3quran.net/bnd/"
+            folderUrl = "https://server13.mp3quran.net/husr/"
         ),
         ReciterInfo(
             id = 159,
-            nameArabic = "محمد أيوب",
-            nameEnglish = "Muhammad Ayyub",
+            nameArabic = "خالد المهنا",
+            nameEnglish = "Khalid Almohana",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server8.mp3quran.net/ayyub/"
+            folderUrl = "https://server11.mp3quran.net/mohna/"
         ),
         ReciterInfo(
             id = 256,
-            nameArabic = "عبد الله المطرود",
-            nameEnglish = "Abdullah Al-Matroud",
+            nameArabic = "أحمد خليل شاهين",
+            nameEnglish = "Ahmad Shaheen",
             rewaya = "حفص عن عاصم",
-            folderUrl = "https://server10.mp3quran.net/mat/"
+            folderUrl = "https://server16.mp3quran.net/shaheen/Rewayat-Hafs-A-n-Assem/"
         )
     )
 
@@ -193,7 +209,8 @@ internal object ReciterDataProvider {
     }
 
     /**
-     * Get default reciter (Abdul Basit)
+     * Get the default reciter: the lowest id we ship timing data for.
+     * Matches ReciterService.DEFAULT_RECITER_ID.
      */
     fun getDefaultReciter(): ReciterInfo {
         return allReciters.first()
