@@ -1,5 +1,6 @@
 package com.mushafimad.app.ui.home
 
+import com.mushafimad.app.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,7 +58,7 @@ fun HomeScreen(
                 Column {
                     Text("Quran Reader")
                     Text(
-                        "${state.chapters.size} surahs - powered by mushaf-ui 0.2.2",
+                        "${state.chapters.size} surahs - powered by mushaf-ui ${BuildConfig.VERSION_NAME}",
                         style = MaterialTheme.typography.labelSmall
                     )
                 }

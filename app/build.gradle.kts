@@ -87,6 +87,11 @@ android {
 
     buildFeatures {
         compose = true
+        // So the UI can show which library version it is running against rather
+        // than restating it in a string literal that goes stale on the next
+        // release - the pipeline auto-bumps the patch, so a hardcoded one lies
+        // immediately.
+        buildConfig = true
     }
 
     packaging {
