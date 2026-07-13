@@ -52,6 +52,13 @@ jobs:
           # VERSION_NAME bump is handled separately below, by diffing that one line.
           RELEASE_PATHS='^mushaf-core/|^mushaf-ui/|^gradle/libs\.versions\.toml$|^jitpack\.yml$'
 
+          # Test sources do not ship in the AAR, so a change confined to them cannot
+          # alter what a consumer downloads. Releasing on one would spend a version
+          # number on bytes identical to the last release - and version numbers are not
+          # free here: JitPack burns a failed one permanently, so they are worth keeping
+          # for changes that actually change something.
+          TEST_ONLY_PATHS='/src/(test|androidTest)/'
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "Manually dispatched - releasing regardless of what changed."
             echo "release=true" >> "$GITHUB_OUTPUT"
@@ -69,7 +76,9 @@ jobs:
           echo "Files changed by this push:"
           echo "$CHANGED_FILES"
 
-          LIBRARY_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -E "$RELEASE_PATHS" || true)"
+          LIBRARY_CHANGES="$(printf '%s\n' "$CHANGED_FILES" \
+            | grep -E "$RELEASE_PATHS" \
+            | grep -v -E "$TEST_ONLY_PATHS" || true)"
 
           # A human deliberately bumping VERSION_NAME is always a release, however
           # little else changed. Diff that single line rather than the whole file:
@@ -102,9 +111,33 @@ jobs:
     permissions:
       contents: write
     steps:
+      # RELEASE_TOKEN, not the default GITHUB_TOKEN.
+      #
+      # main is protected by a ruleset that requires a pull request for every push, and
+      # this job has to push two things directly: the version-bump commit and the tag.
+      # github-actions[bot] cannot be granted a bypass here - GitHub only allows an app
+      # to bypass a ruleset on an ORG-owned repo, and this one is user-owned ("Actor
+      # GitHub Actions integration must be part of the ruleset source or owner
+      # organization"). The bypass list on a personal repo can only name repository
+      # roles, and the bot holds none.
+      #
+      # So the push is made with a token belonging to someone who does have the bypass:
+      # the repository admin. Humans still cannot push to main without a PR; only this
+      # workflow can, and only ever the release commit. The workflow itself lives in the
+      # repo, so changing what it pushes would need a PR of its own.
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Check the release token can actually push
+        run: |
+          set -euo pipefail
+          if [ -z "${{ secrets.RELEASE_TOKEN }}" ]; then
+            echo "::error::RELEASE_TOKEN is not set. The release job must push the version bump and the tag to main, which the ruleset on main forbids for github-actions[bot]. Create a fine-grained PAT with Contents: Read and write on this repo and add it as the RELEASE_TOKEN secret. Failing now, before anything is tagged - a half-done release is worse than none."
+            exit 1
+          fi
+          echo "RELEASE_TOKEN is present."
 
       # This job builds the consumer APK below, so it needs a toolchain. Do not
       # rely on the runner's default JDK: the build targets 17, and which JDK
