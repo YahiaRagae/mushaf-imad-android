@@ -29,7 +29,12 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     outputs:
+      # Whether to publish a version at all.
       release: ${{ steps.filter.outputs.release }}
+      # Whether this merge changed anything worth building. This workflow is now the
+      # ONLY thing that gates main (ci.yml no longer runs on push), so the gate has to
+      # run on every code merge - not only on the ones that release.
+      code: ${{ steps.filter.outputs.code }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -59,9 +64,12 @@ jobs:
           # for changes that actually change something.
           TEST_ONLY_PATHS='/src/(test|androidTest)/'
 
+          # Both early exits must set `code` as well as `release`. The gate is keyed off
+          # `code`, so leaving it unset here would publish without ever running the tests.
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "Manually dispatched - releasing regardless of what changed."
             echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "code=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -69,6 +77,7 @@ jobs:
           if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
             echo "No previous commit to diff against (new branch tip) - releasing to be safe."
             echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "code=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -87,6 +96,17 @@ jobs:
           VERSION_BUMP="$(git diff "$BEFORE_SHA" "${{ github.sha }}" -- gradle.properties \
             | grep -E '^\+VERSION_NAME=' || true)"
 
+          # Anything that is not purely documentation is worth building, even when it is
+          # not worth publishing: a change to the app, the tests or the workflows still
+          # has to pass the gate before it sits on main.
+          CODE_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -v -E '\.md$|^docs/' || true)"
+          if [ -n "$CODE_CHANGES" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Documentation only - nothing to build."
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          fi
+
           if [ -n "$LIBRARY_CHANGES" ] || [ -n "$VERSION_BUMP" ]; then
             echo "Releasing. Reason:"
             [ -n "$LIBRARY_CHANGES" ] && printf '  library files changed:\n%s\n' "$LIBRARY_CHANGES"
@@ -99,9 +119,12 @@ jobs:
           fi
 
   # Reuse the exact same gates PRs must pass. Do not release on red.
+  # The gate. Keyed on `code`, not `release`: this workflow is now the only thing that
+  # runs on a push to main, so it has to test every code merge, including the ones that
+  # do not publish. Only documentation-only merges skip it entirely.
   ci:
     needs: changes
-    if: needs.changes.result == 'success' && needs.changes.outputs.release == 'true'
+    if: needs.changes.result == 'success' && needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/ci.yml
 
   release:
