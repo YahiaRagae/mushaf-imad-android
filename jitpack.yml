@@ -1,6 +1,8 @@
 jdk:
   - openjdk17
-before_install:
-  - sdk-manager "build-tools;35.0.0" "platforms;android-35"
 install:
+  # The Android SDK is already present on the JitPack image, and Gradle installs
+  # whatever else it needs. The previous `before_install: sdk-manager ...` line
+  # never ran at all ("sdk-manager: command not found") and only cluttered the
+  # build log with a failure that looked like the cause of real errors.
   - ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal -x lint

@@ -4,12 +4,12 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)](https://android-arsenal.com/api?level=24)
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.25-blue.svg)](https://kotlinlang.org)
-[![Version](https://img.shields.io/badge/Version-0.1-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.1)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg)](https://kotlinlang.org)
+[![Version](https://img.shields.io/badge/Version-0.2.0-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.2.0)
 [![JitPack](https://jitpack.io/v/YahiaRagae/mushaf-imad-android.svg)](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
 
-> ✅ **Version 0.1:** The library is now feature-complete with background audio playback, modular architecture, and full production readiness.
+> ✅ **Version 0.2.0:** Supports 16 KB memory pages (required by Google Play for apps targeting Android 15+), and fixes a long list of bugs found during QA — including a startup crash and the loss of all saved user data on every launch. The public API is unchanged, so v0.1 code compiles as-is.
 
 ## Features
 
@@ -32,7 +32,7 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 
 - **Min SDK:** 24 (Android 7.0)
 - **Target SDK:** 35 (Android 15)
-- **Kotlin:** 1.9.25
+- **Kotlin:** 2.0.21
 - **Jetpack Compose:** BOM 2024.12.01
 - **Gradle:** 8.7.3
 
@@ -59,14 +59,14 @@ Then add the dependency in your app's `build.gradle.kts`:
 **Option A: Full library (UI + Data) — recommended**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.1")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.2.0")
 }
 ```
 
 **Option B: Data layer only (custom UI)**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.1")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.2.0")
 }
 ```
 
@@ -353,7 +353,7 @@ mushaf-ui/                      # Jetpack Compose UI (depends on mushaf-core)
 ## Technology Stack
 
 - **UI:** Jetpack Compose with Material 3
-- **Database:** Realm Kotlin 1.16.0 (schema version 24)
+- **Database:** Realm Kotlin 3.0.0 (schema version 24, 16 KB page aligned)
 - **Audio:** Media3 (ExoPlayer) 1.5.0
 - **DI:** Koin 3.5.6 (lightweight runtime DI, no code generation)
 - **Async:** Kotlin Coroutines + Flow
@@ -388,8 +388,55 @@ A sample app is included in the `sample/` module demonstrating all library featu
 
 ## Project Status
 
-**Version:** 0.1
-**Status:** Published on [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android) — undergoing QA
+**Version:** 0.2.0
+**Status:** Published on [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
+
+---
+
+## What's new in 0.2.0
+
+The public API is unchanged — v0.1 code compiles as-is.
+
+### 16 KB page size ([#73](https://github.com/YahiaRagae/mushaf-imad-android/issues/73))
+
+Android 15+ devices can use 16 KB memory pages, and Google Play requires apps targeting Android 15+
+to support them. Three native libraries were still built for 4 KB pages, which forced the app into
+page-size compatibility mode and warned the user on every launch. All three are now aligned:
+Realm 3.0.0, DataStore 1.1.7, graphics-path 1.1.0.
+
+Realm 3.0.0 requires Kotlin ≥ 2.0.20, so the library is now built with **Kotlin 2.0.21**. The bundled
+`quran.realm` is unchanged and still shared with the iOS library.
+
+### Fixed
+
+- **Crash on the second launch.** The database was being deleted and recopied from assets on every
+  start, by two racing service instances (`RLM_ERR_MISMATCHED_CONFIG`).
+- **All user data was wiped on every launch.** Bookmarks, reading history and the last read position
+  lived in the file that was being deleted. They now live in a separate `userdata.realm` that is never
+  deleted.
+- **Zero-configuration setup crashed host apps that use Koin themselves.** The library called
+  `startKoin` on the global Koin context; it now runs an isolated one.
+- **Search.** Stale results could overwrite newer ones while typing, and the search box emptied itself
+  after tapping a result while the results stayed on screen.
+- **The reading position was never actually saved.**
+- **The reader never followed the recitation.** The page did not turn, and the highlight vanished as
+  soon as the recited verse was off-page — which also made the next/previous verse buttons appear dead.
+- **Seeking to the start did not return to the chapter opening.** The basmala is recited but is not a
+  numbered verse.
+- **Paging the reader restarted the chapter from its first verse.**
+- **Audio kept playing after the app was swiped out of recents.**
+- **`getSajdaVerses()` always returned an empty list.**
+- **Page turning** is now animated, with neighbouring pages preloaded
+  ([#70](https://github.com/YahiaRagae/mushaf-imad-android/issues/70)).
+- **Player state** comes from listener events instead of a 100 ms polling loop that ran forever.
+
+### Added
+
+- **Reading statistics now work** ([#75](https://github.com/YahiaRagae/mushaf-imad-android/issues/75)).
+  Nothing ever recorded a reading session, so reading time, streak and chapters-read were empty for
+  every consumer. The reader now times real dwell per page.
+
+---
 
 ### Completed Features
 - Page navigation (604 pages) with image-based Mushaf rendering
@@ -447,7 +494,7 @@ Developed with care for the Muslim community.
 
 ---
 
-**Last Updated:** February 3, 2026
-**Current Version:** v0.1
+**Last Updated:** July 2026
+**Current Version:** 0.2.0
 **Status:** Stable - Production Ready
 **Published:** [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
