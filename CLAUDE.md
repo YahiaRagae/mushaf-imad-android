@@ -5,15 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build Commands
 
 ```bash
-# Build all modules
-./gradlew assembleDebug -x lint
-
-# Build individual modules
+# Build individual library modules
 ./gradlew :mushaf-core:assembleDebug
 ./gradlew :mushaf-ui:assembleDebug
 
-# Run sample app
-./gradlew :sample:installDebug
+# Run the app against the library from source (the dev loop)
+./gradlew :app:installSourceDebug
 
 # Run tests
 ./gradlew testDebugUnitTest                      # All tests
@@ -23,6 +20,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build release
 ./gradlew assembleRelease
 ```
+
+> Don't run a blanket `./gradlew assembleDebug` / `assembleRelease` at the
+> root while iterating: `:app` has two product flavours (see below) and the
+> `published` one needs a mavenLocal publish or network access to JitPack.
+> Target `:app:assembleSourceDebug` (or `installSourceDebug`) instead.
 
 ## Architecture
 
@@ -40,10 +42,29 @@ mushaf-ui/       → Jetpack Compose UI (depends on mushaf-core)
     ├── search/  → SearchView, SearchViewModel
     └── di/      → Koin ViewModels (UiModule.kt)
 
-sample/          → Demo app showcasing all features
+app/             → Quran reader app, built in two flavours (see below)
 ```
 
-**Dependency flow:** `sample → mushaf-ui → mushaf-core`
+**Dependency flow:** `app → mushaf-ui → mushaf-core`
+
+### `:app` product flavours
+
+`:app` builds the exact same app code against two different spellings of the
+library, so any gap between "works in this repo" and "works for a real
+consumer" shows up as a build/test failure here instead of as a bug report:
+
+- **`source`** — depends on `project(":mushaf-ui")`. This is the day-to-day
+  dev loop: edit `mushaf-core`/`mushaf-ui` and `:app:installSourceDebug`
+  picks the change up immediately, no publish step.
+- **`published`** — depends on the library by Maven coordinate
+  (`com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:<VERSION_NAME>`),
+  resolved from **mavenLocal** before a release and from **JitPack** after
+  one. This is the gate that proves what we actually ship works: run
+  `./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal`
+  then `:app:assemblePublishedDebug`/`installPublishedDebug` to build the app
+  the way a third-party consumer would, against exactly what would be
+  published. Override the version with `-PmushafVersion=<v>` to build
+  against any already-released version instead of this checkout's own.
 
 ### Key Patterns
 

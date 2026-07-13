@@ -374,13 +374,24 @@ mushaf-ui/                      # Jetpack Compose UI (depends on mushaf-core)
 
 ---
 
-## Sample App
+## App
 
-A sample app is included in the `sample/` module demonstrating all library features:
+A demo app showcasing all library features lives in the `app/` module, built in two
+product flavours against two different spellings of the same library:
 
-```bash
-./gradlew :sample:installDebug
-```
+- **`source`** — depends on the library modules directly (`project(":mushaf-ui")`).
+  This is the day-to-day dev loop:
+  ```bash
+  ./gradlew :app:installSourceDebug
+  ```
+- **`published`** — depends on the library by its published Maven coordinate,
+  resolved from mavenLocal before a release and from JitPack after one. This is
+  the gate that proves what gets shipped actually works for a third party — use
+  it to sanity-check a release candidate, not for everyday development:
+  ```bash
+  ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal
+  ./gradlew :app:installPublishedDebug
+  ```
 
 ---
 
@@ -388,7 +399,10 @@ A sample app is included in the `sample/` module demonstrating all library featu
 
 ```bash
 # Build both library modules
-./gradlew assembleDebug -x lint
+./gradlew :mushaf-core:assembleDebug :mushaf-ui:assembleDebug -x lint
+
+# Build the app against the library from source
+./gradlew :app:assembleSourceDebug -x lint
 
 # Run tests
 ./gradlew testDebugUnitTest

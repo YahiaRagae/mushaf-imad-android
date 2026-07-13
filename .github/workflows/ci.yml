@@ -15,8 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          # Full history: the sample-freeze check needs a merge base with
-          # the PR base branch (three-dot diff fails on shallow clones)
+          # Full history: kept for consistency with the other checkouts in
+          # this repo (release.yml diffs commits with a full-history clone).
           fetch-depth: 0
 
       - name: Set up JDK 17
@@ -30,19 +30,31 @@ jobs:
 
       # Source-compatibility oracle: V01ApiCompatibilityFixture is a frozen
       # snapshot of how a v0.1 consumer calls the library. If any public
-      # signature changes shape, it stops compiling and this fails. It lets the
-      # sample app evolve its demos while keeping the API contract honest.
+      # signature changes shape, it stops compiling and this fails. It lets
+      # the app's `source` flavour evolve its demos while keeping the API
+      # contract honest.
       - name: v0.1 consumer source-compatibility (frozen fixture must compile)
-        run: ./gradlew :sample:compileDebugAndroidTestKotlin
+        run: ./gradlew :app:compileSourceDebugAndroidTestKotlin
 
       - name: Public API check (binary-compatibility-validator)
         run: ./gradlew apiCheck
 
+      # `:app:testSourceDebugUnitTest` is spelled out because :app has product
+      # flavours, so it has NO task called `testDebugUnitTest` for the bare
+      # `testDebugUnitTest` above to match - :app's unit tests would silently
+      # never run. That matters: AppManifestPermissionsTest lives there, and it
+      # is the guard that fails if anyone re-adds a library-owned permission to
+      # the app's manifest. A guard that never executes is worse than no guard.
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebugUnitTest :app:testSourceDebugUnitTest
 
-      - name: Build sample (debug + minified release)
-        run: ./gradlew :sample:assembleDebug :sample:assembleRelease -x lint
+      # `source` flavour only. `published` resolves the library by coordinate
+      # from mavenLocal (pre-release) or JitPack (post-release) - neither is
+      # populated in this job, so building `published` here would just fail
+      # trying to reach JitPack for a version that was never published. The
+      # `consumer` job below is what exercises `published`.
+      - name: Build app - source flavour (debug + minified release)
+        run: ./gradlew :app:assembleSourceDebug :app:assembleSourceRelease -x lint
 
       - name: Upload test reports
         if: failure()
@@ -171,11 +183,12 @@ jobs:
       - name: Verify published AAR contents
         run: ./scripts/verify-aar.sh
 
-      # consumer-check is a separate Gradle build that resolves the library
-      # from mavenLocal() the way a real third party would - not as a source
-      # module in this build.
+      # The `published` flavour resolves the library by coordinate from
+      # mavenLocal - the way a real third party would - not as a source
+      # module in this build. This is what replaces the old standalone
+      # consumer-check Gradle build.
       - name: Build consumer app (debug + release)
-        run: ./gradlew -p consumer-check :app:assembleDebug :app:assembleRelease
+        run: ./gradlew :app:assemblePublishedDebug :app:assemblePublishedRelease
 
       - name: Consumer instrumented test
         uses: reactivecircus/android-emulator-runner@v2
@@ -186,7 +199,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
-          script: ./gradlew -p consumer-check :app:connectedDebugAndroidTest
+          script: ./gradlew :app:connectedPublishedDebugAndroidTest
 
       - name: Upload test reports
         if: failure()
