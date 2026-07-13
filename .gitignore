@@ -5,6 +5,9 @@
 .DS_Store
 /build
 */build
+# Nested Gradle builds (consumer-check) live deeper than */build
+**/build/
+**/.gradle/
 /captures
 .externalNativeBuild
 .cxx

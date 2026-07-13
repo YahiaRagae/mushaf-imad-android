@@ -15,7 +15,7 @@ plugins {
 // surface consumers depend on. Run `apiDump` to regenerate after an
 // intentional (additive-only) change; CI runs `apiCheck`.
 apiValidation {
-    ignoredProjects += listOf("sample")
+    ignoredProjects += listOf("app")
 }
 
 tasks.register("clean", Delete::class) {

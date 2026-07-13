@@ -92,23 +92,12 @@ class MyApplication : Application() {
 
 ### 3. Update AndroidManifest.xml
 
+You need **two** permissions. That is the whole list:
+
 ```xml
 <manifest>
-    <!-- Required permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- For background audio (Android 9+) -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-
-    <!-- For notifications (Android 13+) -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <!--
-        WAKE_LOCK is declared by the library itself and merged in automatically -
-        you do not need to add it.
-    -->
 
     <application
         android:name=".MyApplication"
@@ -117,6 +106,17 @@ class MyApplication : Application() {
     </application>
 </manifest>
 ```
+
+Everything the library needs to run, the library declares for itself, and the
+manifest merger folds it into your app automatically: `WAKE_LOCK`,
+`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` and
+`POST_NOTIFICATIONS`. Do not add them — a library that cannot state its own
+requirements is a library you cannot trust, and if one is ever missing that is
+a bug in the library, not something for you to work around.
+
+(If your app targets Android 13+ you still need to *request* `POST_NOTIFICATIONS`
+from the user at runtime to show playback controls. Declaring it is ours;
+asking the user is yours.)
 
 ---
 
@@ -374,13 +374,31 @@ mushaf-ui/                      # Jetpack Compose UI (depends on mushaf-core)
 
 ---
 
-## Sample App
+## App
 
-A sample app is included in the `sample/` module demonstrating all library features:
+**Just want to try it?** Every [release](https://github.com/YahiaRagae/mushaf-imad-android/releases)
+ships a ready-to-install APK. It is built against the *published* library, so the app
+you download is the same app a third party would get by depending on the coordinate
+below — which makes it the proof that the release actually works, not just a demo.
+(It is debug-signed, so Android will ask you to allow installing from an unknown source.)
 
-```bash
-./gradlew :sample:installDebug
-```
+The app is a full Quran reader — surah list, search, bookmarks, reading history,
+settings, the Mushaf reader and the audio player. Its source is the `app/` module, built
+in two product flavours against two different spellings of the same library:
+
+- **`source`** — depends on the library modules directly (`project(":mushaf-ui")`).
+  This is the day-to-day dev loop:
+  ```bash
+  ./gradlew :app:installSourceDebug
+  ```
+- **`published`** — depends on the library by its published Maven coordinate,
+  resolved from mavenLocal before a release and from JitPack after one. This is
+  the gate that proves what gets shipped actually works for a third party — use
+  it to sanity-check a release candidate, not for everyday development:
+  ```bash
+  ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal
+  ./gradlew :app:installPublishedDebug
+  ```
 
 ---
 
@@ -388,7 +406,10 @@ A sample app is included in the `sample/` module demonstrating all library featu
 
 ```bash
 # Build both library modules
-./gradlew assembleDebug -x lint
+./gradlew :mushaf-core:assembleDebug :mushaf-ui:assembleDebug -x lint
+
+# Build the app against the library from source
+./gradlew :app:assembleSourceDebug -x lint
 
 # Run tests
 ./gradlew testDebugUnitTest

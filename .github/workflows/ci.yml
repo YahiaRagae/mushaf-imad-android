@@ -4,15 +4,25 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Lets release.yml run these same gates as a reusable workflow before it
+  # tags/publishes anything. Keep this workflow self-contained (no inputs it
+  # needs from the caller) so `uses: ./.github/workflows/ci.yml` just works.
+  workflow_call:
 
 jobs:
   build:
+    # Skip the release job's own "chore: release X.Y.Z [skip ci]" bump commit. It
+    # is a one-line version bump to a tree CI just went green on, and re-testing
+    # it costs a full emulator run. The guard is scoped to `push` so it cannot
+    # affect pull_request or the workflow_call from release.yml, where
+    # head_commit is absent.
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
-          # Full history: the sample-freeze check needs a merge base with
-          # the PR base branch (three-dot diff fails on shallow clones)
+          # Full history: kept for consistency with the other checkouts in
+          # this repo (release.yml diffs commits with a full-history clone).
           fetch-depth: 0
 
       - name: Set up JDK 17
@@ -26,26 +36,197 @@ jobs:
 
       # Source-compatibility oracle: V01ApiCompatibilityFixture is a frozen
       # snapshot of how a v0.1 consumer calls the library. If any public
-      # signature changes shape, it stops compiling and this fails. It lets the
-      # sample app evolve its demos while keeping the API contract honest.
+      # signature changes shape, it stops compiling and this fails. It lets
+      # the app's `source` flavour evolve its demos while keeping the API
+      # contract honest.
       - name: v0.1 consumer source-compatibility (frozen fixture must compile)
-        run: ./gradlew :sample:compileDebugAndroidTestKotlin
+        run: ./gradlew :app:compileSourceDebugAndroidTestKotlin
 
       - name: Public API check (binary-compatibility-validator)
         run: ./gradlew apiCheck
 
+      # `:app:testSourceDebugUnitTest` is spelled out because :app has product
+      # flavours, so it has NO task called `testDebugUnitTest` for the bare
+      # `testDebugUnitTest` above to match - :app's unit tests would silently
+      # never run. That matters: AppManifestPermissionsTest lives there, and it
+      # is the guard that fails if anyone re-adds a library-owned permission to
+      # the app's manifest. A guard that never executes is worse than no guard.
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebugUnitTest :app:testSourceDebugUnitTest
 
-      - name: Build sample (debug + minified release)
-        run: ./gradlew :sample:assembleDebug :sample:assembleRelease -x lint
-
-      - name: Publish to Maven local (JitPack dry run)
-        run: ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal -x lint
+      # `source` flavour only. `published` resolves the library by coordinate
+      # from mavenLocal (pre-release) or JitPack (post-release) - neither is
+      # populated in this job, so building `published` here would just fail
+      # trying to reach JitPack for a version that was never published. The
+      # `consumer` job below is what exercises `published`.
+      - name: Build app - source flavour (debug + minified release)
+        run: ./gradlew :app:assembleSourceDebug :app:assembleSourceRelease -x lint
 
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v5
         with:
-          name: test-reports
+          name: unit-test-reports
           path: '**/build/reports/tests/'
+
+  instrumented:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      # GitHub's ubuntu-latest runners support nested virtualization but don't
+      # ship the udev rule that makes /dev/kvm group-accessible. Without this,
+      # the emulator falls back to software virtualization and is unusably
+      # slow (tests time out rather than fail).
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-33-google_apis-x86_64
+
+      - name: Create AVD and generate cache
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: false
+          script: echo "AVD created and cached."
+
+      # 23 instrumented tests across mushaf-core and mushaf-ui. These never
+      # ran in CI before this workflow - only unit tests did.
+      - name: Instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          # Wake and unlock before running. Compose's performClick injects real
+          # touch events, and the injection is REJECTED outright - "Failed to
+          # inject touch input" - if the emulator is asleep or sitting behind the
+          # keyguard, which a freshly booted headless AVD often is. That is an
+          # environment problem, so it is fixed here rather than by weakening the
+          # test to stop touching the screen.
+          script: |
+            adb shell input keyevent 82 || true
+            adb shell wm dismiss-keyguard || true
+            adb shell svc power stayon true || true
+            ./gradlew :mushaf-core:connectedDebugAndroidTest :mushaf-ui:connectedDebugAndroidTest -x lint
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: instrumented-test-reports
+          path: '**/build/reports/androidTests/'
+
+  consumer:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: AVD cache
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-33-google_apis-x86_64
+
+      - name: Create AVD and generate cache
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: false
+          script: echo "AVD created and cached."
+
+      # publishToMavenLocal only proves the publish machinery runs; it says
+      # nothing about what ends up inside the AAR or whether a real third
+      # party can build against it. This job is what would have caught the
+      # WAKE_LOCK and reading-history crashes shipped in 0.2.1.
+      - name: Publish to Maven local
+        run: ./gradlew :mushaf-core:publishToMavenLocal :mushaf-ui:publishToMavenLocal -x lint
+
+      - name: Verify published AAR contents
+        run: ./scripts/verify-aar.sh
+
+      # The `published` flavour resolves the library by coordinate from
+      # mavenLocal - the way a real third party would - not as a source
+      # module in this build. This is what replaces the old standalone
+      # consumer-check Gradle build.
+      - name: Build consumer app (debug + release)
+        run: ./gradlew :app:assemblePublishedDebug :app:assemblePublishedRelease
+
+      - name: Consumer instrumented test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          # Same wake-and-unlock as the instrumented job above.
+          script: |
+            adb shell input keyevent 82 || true
+            adb shell wm dismiss-keyguard || true
+            adb shell svc power stayon true || true
+            ./gradlew :app:connectedPublishedDebugAndroidTest
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: consumer-test-reports
+          path: '**/build/reports/androidTests/'

@@ -1,0 +1,267 @@
+name: Release
+
+# Runs after a merge lands on main. Decides whether to skip (docs-only,
+# or our own version-bump commit), re-runs the full CI gate, then cuts a
+# version, tags it, forces JitPack to actually build it (JitPack is lazy -
+# pushing a tag alone builds nothing), and publishes a GitHub release.
+on:
+  push:
+    branches: [main]
+  # Escape hatch: cut a release by hand when the path filter below decided not
+  # to, or to re-cut after a failure. A burned version still cannot be reused -
+  # bump VERSION_NAME first.
+  workflow_dispatch:
+
+# Never run two releases concurrently - the version-bump/tag logic below is
+# not safe against a second run reading gradle.properties mid-bump.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # Decide whether this push should release at all.
+  changes:
+    # Guards against the release job's own "chore: release X.Y.Z [skip ci]"
+    # bump commit re-triggering another release.
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.filter.outputs.release }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Decide if this push touches anything release-worthy
+        id: filter
+        run: |
+          set -euo pipefail
+
+          # A release publishes the LIBRARY. So only a change that can alter what
+          # ends up inside the published AARs is worth a version. Changes to the
+          # app, the workflows, the docs or the scripts are gated by CI but do not
+          # get a version of their own - cutting one would burn a version number on
+          # bytes identical to the last release and notify everyone about nothing.
+          #
+          # jitpack.yml is included because it decides what JitPack even builds.
+          # gradle.properties is NOT a path here: it also holds GROUP and other
+          # settings that do not change the published bytes. A deliberate
+          # VERSION_NAME bump is handled separately below, by diffing that one line.
+          RELEASE_PATHS='^mushaf-core/|^mushaf-ui/|^gradle/libs\.versions\.toml$|^jitpack\.yml$'
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manually dispatched - releasing regardless of what changed."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BEFORE_SHA="${{ github.event.before }}"
+          if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            echo "No previous commit to diff against (new branch tip) - releasing to be safe."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CHANGED_FILES="$(git diff --name-only "$BEFORE_SHA" "${{ github.sha }}")"
+          echo "Files changed by this push:"
+          echo "$CHANGED_FILES"
+
+          LIBRARY_CHANGES="$(printf '%s\n' "$CHANGED_FILES" | grep -E "$RELEASE_PATHS" || true)"
+
+          # A human deliberately bumping VERSION_NAME is always a release, however
+          # little else changed. Diff that single line rather than the whole file:
+          # gradle.properties also carries GROUP and JVM args, and editing those
+          # must not cut a version.
+          VERSION_BUMP="$(git diff "$BEFORE_SHA" "${{ github.sha }}" -- gradle.properties \
+            | grep -E '^\+VERSION_NAME=' || true)"
+
+          if [ -n "$LIBRARY_CHANGES" ] || [ -n "$VERSION_BUMP" ]; then
+            echo "Releasing. Reason:"
+            [ -n "$LIBRARY_CHANGES" ] && printf '  library files changed:\n%s\n' "$LIBRARY_CHANGES"
+            [ -n "$VERSION_BUMP" ] && echo "  VERSION_NAME was deliberately changed: ${VERSION_BUMP}"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nothing that changes the published library - skipping the release."
+            echo "Run this workflow manually (workflow_dispatch) to force one anyway."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Reuse the exact same gates PRs must pass. Do not release on red.
+  ci:
+    needs: changes
+    if: needs.changes.result == 'success' && needs.changes.outputs.release == 'true'
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: [changes, ci]
+    if: needs.changes.outputs.release == 'true' && needs.ci.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      # This job builds the consumer APK below, so it needs a toolchain. Do not
+      # rely on the runner's default JDK: the build targets 17, and which JDK
+      # ubuntu-latest points JAVA_HOME at has changed before.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Determine release version
+        id: version
+        run: |
+          set -euo pipefail
+
+          CURRENT_VERSION="$(sed -n 's/^VERSION_NAME=//p' gradle.properties)"
+          CURRENT_CODE="$(sed -n 's/^VERSION_CODE=//p' gradle.properties)"
+          echo "Current VERSION_NAME=${CURRENT_VERSION} VERSION_CODE=${CURRENT_CODE}"
+
+          BEFORE_SHA="${{ github.event.before }}"
+          BEFORE_VERSION=""
+          if [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            BEFORE_VERSION="$(git show "${BEFORE_SHA}:gradle.properties" 2>/dev/null | sed -n 's/^VERSION_NAME=//p' || true)"
+          fi
+
+          # Compute what the release version *would* be, but do not touch
+          # gradle.properties or push anything yet - the tag-exists guard
+          # below must run first. Pushing the bump before the guard is what
+          # used to leave main permanently bumped with no release whenever
+          # the guard later failed.
+          BUMP_NEEDED=false
+          if [ -n "$BEFORE_VERSION" ] && [ "$BEFORE_VERSION" != "$CURRENT_VERSION" ]; then
+            # A human deliberately changed VERSION_NAME in this merge - respect it as-is.
+            echo "VERSION_NAME changed by this merge (${BEFORE_VERSION} -> ${CURRENT_VERSION}). Using it as-is."
+            RELEASE_VERSION="$CURRENT_VERSION"
+          else
+            # No deliberate version change - auto-bump the patch component.
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+            if [ -z "${MAJOR:-}" ] || [ -z "${MINOR:-}" ] || [ -z "${PATCH:-}" ]; then
+              echo "::error::VERSION_NAME '${CURRENT_VERSION}' is not MAJOR.MINOR.PATCH - cannot auto-bump the patch. Bump VERSION_NAME by hand and merge again."
+              exit 1
+            fi
+            RELEASE_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+            NEW_CODE=$((CURRENT_CODE + 1))
+            echo "Patch would auto-bump: ${CURRENT_VERSION} -> ${RELEASE_VERSION} (VERSION_CODE ${CURRENT_CODE} -> ${NEW_CODE}); pending the tag-exists guard below."
+            BUMP_NEEDED=true
+          fi
+
+          # Guard: never silently reuse a version. If JitPack already has (or
+          # tried and burned) this tag, a human needs to cut the next patch.
+          # This MUST run before anything is pushed to main.
+          if git ls-remote --exit-code --tags origin "refs/tags/${RELEASE_VERSION}" >/dev/null 2>&1; then
+            echo "::error::Tag ${RELEASE_VERSION} already exists on origin. Refusing to reuse a version - if a previous release attempt failed, JitPack has likely burned this version string permanently. Cut a new patch version by hand."
+            exit 1
+          fi
+
+          if [ "$BUMP_NEEDED" = true ]; then
+            sed -i "s/^VERSION_NAME=.*/VERSION_NAME=${RELEASE_VERSION}/" gradle.properties
+            sed -i "s/^VERSION_CODE=.*/VERSION_CODE=${NEW_CODE}/" gradle.properties
+
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add gradle.properties
+            git commit -m "chore: release ${RELEASE_VERSION} [skip ci]"
+            git push origin HEAD:main
+          fi
+
+          echo "version=${RELEASE_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Tag release
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # No "v" prefix - JitPack derives the published artifact version
+          # directly from the tag name, and existing tags (0.1, 0.2.1) have none.
+          git tag -a "${RELEASE_VERSION}" -m "Release ${RELEASE_VERSION}"
+          git push origin "${RELEASE_VERSION}"
+
+      - name: Trigger and verify JitPack build
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          BUILD_API="https://jitpack.io/api/builds/com.github.YahiaRagae/mushaf-imad-android/${RELEASE_VERSION}"
+          POM_URL="https://jitpack.io/com/github/YahiaRagae/mushaf-imad-android/mushaf-ui/${RELEASE_VERSION}/mushaf-ui-${RELEASE_VERSION}.pom"
+          AAR_URL="https://jitpack.io/com/github/YahiaRagae/mushaf-imad-android/mushaf-ui/${RELEASE_VERSION}/mushaf-ui-${RELEASE_VERSION}.aar"
+
+          poll_build_status() {
+            STATUS=""
+            for i in $(seq 1 40); do
+              STATUS="$(curl -sS --max-time 60 "$BUILD_API" | sed -n 's/.*"status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+              echo "  poll ${i}/40: status=${STATUS:-unknown}"
+              if [ "$STATUS" = "ok" ] || [ "$STATUS" = "Error" ]; then
+                return 0
+              fi
+              sleep 30
+            done
+            return 0
+          }
+
+          # JitPack is lazy: pushing a tag builds nothing. Requesting an
+          # artifact is what actually kicks off the build, and the first
+          # request can block for several minutes while it happens.
+          echo "Requesting ${POM_URL} to trigger the JitPack build..."
+          curl -sS --max-time 900 -o /dev/null -w 'HTTP %{http_code}\n' "$POM_URL" || true
+
+          echo "Polling ${BUILD_API} for build status..."
+          poll_build_status
+
+          # No retry here. JitPack permanently caches a failed build against
+          # the version string and serves the cached failure instantly on any
+          # later request for the same POM - re-requesting does nothing. This
+          # is exactly how 0.2.0 died on a transient Maven Central socket
+          # error and could never be rebuilt, even after moving the tag. The
+          # only real recovery is a new version string, which is why the
+          # tag-exists guard above refuses to let a burned version be reused.
+          if [ "$STATUS" != "ok" ]; then
+            echo "::error::JitPack failed to build ${RELEASE_VERSION} (status=${STATUS:-unknown}). JitPack permanently caches a failed build against a version string - ${RELEASE_VERSION} is now burned. A human must cut the next patch version; do not retry this same version."
+            exit 1
+          fi
+          echo "JitPack build ok for ${RELEASE_VERSION}."
+
+          echo "Downloading ${AAR_URL} to confirm the published artifact is genuinely installable..."
+          HTTP_CODE="$(curl -sS --max-time 120 -o /tmp/mushaf-ui.aar -w '%{http_code}' "$AAR_URL")"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Downloading the published AAR returned HTTP ${HTTP_CODE}, not 200. JitPack reported the build ok but the artifact is not actually fetchable."
+            exit 1
+          fi
+          ls -la /tmp/mushaf-ui.aar
+          echo "Downloaded mushaf-ui-${RELEASE_VERSION}.aar successfully (HTTP 200)."
+
+      # This build is not just a nicety - it is the proof the publish worked.
+      # By now the working tree's VERSION_NAME is the released version (either
+      # committed by the auto-bump above, or the human's deliberate bump), so
+      # `published` resolves it from JitPack exactly like a real third party
+      # would. It can only succeed if JitPack actually served a usable AAR.
+      - name: Build consumer APK against the published artifact
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          ./gradlew :app:assemblePublishedRelease
+          cp "app/build/outputs/apk/published/release/app-published-release.apk" \
+            "mushaf-app-${RELEASE_VERSION}.apk"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh release create "${RELEASE_VERSION}" "mushaf-app-${RELEASE_VERSION}.apk" \
+            --generate-notes --latest
