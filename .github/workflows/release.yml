@@ -167,10 +167,32 @@ jobs:
           if [ "$BUMP_NEEDED" = true ]; then
             sed -i "s/^VERSION_NAME=.*/VERSION_NAME=${RELEASE_VERSION}/" gradle.properties
             sed -i "s/^VERSION_CODE=.*/VERSION_CODE=${NEW_CODE}/" gradle.properties
+          fi
 
+          # Point the README at the version we are about to publish. The dependency
+          # snippet is the single most consequential line in it - people copy-paste it -
+          # and until now nothing updated it, so every release quietly told new users to
+          # depend on the previous one.
+          #
+          # These patterns are deliberately narrow. A blanket search-and-replace of the
+          # old version string would also rewrite the "## What's new in 0.2.2" heading
+          # and the prose describing what past releases fixed, i.e. it would falsify the
+          # changelog. Only what must track the current version is touched; history is
+          # left alone.
+          sed -i -E "s|mushaf-ui:[0-9]+\.[0-9]+\.[0-9]+|mushaf-ui:${RELEASE_VERSION}|g" README.md
+          sed -i -E "s|mushaf-core:[0-9]+\.[0-9]+\.[0-9]+|mushaf-core:${RELEASE_VERSION}|g" README.md
+          sed -i -E "s|Version-[0-9]+\.[0-9]+\.[0-9]+-blue|Version-${RELEASE_VERSION}-blue|g" README.md
+          sed -i -E "s|(releases/tag/)[0-9]+\.[0-9]+\.[0-9]+|\1${RELEASE_VERSION}|g" README.md
+          sed -i -E "s|^\*\*Version:\*\* [0-9]+\.[0-9]+\.[0-9]+|**Version:** ${RELEASE_VERSION}|" README.md
+          sed -i -E "s|^\*\*Current Version:\*\* [0-9]+\.[0-9]+\.[0-9]+|**Current Version:** ${RELEASE_VERSION}|" README.md
+
+          # One commit for the whole release: the version bump (if any) and the docs that
+          # quote it. Committing only when something actually changed keeps a re-run or a
+          # deliberate human bump from creating an empty commit.
+          if ! git diff --quiet gradle.properties README.md; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add gradle.properties
+            git add gradle.properties README.md
             git commit -m "chore: release ${RELEASE_VERSION} [skip ci]"
             git push origin HEAD:main
           fi

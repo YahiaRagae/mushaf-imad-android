@@ -13,3 +13,7 @@
 .cxx
 local.properties
 .claude/
+
+# Android Studio creates a nested .idea/ inside each module (e.g. app/.idea/).
+# Unanchored so it matches at any depth, not just the repo root.
+.idea/

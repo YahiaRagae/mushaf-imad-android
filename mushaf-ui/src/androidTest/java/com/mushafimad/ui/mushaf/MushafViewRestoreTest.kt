@@ -1,9 +1,12 @@
 package com.mushafimad.ui.mushaf
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertHasClickAction
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.mushafimad.core.MushafLibrary
@@ -120,8 +123,22 @@ class MushafViewRestoreTest {
         }
         compose.waitUntil(timeoutMillis = 15_000) { pageShown == 100 }
 
-        // Tap "next page" and let the debounced save run
-        compose.onNodeWithContentDescription("الصفحة التالية").performClick()
+        // Tap "next page" and let the debounced save run.
+        //
+        // Deliberately not performClick(). performClick does two things: it checks the
+        // node is displayed and clickable, then injects a real touch event. On a
+        // headless CI emulator that injection is rejected outright - "Failed to inject
+        // touch input" - which fails the build for reasons that have nothing to do with
+        // this library. Waking and unlocking the device first did not fix it.
+        //
+        // The check is the part worth keeping, so it is kept, explicitly. The injection
+        // is not: it was only ever exercising the emulator's input stack. Driving the
+        // click through the semantics action asserts the same thing about the button and
+        // then invokes it deterministically.
+        compose.onNodeWithContentDescription("الصفحة التالية")
+            .assertIsDisplayed()
+            .assertHasClickAction()
+            .performSemanticsAction(SemanticsActions.OnClick)
         compose.waitUntil(timeoutMillis = 15_000) { pageShown == 101 }
         compose.waitUntil(timeoutMillis = 15_000) {
             runBlocking {

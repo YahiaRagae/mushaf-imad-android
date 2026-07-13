@@ -70,6 +70,12 @@ jobs:
           path: '**/build/reports/tests/'
 
   instrumented:
+    # Gated on `build`. The emulator jobs are by far the most expensive thing here -
+    # each boots an AVD and takes minutes - while `build` is cheap and catches the
+    # ordinary breakages (API change, failing unit test, compile error). Running them
+    # in parallel meant a one-line apiCheck failure still paid for two emulator boots.
+    # Costs a little wall-clock on a green run; saves a lot of minutes on a red one.
+    needs: build
     if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
@@ -128,12 +134,11 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
-          # Wake and unlock before running. Compose's performClick injects real
-          # touch events, and the injection is REJECTED outright - "Failed to
-          # inject touch input" - if the emulator is asleep or sitting behind the
-          # keyguard, which a freshly booted headless AVD often is. That is an
-          # environment problem, so it is fixed here rather than by weakening the
-          # test to stop touching the screen.
+          # Wake and unlock before running: a freshly booted headless AVD is often
+          # still asleep or behind the keyguard, and an app cannot be driven in that
+          # state. This is hygiene, not a fix - it did NOT stop the "Failed to inject
+          # touch input" flake, which is why MushafViewRestoreTest no longer depends
+          # on the emulator's touch-injection stack (see the comment there).
           script: |
             adb shell input keyevent 82 || true
             adb shell wm dismiss-keyguard || true
@@ -148,6 +153,8 @@ jobs:
           path: '**/build/reports/androidTests/'
 
   consumer:
+    # Same gate as `instrumented`, for the same reason.
+    needs: build
     if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
