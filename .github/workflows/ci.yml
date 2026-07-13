@@ -128,7 +128,17 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
-          script: ./gradlew :mushaf-core:connectedDebugAndroidTest :mushaf-ui:connectedDebugAndroidTest -x lint
+          # Wake and unlock before running. Compose's performClick injects real
+          # touch events, and the injection is REJECTED outright - "Failed to
+          # inject touch input" - if the emulator is asleep or sitting behind the
+          # keyguard, which a freshly booted headless AVD often is. That is an
+          # environment problem, so it is fixed here rather than by weakening the
+          # test to stop touching the screen.
+          script: |
+            adb shell input keyevent 82 || true
+            adb shell wm dismiss-keyguard || true
+            adb shell svc power stayon true || true
+            ./gradlew :mushaf-core:connectedDebugAndroidTest :mushaf-ui:connectedDebugAndroidTest -x lint
 
       - name: Upload test reports
         if: failure()
@@ -207,7 +217,12 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
-          script: ./gradlew :app:connectedPublishedDebugAndroidTest
+          # Same wake-and-unlock as the instrumented job above.
+          script: |
+            adb shell input keyevent 82 || true
+            adb shell wm dismiss-keyguard || true
+            adb shell svc power stayon true || true
+            ./gradlew :app:connectedPublishedDebugAndroidTest
 
       - name: Upload test reports
         if: failure()
