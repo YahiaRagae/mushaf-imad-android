@@ -100,7 +100,8 @@ fun ReaderScreen(
                         showNavigationControls = true,
                         showPageInfo = true,
                         showAudioPlayer = true,
-                        onVerseSelected = viewModel::toggleBookmark,
+                        onVerseSelected = viewModel::onVerseTapped,
+                        onVerseLongPress = viewModel::toggleBookmark,
                         onPageChanged = viewModel::onPageChanged,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -112,7 +113,8 @@ fun ReaderScreen(
                         initialPage = start.page,
                         showNavigationControls = true,
                         showPageInfo = true,
-                        onVerseSelected = viewModel::toggleBookmark,
+                        onVerseSelected = viewModel::onVerseTapped,
+                        onVerseLongPress = viewModel::toggleBookmark,
                         onPageChanged = viewModel::onPageChanged,
                         modifier = Modifier.fillMaxSize()
                     )

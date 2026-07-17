@@ -48,8 +48,12 @@ fun QuranPageView(
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
     onVerseClick: ((Verse) -> Unit)? = null,
+    onVerseLongClick: ((Verse) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    // One press-preview verse shared across all 15 line views on this page, so pressing
+    // any fragment lights up every fragment of that verse. Resets when the page changes.
+    var pressedVerse by remember { mutableStateOf<Verse?>(null) }
     val readingTheme = MaterialTheme.readingTheme
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
@@ -94,7 +98,10 @@ fun QuranPageView(
                         verses = verses.filter { it.pageNumber == pageNumber },
                         selectedVerse = selectedVerse,
                         highlightedVerse = highlightedVerse,
+                        pressedVerse = pressedVerse,
                         onVerseClick = onVerseClick,
+                        onVerseLongClick = onVerseLongClick,
+                        onVersePressChange = { pressedVerse = it },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

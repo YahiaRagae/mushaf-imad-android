@@ -2,9 +2,12 @@ package com.mushafimad.ui.mushaf
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +37,7 @@ import java.io.InputStream
  * Original dimensions: 1440 x 232 pixels
  * Each page has 15 lines (0-14)
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuranLineImageView(
     page: Int,
@@ -42,7 +46,10 @@ fun QuranLineImageView(
     verses: List<Verse>,
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
+    pressedVerse: Verse? = null,
     onVerseClick: ((Verse) -> Unit)? = null,
+    onVerseLongClick: ((Verse) -> Unit)? = null,
+    onVersePressChange: ((Verse?) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -101,8 +108,27 @@ fun QuranLineImageView(
                     val highlightWidth = visualRightX - visualLeftX
                     val highlightHeight = containerHeight * 0.94f
 
-                    // Determine if this verse should be highlighted
-                    val shouldHighlight = verse == selectedVerse || verse == highlightedVerse
+                    // The committed selection, the audio highlight, and the transient
+                    // press preview all paint the same way. pressedVerse makes the WHOLE
+                    // verse light up while a finger is down on any one of its fragments
+                    // (matching iOS), instead of a per-fragment ripple on one line only.
+                    val shouldHighlight =
+                        verse == selectedVerse || verse == highlightedVerse || verse == pressedVerse
+
+                    // Report press down/up for this fragment up to the page, which shares
+                    // one pressedVerse across all lines so every fragment reacts together.
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    LaunchedEffect(isPressed) {
+                        onVersePressChange?.invoke(if (isPressed) verse else null)
+                    }
+                    // If this fragment leaves composition while still pressed - e.g. the page
+                    // scrolls out from under the finger - the effect above is cancelled without
+                    // ever reporting the release, which would leave the preview stuck on a verse
+                    // that scrolled away. Clear it on disposal to guarantee it never sticks.
+                    DisposableEffect(Unit) {
+                        onDispose { if (isPressed) onVersePressChange?.invoke(null) }
+                    }
 
                     Box(
                         modifier = Modifier
@@ -126,9 +152,14 @@ fun QuranLineImageView(
                                     androidx.compose.ui.graphics.Color.Transparent
                                 }
                             )
-                            .clickable(enabled = onVerseClick != null) {
-                                onVerseClick?.invoke(verse)
-                            }
+                            .combinedClickable(
+                                interactionSource = interactionSource,
+                                // No ripple: the whole-verse background flip IS the feedback.
+                                indication = null,
+                                enabled = onVerseClick != null || onVerseLongClick != null,
+                                onClick = { onVerseClick?.invoke(verse) },
+                                onLongClick = onVerseLongClick?.let { cb -> { cb(verse) } }
+                            )
                     )
                 }
             }
