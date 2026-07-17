@@ -147,16 +147,15 @@ fun QuranLineImageView(
                 val markerX = containerWidth * (1.0f - marker.centerX)
                 val markerY = containerHeight * marker.centerY
 
-                // Marker size calculation (increased from quran_android's 5% for better readability)
-                // quran_android uses: markerDimen = (0.025f * 2 * width).toInt() = 5%
-                // We use 7% for better visibility and readability
-                val markerDimen = (0.035f * 2 * containerWidth).toInt()
+                // Marker WIDTH = 5.4% of the line width - the width of the blank slot the
+                // Mushaf reserves for the verse number. The height follows the ornament's
+                // taller-than-wide aspect (see VerseFasel), so the number stays readable
+                // without the marker spilling sideways onto the text. Mirrors the iOS renderer.
+                val markerWidth = 0.054f * containerWidth
+                val markerHeight = markerWidth / (92f / 117f)
 
-                // Center the marker at coordinates (quran_android approach)
-                // x = points[0] - (markerDimen / 2) + paddingLeft
-                // Note: we don't have padding in our Compose setup
-                val adjustedX = markerX - (markerDimen / 2f)
-                val adjustedY = markerY - (markerDimen / 2f)
+                val adjustedX = markerX - (markerWidth / 2f)
+                val adjustedY = markerY - (markerHeight / 2f)
 
                 Box(
                     modifier = Modifier
@@ -167,7 +166,7 @@ fun QuranLineImageView(
                 ) {
                     VerseFasel(
                         number = verse.number,
-                        sizeInPx = markerDimen.toFloat()
+                        sizeInPx = markerWidth
                     )
                 }
             }
