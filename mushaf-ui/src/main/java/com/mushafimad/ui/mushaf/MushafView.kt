@@ -62,6 +62,7 @@ fun MushafView(
     showNavigationControls: Boolean = true,
     showPageInfo: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
+    onVerseLongPress: ((Verse) -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: MushafViewModel = mushafViewModel()
@@ -160,6 +161,7 @@ fun MushafView(
                                 viewModel.selectVerse(verse)
                                 onVerseSelected?.invoke(verse)
                             },
+                            onVerseLongClick = onVerseLongPress,
                             viewModel = viewModel
                         )
                     }
@@ -208,6 +210,7 @@ private fun MushafPagerPage(
     selectedVerse: Verse?,
     highlightedVerse: Verse?,
     onVerseClick: (Verse) -> Unit,
+    onVerseLongClick: ((Verse) -> Unit)? = null,
     viewModel: MushafViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -232,6 +235,7 @@ private fun MushafPagerPage(
             selectedVerse = selectedVerse,
             highlightedVerse = highlightedVerse,
             onVerseClick = onVerseClick,
+            onVerseLongClick = onVerseLongClick,
             modifier = modifier.fillMaxSize()
         )
     } else {

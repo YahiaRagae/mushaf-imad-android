@@ -92,7 +92,16 @@ class ReaderViewModel : ViewModel() {
         }
     }
 
-    /** Bookmarks come from the library's BookmarkRepository. */
+    /**
+     * A single tap just reports which verse was tapped - it is bookmarking that now lives
+     * on long-press (see the reader wiring), so an accidental tap no longer toggles a
+     * bookmark. This shows off the library exposing tap and long-press as separate hooks.
+     */
+    fun onVerseTapped(verse: Verse) {
+        showMessage("Tapped ${verse.chapterNumber}:${verse.number}")
+    }
+
+    /** Bookmarks come from the library's BookmarkRepository. Now driven by long-press. */
     fun toggleBookmark(verse: Verse) {
         viewModelScope.launch {
             val existing = bookmarkRepository.getBookmarkForVerse(verse.chapterNumber, verse.number)

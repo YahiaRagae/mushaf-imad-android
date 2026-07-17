@@ -43,6 +43,7 @@ fun MushafWithPlayerView(
     showPageInfo: Boolean = true,
     showAudioPlayer: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
+    onVerseLongPress: ((Verse) -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -145,6 +146,7 @@ fun MushafWithPlayerView(
                 showNavigationControls = showNavigationControls,
                 showPageInfo = showPageInfo,
                 onVerseSelected = onVerseSelected,
+                onVerseLongPress = onVerseLongPress,
                 onPageChanged = onPageChangedStable,
                 viewModel = mushafViewModel
             )
