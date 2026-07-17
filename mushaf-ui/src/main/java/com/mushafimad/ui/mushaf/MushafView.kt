@@ -61,6 +61,7 @@ fun MushafView(
     highlightedVerse: Verse? = null,
     showNavigationControls: Boolean = true,
     showPageInfo: Boolean = true,
+    pageSwipeEnabled: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
     onVerseLongPress: ((Verse) -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
@@ -150,6 +151,9 @@ fun MushafView(
                         // Pre-compose neighbours so their content is already
                         // loaded when the swipe starts (issue #70)
                         beyondViewportPageCount = 1,
+                        // Let a host lock page-turning by swipe (the nav buttons and
+                        // programmatic navigation still work). Default keeps swiping on.
+                        userScrollEnabled = pageSwipeEnabled,
                         modifier = Modifier.fillMaxSize()
                     ) { index ->
                         MushafPagerPage(
