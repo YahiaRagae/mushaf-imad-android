@@ -60,10 +60,13 @@ fun MushafView(
     initialPage: Int? = null,
     highlightedVerse: Verse? = null,
     showNavigationControls: Boolean = true,
-    showPageInfo: Boolean = true,
+    // Off by default: the floating page-info card duplicated the reader header and the
+    // iOS viewer has no such card. A consumer can still opt in.
+    showPageInfo: Boolean = false,
     pageSwipeEnabled: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
     onVerseLongPress: ((Verse) -> Unit)? = null,
+    onPageTap: (() -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: MushafViewModel = mushafViewModel()
@@ -166,6 +169,7 @@ fun MushafView(
                                 onVerseSelected?.invoke(verse)
                             },
                             onVerseLongClick = onVerseLongPress,
+                            onPageTap = onPageTap,
                             viewModel = viewModel
                         )
                     }
@@ -215,6 +219,7 @@ private fun MushafPagerPage(
     highlightedVerse: Verse?,
     onVerseClick: (Verse) -> Unit,
     onVerseLongClick: ((Verse) -> Unit)? = null,
+    onPageTap: (() -> Unit)? = null,
     viewModel: MushafViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -240,6 +245,7 @@ private fun MushafPagerPage(
             highlightedVerse = highlightedVerse,
             onVerseClick = onVerseClick,
             onVerseLongClick = onVerseLongClick,
+            onPageTap = onPageTap,
             modifier = modifier.fillMaxSize()
         )
     } else {

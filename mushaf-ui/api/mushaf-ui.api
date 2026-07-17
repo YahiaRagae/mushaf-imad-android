@@ -164,7 +164,7 @@ public final class com/mushafimad/ui/mushaf/MushafUiState {
 }
 
 public final class com/mushafimad/ui/mushaf/MushafViewKt {
-	public static final fun MushafView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/mushafimad/ui/mushaf/MushafViewModel;Landroidx/compose/runtime/Composer;III)V
+	public static final fun MushafView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/mushafimad/ui/mushaf/MushafViewModel;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/MushafViewModel : androidx/lifecycle/ViewModel {
@@ -191,7 +191,7 @@ public final class com/mushafimad/ui/mushaf/MushafViewModel : androidx/lifecycle
 }
 
 public final class com/mushafimad/ui/mushaf/MushafWithPlayerViewKt {
-	public static final fun MushafWithPlayerView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;ZZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
+	public static final fun MushafWithPlayerView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;ZZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/PageInfo {
@@ -219,7 +219,7 @@ public final class com/mushafimad/ui/mushaf/QuranLineImageViewKt {
 }
 
 public final class com/mushafimad/ui/mushaf/QuranPageViewKt {
-	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;IILcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;IILcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/VerseFaselKt {

@@ -1,6 +1,8 @@
 package com.mushafimad.ui.mushaf
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,13 +14,22 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mushafimad.core.domain.models.Chapter
 import com.mushafimad.core.domain.models.Verse
+import com.mushafimad.ui.R
 import com.mushafimad.ui.theme.MushafTypography
 import com.mushafimad.ui.theme.mushafColors
 import com.mushafimad.ui.theme.readingTheme
@@ -49,6 +60,7 @@ fun QuranPageView(
     highlightedVerse: Verse? = null,
     onVerseClick: ((Verse) -> Unit)? = null,
     onVerseLongClick: ((Verse) -> Unit)? = null,
+    onPageTap: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // One press-preview verse shared across all 15 line views on this page, so pressing
@@ -71,16 +83,24 @@ fun QuranPageView(
             // Page header
             PageHeader(
                 chapters = chapters,
-                pageNumber = pageNumber,
                 juzNumber = juzNumber
             )
 
-            HorizontalDivider(
-                color = MaterialTheme.mushafColors.divider,
-                thickness = 1.dp
-            )
-
-            // Lines container
+            // Lines container. A tap on the reading area that is NOT on a verse (verse
+            // fragments consume their own taps) bubbles up to this Box and fires onPageTap
+            // - the hook a host uses to toggle immersive/full-screen reading, matching iOS.
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .then(
+                        if (onPageTap != null) {
+                            Modifier.pointerInput(onPageTap) {
+                                detectTapGestures { onPageTap() }
+                            }
+                        } else Modifier
+                    )
+            ) {
             LazyColumn(
                 state = rememberLazyListState(),
                 modifier = Modifier
@@ -105,7 +125,16 @@ fun QuranPageView(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+
+                // The page-number ornament flows as the last item of the page - it is the
+                // end of the page, not a pinned footer, so it sits right after the final
+                // line (and only comes into view once the reader reaches the bottom),
+                // exactly like the iOS viewer.
+                item {
+                    PageFooter(pageNumber = pageNumber)
+                }
             }
+            } // page-tap Box
         }
     }
 }
@@ -116,50 +145,89 @@ fun QuranPageView(
 @Composable
 private fun PageHeader(
     chapters: List<Chapter>,
-    pageNumber: Int,
     juzNumber: Int,
     modifier: Modifier = Modifier
 ) {
-    val mushafColors = MaterialTheme.mushafColors
-    val readingTheme = MaterialTheme.readingTheme
+    // Minimal header, matching the iOS viewer: juz on one side, the surah name on the other,
+    // both in the same soft green with no heavy background bar. The surah name uses the same
+    // calligraphic SurahName font iOS does (shipped in mushaf-core's assets). The page number
+    // is no longer shown here - it appears as an ornament at the foot of the page.
+    val accent = Color(0xFF5E8B6A)
+    val context = LocalContext.current
+    val surahNameFont = remember { FontFamily(Font("SurahName.otf", context.assets)) }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(mushafColors.chapterHeaderBackground)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left: Page number
         Text(
-            text = "صفحة ${convertToArabicNumerals(pageNumber)}",
+            text = "الجزء ${convertToArabicNumerals(juzNumber)}",
             style = MushafTypography.label,
-            color = readingTheme.textColor.copy(alpha = 0.8f)
+            color = accent
         )
 
-        // Center: Chapter name(s)
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             chapters.forEach { chapter ->
                 Text(
-                    text = chapter.arabicTitle,
-                    style = MushafTypography.chapterTitle.copy(
-                        fontSize = MushafTypography.chapterTitle.fontSize * 0.8f
-                    ),
-                    color = readingTheme.textColor,
-                    textAlign = TextAlign.Center
+                    text = "سورة ${chapter.arabicTitle}",
+                    fontFamily = surahNameFont,
+                    fontSize = 26.sp,
+                    color = accent
                 )
             }
         }
+    }
+}
 
-        // Right: Juz number
-        Text(
-            text = "جزء ${convertToArabicNumerals(juzNumber)}",
-            style = MushafTypography.label,
-            color = readingTheme.textColor.copy(alpha = 0.8f)
-        )
+/**
+ * Page-number ornament at the foot of the page, matching the iOS viewer: the dedicated
+ * wide `pagenumb` frame (distinct from the verse fasel), with the number overlaid, sitting
+ * on the left or right by page parity the way a facing-page Mushaf alternates it.
+ */
+@Composable
+private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
+    // Which edge the ornament sits on. This mirrors iOS, which reads Page.isRight
+    // from the shared quran.realm; that field is strict parity for all 604 pages
+    // (odd = right, even = left), so computing it here is identical to the data
+    // and saves plumbing the Page object down to the footer.
+    val isRight = pageNumber % 2 == 1
+
+    val ornament: @Composable () -> Unit = {
+        Box(contentAlignment = Alignment.Center) {
+            Image(
+                painter = painterResource(id = R.drawable.pagenumb),
+                contentDescription = null,
+                modifier = Modifier.size(width = 54.dp, height = 36.dp)
+            )
+            Text(
+                text = convertToArabicNumerals(pageNumber),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                maxLines = 1,
+                color = Color(0xFF2B2B2B),
+                modifier = Modifier.offset(y = (-1).dp)
+            )
+        }
+    }
+
+    Row(
+        // The reading lines already sit inside the list's 16dp horizontal inset, so a
+        // further 14dp here lands the ornament ~30dp from the screen edge, as on iOS.
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (isRight) {
+            ornament()
+            Spacer(Modifier.weight(1f))
+        } else {
+            Spacer(Modifier.weight(1f))
+            ornament()
+        }
     }
 }
 

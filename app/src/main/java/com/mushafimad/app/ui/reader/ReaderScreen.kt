@@ -1,5 +1,10 @@
 package com.mushafimad.app.ui.reader
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -49,6 +54,12 @@ fun ReaderScreen(
     var withPlayer by rememberSaveable { mutableStateOf(startWithPlayer) }
     val snackbar = remember { SnackbarHostState() }
 
+    // Immersive reading, matching the iOS viewer: the app bar is hidden so the page opens
+    // clean (just the surah/juz header, the text and the page ornament). A tap on the page
+    // (onPageTap) brings the bar back for navigation and the player toggle; tap again to
+    // hide it. The system status bar stays put, exactly as iOS keeps it.
+    var immersive by remember { mutableStateOf(true) }
+
     LaunchedEffect(chapterNumber, requestedPage) {
         viewModel.resolveStart(chapterNumber, requestedPage)
     }
@@ -62,27 +73,33 @@ fun ReaderScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        state.title + (state.currentPage?.let { " - p.$it" } ?: ""),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { withPlayer = !withPlayer }) {
-                        Icon(
-                            if (withPlayer) Icons.Default.HeadsetOff else Icons.Default.Headphones,
-                            contentDescription = if (withPlayer) "Hide player" else "Show player"
+            AnimatedVisibility(
+                visible = !immersive,
+                enter = slideInVertically { -it } + fadeIn(),
+                exit = slideOutVertically { -it } + fadeOut(),
+            ) {
+                TopAppBar(
+                    title = {
+                        Text(
+                            state.title + (state.currentPage?.let { " - p.$it" } ?: ""),
+                            style = MaterialTheme.typography.titleMedium
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { withPlayer = !withPlayer }) {
+                            Icon(
+                                if (withPlayer) Icons.Default.HeadsetOff else Icons.Default.Headphones,
+                                contentDescription = if (withPlayer) "Hide player" else "Show player"
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
@@ -97,11 +114,11 @@ fun ReaderScreen(
                         colorScheme = colorScheme,
                         mushafType = mushafType,
                         initialPage = start.page,
-                        showNavigationControls = true,
-                        showPageInfo = true,
+                        showNavigationControls = false,
                         showAudioPlayer = true,
                         onVerseSelected = viewModel::onVerseTapped,
                         onVerseLongPress = viewModel::toggleBookmark,
+                        onPageTap = { immersive = !immersive },
                         onPageChanged = viewModel::onPageChanged,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -111,10 +128,10 @@ fun ReaderScreen(
                         colorScheme = colorScheme,
                         mushafType = mushafType,
                         initialPage = start.page,
-                        showNavigationControls = true,
-                        showPageInfo = true,
+                        showNavigationControls = false,
                         onVerseSelected = viewModel::onVerseTapped,
                         onVerseLongPress = viewModel::toggleBookmark,
+                        onPageTap = { immersive = !immersive },
                         onPageChanged = viewModel::onPageChanged,
                         modifier = Modifier.fillMaxSize()
                     )
