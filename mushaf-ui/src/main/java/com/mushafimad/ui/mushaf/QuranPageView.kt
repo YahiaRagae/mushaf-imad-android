@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mushafimad.core.domain.models.Chapter
+import com.mushafimad.core.domain.models.ChapterHeader
 import com.mushafimad.core.domain.models.Verse
 import com.mushafimad.ui.R
 import com.mushafimad.ui.theme.MushafTypography
@@ -52,6 +53,7 @@ fun QuranPageView(
     pageNumber: Int,
     juzLabel: String,
     hizbLabel: String? = null,
+    chapterHeaders: List<ChapterHeader> = emptyList(),
     mushafType: com.mushafimad.core.domain.models.MushafType = com.mushafimad.core.domain.models.MushafType.HAFS_1441,
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
@@ -107,6 +109,7 @@ fun QuranPageView(
                         line = line,
                         mushafType = mushafType,
                         verses = pageVerses,
+                        chapterHeaders = chapterHeaders,
                         selectedVerse = selectedVerse,
                         highlightedVerse = highlightedVerse,
                         pressedVerse = pressedVerse,

@@ -245,6 +245,7 @@ private fun MushafPagerPage(
             pageNumber = pageNumber,
             juzLabel = if (isArabic) pageContent.juzArabic else pageContent.juzEnglish,
             hizbLabel = if (isArabic) pageContent.hizbArabic else pageContent.hizbEnglish,
+            chapterHeaders = pageContent.chapterHeaders,
             mushafType = mushafType,
             selectedVerse = selectedVerse,
             highlightedVerse = highlightedVerse,

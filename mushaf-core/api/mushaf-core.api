@@ -588,6 +588,23 @@ public final class com/mushafimad/core/domain/models/Chapter {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/mushafimad/core/domain/models/ChapterHeader {
+	public fun <init> (IIFF)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (IIFF)Lcom/mushafimad/core/domain/models/ChapterHeader;
+	public static synthetic fun copy$default (Lcom/mushafimad/core/domain/models/ChapterHeader;IIFFILjava/lang/Object;)Lcom/mushafimad/core/domain/models/ChapterHeader;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCenterX ()F
+	public final fun getCenterY ()F
+	public final fun getChapterNumber ()I
+	public final fun getLine ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/mushafimad/core/domain/models/ChapterInfo {
 	public fun <init> (ILjava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()I
@@ -1438,6 +1455,7 @@ public abstract interface class com/mushafimad/core/domain/repository/PageReposi
 	public abstract fun cachePageRange (Lkotlin/ranges/IntRange;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun clearAllPageCache (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun clearPageCache (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getChapterHeaders (ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getPage (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getPageHeaderInfo (ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getTotalPages (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1445,6 +1463,7 @@ public abstract interface class com/mushafimad/core/domain/repository/PageReposi
 }
 
 public final class com/mushafimad/core/domain/repository/PageRepository$DefaultImpls {
+	public static synthetic fun getChapterHeaders$default (Lcom/mushafimad/core/domain/repository/PageRepository;ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun getPageHeaderInfo$default (Lcom/mushafimad/core/domain/repository/PageRepository;ILcom/mushafimad/core/domain/models/MushafType;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 

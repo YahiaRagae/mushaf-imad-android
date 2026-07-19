@@ -99,6 +99,9 @@ class MushafViewModel(
                 juzEnglish = header?.partEnglishTitle ?: "Part $juz",
                 hizbArabic = header?.quarterArabicTitle,
                 hizbEnglish = header?.quarterEnglishTitle,
+                chapterHeaders = runCatching {
+                    pageRepository.getChapterHeaders(pageNumber, mushafType)
+                }.getOrDefault(emptyList()),
             ).also { pageCache.put(pageNumber, it) }
         } catch (e: Exception) {
             null
@@ -569,6 +572,9 @@ internal data class PageContent(
     val juzEnglish: String,
     val hizbArabic: String? = null,
     val hizbEnglish: String? = null,
+    // Surah headers starting on this page, with the normalized position of each name so
+    // the reader can draw the decorative bar behind it.
+    val chapterHeaders: List<ChapterHeader> = emptyList(),
 )
 
 internal val TOTAL_PAGES = com.mushafimad.core.utils.QuranUtils.TOTAL_PAGES

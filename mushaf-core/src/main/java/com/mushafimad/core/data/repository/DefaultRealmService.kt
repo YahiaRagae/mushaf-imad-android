@@ -309,6 +309,20 @@ internal class DefaultRealmService(
             )
         }
 
+    override suspend fun getChapterHeaders(
+        pageNumber: Int,
+        mushafType: MushafType
+    ): List<com.mushafimad.core.domain.models.ChapterHeader> = withContext(Dispatchers.IO) {
+        val page = getPageEntity(pageNumber) ?: return@withContext emptyList()
+
+        val headers = when (mushafType) {
+            MushafType.HAFS_1441 -> page.chapterHeaders1441
+            MushafType.HAFS_1405 -> page.chapterHeaders1405
+        }
+
+        headers.map { it.toDomain() }
+    }
+
     // MARK: - Verse Operations
 
     override suspend fun getVersesForPage(pageNumber: Int, mushafType: MushafType): List<Verse> =
@@ -507,6 +521,13 @@ internal class DefaultRealmService(
         line = line,
         left = left,
         right = right
+    )
+
+    private fun ChapterHeaderEntity.toDomain() = com.mushafimad.core.domain.models.ChapterHeader(
+        chapterNumber = chapter?.number ?: 0,
+        line = line,
+        centerX = centerX,
+        centerY = centerY
     )
 
     private fun PageEntity.toDomain() = Page(
