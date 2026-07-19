@@ -150,29 +150,33 @@ fun MushafView(
                             .collect { index -> viewModel.onPageSettled(index + 1) }
                     }
 
-                    HorizontalPager(
-                        state = pagerState,
-                        // Pre-compose neighbours so their content is already
-                        // loaded when the swipe starts (issue #70)
-                        beyondViewportPageCount = 1,
-                        // Let a host lock page-turning by swipe (the nav buttons and
-                        // programmatic navigation still work). Default keeps swiping on.
-                        userScrollEnabled = pageSwipeEnabled,
-                        modifier = Modifier.fillMaxSize()
-                    ) { index ->
-                        MushafPagerPage(
-                            pageNumber = index + 1,
-                            mushafType = uiState.mushafType,
-                            selectedVerse = uiState.selectedVerse,
-                            highlightedVerse = highlightedVerse,
-                            onVerseClick = { verse ->
-                                viewModel.selectVerse(verse)
-                                onVerseSelected?.invoke(verse)
-                            },
-                            onVerseLongClick = onVerseLongPress,
-                            onPageTap = onPageTap,
-                            viewModel = viewModel
-                        )
+                    // The Mushaf is an Arabic book: swiping right always turns to the
+                    // next page, whatever the host app's locale (issue #105)
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                        HorizontalPager(
+                            state = pagerState,
+                            // Pre-compose neighbours so their content is already
+                            // loaded when the swipe starts (issue #70)
+                            beyondViewportPageCount = 1,
+                            // Let a host lock page-turning by swipe (the nav buttons and
+                            // programmatic navigation still work). Default keeps swiping on.
+                            userScrollEnabled = pageSwipeEnabled,
+                            modifier = Modifier.fillMaxSize()
+                        ) { index ->
+                            MushafPagerPage(
+                                pageNumber = index + 1,
+                                mushafType = uiState.mushafType,
+                                selectedVerse = uiState.selectedVerse,
+                                highlightedVerse = highlightedVerse,
+                                onVerseClick = { verse ->
+                                    viewModel.selectVerse(verse)
+                                    onVerseSelected?.invoke(verse)
+                                },
+                                onVerseLongClick = onVerseLongPress,
+                                onPageTap = onPageTap,
+                                viewModel = viewModel
+                            )
+                        }
                     }
 
                     // Navigation controls overlay
