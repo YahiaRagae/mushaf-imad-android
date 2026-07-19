@@ -273,6 +273,7 @@ internal class DefaultRealmService(
     }
 
     private suspend fun getPageEntity(number: Int): PageEntity? = withContext(Dispatchers.IO) {
+        ensureInitialized()
         val realmInstance = realm ?: return@withContext null
         realmInstance.query<PageEntity>("number == $0", number)
             .first()

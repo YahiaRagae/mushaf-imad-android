@@ -50,7 +50,8 @@ fun QuranPageView(
     verses: List<Verse>,
     chapters: List<Chapter>,
     pageNumber: Int,
-    juzNumber: Int,
+    juzLabel: String,
+    hizbLabel: String? = null,
     mushafType: com.mushafimad.core.domain.models.MushafType = com.mushafimad.core.domain.models.MushafType.HAFS_1441,
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
@@ -73,7 +74,8 @@ fun QuranPageView(
             // Page header
             PageHeader(
                 chapters = chapters,
-                juzNumber = juzNumber
+                juzLabel = juzLabel,
+                hizbLabel = hizbLabel
             )
 
             // The 15 lines share the height between the header and the footer, so the whole
@@ -131,11 +133,14 @@ fun QuranPageView(
 @Composable
 private fun PageHeader(
     chapters: List<Chapter>,
-    juzNumber: Int,
+    juzLabel: String,
+    hizbLabel: String? = null,
     modifier: Modifier = Modifier
 ) {
-    // Minimal header, matching the iOS viewer: juz on one side, the surah name on the other,
-    // both in the same soft green with no heavy background bar. The surah name uses the same
+    // Minimal header, matching the iOS viewer: juz (and the hizb, where one starts on this
+    // page) on one side, the surah name on the other, both in the same soft green with no
+    // heavy background bar. The juz/hizb labels are the localized titles carried in the page
+    // data (Arabic or English, chosen for the app language); the surah name uses the same
     // calligraphic SurahName font iOS does (shipped in mushaf-core's assets). The page number
     // is no longer shown here - it appears as an ornament at the foot of the page.
     val accent = Color(0xFF5E8B6A)
@@ -149,11 +154,20 @@ private fun PageHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "الجزء ${convertToArabicNumerals(juzNumber)}",
-            style = MushafTypography.label,
-            color = accent
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = juzLabel,
+                style = MushafTypography.label,
+                color = accent
+            )
+            hizbLabel?.let { hizb ->
+                Text(
+                    text = hizb,
+                    style = MushafTypography.label,
+                    color = accent
+                )
+            }
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             chapters.forEach { chapter ->

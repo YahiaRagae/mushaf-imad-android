@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -235,11 +236,15 @@ private fun MushafPagerPage(
 
     val pageContent = content
     if (pageContent != null) {
+        // Pick the juz/hizb labels for the app language: Arabic titles for an Arabic app,
+        // English otherwise. Both variants come from the page data.
+        val isArabic = LocalConfiguration.current.locales.get(0).language == "ar"
         QuranPageView(
             verses = pageContent.verses,
             chapters = pageContent.chapters,
             pageNumber = pageNumber,
-            juzNumber = ((pageNumber - 1) / 20) + 1,
+            juzLabel = if (isArabic) pageContent.juzArabic else pageContent.juzEnglish,
+            hizbLabel = if (isArabic) pageContent.hizbArabic else pageContent.hizbEnglish,
             mushafType = mushafType,
             selectedVerse = selectedVerse,
             highlightedVerse = highlightedVerse,

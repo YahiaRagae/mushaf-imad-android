@@ -26,6 +26,7 @@ val uiModule = module {
         MushafViewModel(
             verseRepository = get(),
             chapterRepository = get(),
+            pageRepository = get(),
             readingHistoryRepository = get(),
             preferencesRepository = get()
         )

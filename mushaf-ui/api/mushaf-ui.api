@@ -169,7 +169,7 @@ public final class com/mushafimad/ui/mushaf/MushafViewKt {
 
 public final class com/mushafimad/ui/mushaf/MushafViewModel : androidx/lifecycle/ViewModel {
 	public static final field $stable I
-	public fun <init> (Lcom/mushafimad/core/domain/repository/VerseRepository;Lcom/mushafimad/core/domain/repository/ChapterRepository;Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Lcom/mushafimad/core/domain/repository/PreferencesRepository;)V
+	public fun <init> (Lcom/mushafimad/core/domain/repository/VerseRepository;Lcom/mushafimad/core/domain/repository/ChapterRepository;Lcom/mushafimad/core/domain/repository/PageRepository;Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Lcom/mushafimad/core/domain/repository/PreferencesRepository;)V
 	public final fun clearAllSelections ()V
 	public final fun clearError ()V
 	public final fun clearSelection ()V
@@ -219,7 +219,7 @@ public final class com/mushafimad/ui/mushaf/QuranLineImageViewKt {
 }
 
 public final class com/mushafimad/ui/mushaf/QuranPageViewKt {
-	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;IILcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
+	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;ILjava/lang/String;Ljava/lang/String;Lcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/VerseFaselKt {

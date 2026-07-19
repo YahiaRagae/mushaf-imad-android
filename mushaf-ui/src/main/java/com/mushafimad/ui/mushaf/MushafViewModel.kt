@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 class MushafViewModel(
     private val verseRepository: VerseRepository,
     private val chapterRepository: ChapterRepository,
+    private val pageRepository: PageRepository,
     private val readingHistoryRepository: ReadingHistoryRepository,
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
@@ -80,7 +81,25 @@ class MushafViewModel(
                 }
             }
 
-            PageContent(verses, chapters).also { pageCache.put(pageNumber, it) }
+            // Real juz (part) and hizb for this page, read from the page data - the same
+            // source iOS uses. Falls back to the page-count approximation only if the
+            // header is unavailable, so the number is never blank.
+            val header = try {
+                pageRepository.getPageHeaderInfo(pageNumber, mushafType)
+            } catch (e: Exception) {
+                null
+            }
+
+            val juz = header?.partNumber ?: calculateJuzNumber(pageNumber)
+            PageContent(
+                verses = verses,
+                chapters = chapters,
+                juzNumber = juz,
+                juzArabic = header?.partArabicTitle ?: "الجزء $juz",
+                juzEnglish = header?.partEnglishTitle ?: "Part $juz",
+                hizbArabic = header?.quarterArabicTitle,
+                hizbEnglish = header?.quarterEnglishTitle,
+            ).also { pageCache.put(pageNumber, it) }
         } catch (e: Exception) {
             null
         }
@@ -485,14 +504,16 @@ class MushafViewModel(
             pageNumber = state.currentPage,
             totalPages = TOTAL_PAGES,
             chapterName = state.chapters.firstOrNull()?.arabicTitle ?: "",
-            juzNumber = calculateJuzNumber(state.currentPage),
+            // Prefer the real juz cached with the page; fall back only if it hasn't loaded.
+            juzNumber = pageCache.get(state.currentPage)?.juzNumber
+                ?: calculateJuzNumber(state.currentPage),
             progress = (state.currentPage.toFloat() / TOTAL_PAGES * 100).toInt()
         )
     }
 
     /**
-     * Calculate Juz number from page number
-     * Each Juz is approximately 20 pages
+     * Fallback juz estimate from the page number (each juz is ~20 pages). Only used when
+     * the real juz from the page data has not loaded yet; the header uses the real value.
      */
     private fun calculateJuzNumber(pageNumber: Int): Int {
         return ((pageNumber - 1) / 20) + 1
@@ -538,7 +559,16 @@ data class PageInfo(
  */
 internal data class PageContent(
     val verses: List<Verse>,
-    val chapters: List<Chapter>
+    val chapters: List<Chapter>,
+    // Real juz number (for the deprecated page-info overlay) plus the localized juz/hizb
+    // labels read straight from the page data - Arabic and English variants, so the header
+    // can show whichever matches the app language. Hizb is null on pages where no quarter
+    // starts.
+    val juzNumber: Int,
+    val juzArabic: String,
+    val juzEnglish: String,
+    val hizbArabic: String? = null,
+    val hizbEnglish: String? = null,
 )
 
 internal val TOTAL_PAGES = com.mushafimad.core.utils.QuranUtils.TOTAL_PAGES
