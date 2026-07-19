@@ -88,14 +88,15 @@ fun QuranPageView(
             // page fits one screen with no scrolling - the line is the unit of measure, as
             // in a printed Mushaf and the iOS viewer. Each line frame is shorter than the
             // image's natural height; QuranLineImageView crops the top/bottom whitespace to
-            // fit. A tap on the reading area that is NOT on a verse (verse fragments consume
-            // their own taps) bubbles up here and fires onPageTap - the hook a host uses to
-            // toggle immersive/full-screen reading, matching iOS.
+            // fit. Lines run the FULL page width - iOS pads only the header row, not the
+            // line stack, and everything on the line (text scale, surah-name bar) derives
+            // from this width. A tap on the reading area that is NOT on a verse (verse
+            // fragments consume their own taps) bubbles up here and fires onPageTap - the
+            // hook a host uses to toggle immersive/full-screen reading, matching iOS.
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
                     .then(
                         if (onPageTap != null) {
                             Modifier.pointerInput(onPageTap) {
