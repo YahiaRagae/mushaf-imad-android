@@ -84,16 +84,16 @@ fun QuranPageView(
                 hizbLabel = hizbLabel
             )
 
-            // The 15 lines share the height between the header and the footer, so the whole
-            // page fits one screen with no scrolling - the line is the unit of measure, as
-            // in a printed Mushaf and the iOS viewer. Each line frame is shorter than the
-            // image's natural height; QuranLineImageView crops the top/bottom whitespace to
-            // fit. Lines run the FULL page width - iOS pads only the header row, not the
-            // line stack, and everything on the line (text scale, surah-name bar) derives
-            // from this width. A tap on the reading area that is NOT on a verse (verse
-            // fragments consume their own taps) bubbles up here and fires onPageTap - the
-            // hook a host uses to toggle immersive/full-screen reading, matching iOS.
-            Column(
+            // The 15 lines between the header and the footer - the line is the unit of
+            // measure, as in a printed Mushaf and the iOS viewer. Each line frame is
+            // shorter than the image's natural height; QuranLineImageView crops the
+            // top/bottom whitespace to fit. Lines run the FULL page width - iOS pads only
+            // the header row, not the line stack, and everything on the line (text scale,
+            // surah-name bar) derives from this width. A tap on the reading area that is
+            // NOT on a verse (verse fragments consume their own taps) bubbles up here and
+            // fires onPageTap - the hook a host uses to toggle immersive/full-screen
+            // reading, matching iOS.
+            BoxWithConstraints(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -105,26 +105,38 @@ fun QuranPageView(
                         } else Modifier
                     )
             ) {
-                val pageVerses = verses.filter { it.pageNumber == pageNumber }
-                // Render 15 lines (1-15) as images - skip line 0 which is often empty
-                repeat(15) { index ->
-                    val line = index + 1  // Start from line 1 instead of 0
-                    QuranLineImageView(
-                        page = pageNumber,
-                        line = line,
-                        mushafType = mushafType,
-                        verses = pageVerses,
-                        chapterHeaders = chapterHeaders,
-                        selectedVerse = selectedVerse,
-                        highlightedVerse = highlightedVerse,
-                        pressedVerse = pressedVerse,
-                        onVerseClick = onVerseClick,
-                        onVerseLongClick = onVerseLongClick,
-                        onVersePressChange = { pressedVerse = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
+                // Every line - blank or not - is pinned to the height iOS uses: derived
+                // from the page WIDTH alone (the 1440x232 image aspect x a 0.73 crop
+                // factor, QuranPageView.swift:68,118), with the leftover height sitting
+                // BELOW the last line, before the footer. Dividing the height equally
+                // instead (the old model) made every blank slot on a sparse page claim a
+                // full uncapped 1/15 share, stretching pages 1-2's few real lines apart,
+                // and loosened line spacing on tall screens. The equal share remains only
+                // as a CAP so short/wide screens still fit all 15 lines with no scrolling
+                // (fit-to-page, #94).
+                val lineHeight = minOf(maxWidth / (1440f / 232f) * 0.73f, maxHeight / 15)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    val pageVerses = verses.filter { it.pageNumber == pageNumber }
+                    // Render 15 lines (1-15) as images - skip line 0 which is often empty
+                    repeat(15) { index ->
+                        val line = index + 1  // Start from line 1 instead of 0
+                        QuranLineImageView(
+                            page = pageNumber,
+                            line = line,
+                            mushafType = mushafType,
+                            verses = pageVerses,
+                            chapterHeaders = chapterHeaders,
+                            selectedVerse = selectedVerse,
+                            highlightedVerse = highlightedVerse,
+                            pressedVerse = pressedVerse,
+                            onVerseClick = onVerseClick,
+                            onVerseLongClick = onVerseLongClick,
+                            onVersePressChange = { pressedVerse = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(lineHeight)
+                        )
+                    }
                 }
             }
 
