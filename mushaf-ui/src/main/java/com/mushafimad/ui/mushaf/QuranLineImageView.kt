@@ -75,9 +75,13 @@ fun QuranLineImageView(
         imageBitmap = loadLineImage(context, page, line)
     }
 
+    // NOT clipped as a whole: the surah-name bar (and, at the margins, the fasel
+    // markers) are deliberately taller than the line frame and must overflow it,
+    // exactly as iOS's unclipped line ZStack allows. Clipping here (as fit-to-page
+    // #94 once did) cuts the bar's top/bottom rules wherever the frame is short -
+    // e.g. tablet portrait (#112). Only the line IMAGE is clipped, below.
     Box(
         modifier = modifier
-            .clipToBounds()
             .onGloballyPositioned { coordinates ->
                 with(density) {
                     containerWidth = coordinates.size.width.toFloat()
@@ -97,7 +101,14 @@ fun QuranLineImageView(
                 val barWidth = containerWidth * 0.9f
                 val barHeight = scaledImageHeight * 0.8f
                 val centerX = containerWidth * (1.0f - header.centerX)
-                val centerY = scaledImageHeight * header.centerY - cropOffset
+                // The header's data point sits above the visual centre of the name text
+                // baked into the PNG, so iOS nudges the frame down 8pt when placing it
+                // (QuranPageView.swift `.position(y: chapterY + 8)`). 8pt is ~1/8 of the
+                // scaled image height on the iPhone widths that constant was tuned for;
+                // ported proportionally so the text stays centred at any page width.
+                // The old whole-box clipping hid this offset by cropping the frame (#112).
+                val centerY =
+                    scaledImageHeight * header.centerY - cropOffset + scaledImageHeight * 0.125f
 
                 Image(
                     painter = painterResource(id = R.drawable.suranamebar),
@@ -203,7 +214,12 @@ fun QuranLineImageView(
                 // line spacing, exactly as the iOS viewer does.
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(readingTheme.textColor),
-                modifier = Modifier.fillMaxSize()
+                // Clip the IMAGE only (iOS `.clipped()` on its Image likewise): Crop
+                // scales the bitmap past the frame and without this it would bleed
+                // into the neighbouring lines.
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clipToBounds()
             )
         }
 
