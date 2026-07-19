@@ -46,7 +46,9 @@ fun VerseFasel(
     // sizeInPx, when provided, is the target WIDTH in px; the height follows the aspect.
     val widthDp = sizeInPx?.let { px -> with(density) { px.toDp() } } ?: (21 * 1.2f * scale).dp
     val heightDp = widthDp / ornamentWtoH
-    val fontSizeSp = with(density) { (heightDp.toPx() * 0.46f).toSp() }
+    // iOS draws the digits at 14pt over a 27pt-tall fasel (VerseFasel.swift); with the
+    // same UthmanTaha font shipped (#97) the same ratio gives the same rendered digits.
+    val fontSizeSp = with(density) { (heightDp.toPx() * (14f / 27f)).toSp() }
 
     Box(
         modifier = modifier
