@@ -75,9 +75,13 @@ fun QuranLineImageView(
         imageBitmap = loadLineImage(context, page, line)
     }
 
+    // NOT clipped as a whole: the surah-name bar (and, at the margins, the fasel
+    // markers) are deliberately taller than the line frame and must overflow it,
+    // exactly as iOS's unclipped line ZStack allows. Clipping here (as fit-to-page
+    // #94 once did) cuts the bar's top/bottom rules wherever the frame is short -
+    // e.g. tablet portrait (#112). Only the line IMAGE is clipped, below.
     Box(
         modifier = modifier
-            .clipToBounds()
             .onGloballyPositioned { coordinates ->
                 with(density) {
                     containerWidth = coordinates.size.width.toFloat()
@@ -203,7 +207,12 @@ fun QuranLineImageView(
                 // line spacing, exactly as the iOS viewer does.
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(readingTheme.textColor),
-                modifier = Modifier.fillMaxSize()
+                // Clip the IMAGE only (iOS `.clipped()` on its Image likewise): Crop
+                // scales the bitmap past the frame and without this it would bleed
+                // into the neighbouring lines.
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clipToBounds()
             )
         }
 
