@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -72,8 +73,7 @@ fun QuranLineImageView(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(imageAspect)
+            .clipToBounds()
             .onGloballyPositioned { coordinates ->
                 with(density) {
                     containerWidth = coordinates.size.width.toFloat()
@@ -86,7 +86,11 @@ fun QuranLineImageView(
             Image(
                 bitmap = bitmap,
                 contentDescription = "Quran page $page line $line",
-                contentScale = ContentScale.Fit,
+                // Fill the width and crop the image's top/bottom whitespace: the line frame
+                // is deliberately shorter than the image's natural height so 15 lines fit the
+                // screen, and cropping (not scaling) keeps the glyphs full-size and tightens
+                // line spacing, exactly as the iOS viewer does.
+                contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(readingTheme.textColor),
                 modifier = Modifier.fillMaxSize()
             )
@@ -174,9 +178,15 @@ fun QuranLineImageView(
 
             // Markers use 0-14 indexing like highlights, adjust for UI's 1-15
             if (marker != null && marker.line == (line - 1) && containerWidth > 0f && containerHeight > 0f) {
-                // Transform percentage coordinates to screen pixels (RTL-aware for X)
+                // Transform percentage coordinates to screen pixels (RTL-aware for X).
+                // The line frame is shorter than the image's natural height (the page fits
+                // 15 lines to the screen and the image is cropped top/bottom), so the marker
+                // centerY - given relative to the FULL image - is mapped into full-image
+                // space and shifted up by the crop offset. Mirrors the iOS renderer.
+                val scaledImageHeight = containerWidth / imageAspect
+                val cropOffset = (scaledImageHeight - containerHeight) / 2f
                 val markerX = containerWidth * (1.0f - marker.centerX)
-                val markerY = containerHeight * marker.centerY
+                val markerY = scaledImageHeight * marker.centerY - cropOffset
 
                 // Marker WIDTH = 5.4% of the line width - the width of the blank slot the
                 // Mushaf reserves for the verse number. The height follows the ornament's
