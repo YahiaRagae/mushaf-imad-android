@@ -13,12 +13,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -101,24 +104,30 @@ fun QuranLineImageView(
                 val barWidth = containerWidth * 0.9f
                 val barHeight = scaledImageHeight * 0.8f
                 val centerX = containerWidth * (1.0f - header.centerX)
-                // The header's data point sits above the visual centre of the name text
-                // baked into the PNG, so iOS nudges the frame down 8pt when placing it
-                // (QuranPageView.swift `.position(y: chapterY + 8)`). 8pt is ~1/8 of the
-                // scaled image height on the iPhone widths that constant was tuned for;
-                // ported proportionally so the text stays centred at any page width.
-                // The old whole-box clipping hid this offset by cropping the frame (#112).
-                val centerY =
-                    scaledImageHeight * header.centerY - cropOffset + scaledImageHeight * 0.125f
+                val centerY = scaledImageHeight * header.centerY - cropOffset
 
                 Image(
                     painter = painterResource(id = R.drawable.suranamebar),
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
+                    // Measured OUTSIDE the parent's constraints: the bar is deliberately
+                    // taller than the line frame, and a plain size() request gets CLAMPED
+                    // to the line height - which squashed the frame and, because the
+                    // offset still assumed the full height, shifted it up by half the
+                    // overflow. That clamp was the real source of every "surah name not
+                    // centred in its bar" report (#112, #114 review); iOS never hits it
+                    // because SwiftUI frames don't constrain children. wrapContentSize
+                    // with unbounded=true measures the child free of the parent's max
+                    // constraints; TopStart alignment keeps the true box anchored to the
+                    // offset, so the centre math holds at any line pitch.
                     modifier = Modifier
-                        .offset(
-                            x = with(density) { (centerX - barWidth / 2f).toDp() },
-                            y = with(density) { (centerY - barHeight / 2f).toDp() }
-                        )
+                        .offset {
+                            IntOffset(
+                                (centerX - barWidth / 2f).roundToInt(),
+                                (centerY - barHeight / 2f).roundToInt()
+                            )
+                        }
+                        .wrapContentSize(align = Alignment.TopStart, unbounded = true)
                         .size(
                             width = with(density) { barWidth.toDp() },
                             height = with(density) { barHeight.toDp() }
