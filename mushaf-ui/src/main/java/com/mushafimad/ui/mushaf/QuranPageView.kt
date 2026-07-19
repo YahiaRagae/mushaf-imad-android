@@ -4,8 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -13,11 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -67,12 +63,6 @@ fun QuranPageView(
     // any fragment lights up every fragment of that verse. Resets when the page changes.
     var pressedVerse by remember { mutableStateOf<Verse?>(null) }
     val readingTheme = MaterialTheme.readingTheme
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-
-    // Calculate dimensions matching iOS (aspect ratio 1440:232 per line)
-    val screenWidth = with(density) { configuration.screenWidthDp.dp.toPx() }
-    val lineHeight = screenWidth / 1440f * 232f
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -86,13 +76,18 @@ fun QuranPageView(
                 juzNumber = juzNumber
             )
 
-            // Lines container. A tap on the reading area that is NOT on a verse (verse
-            // fragments consume their own taps) bubbles up to this Box and fires onPageTap
-            // - the hook a host uses to toggle immersive/full-screen reading, matching iOS.
-            Box(
+            // The 15 lines share the height between the header and the footer, so the whole
+            // page fits one screen with no scrolling - the line is the unit of measure, as
+            // in a printed Mushaf and the iOS viewer. Each line frame is shorter than the
+            // image's natural height; QuranLineImageView crops the top/bottom whitespace to
+            // fit. A tap on the reading area that is NOT on a verse (verse fragments consume
+            // their own taps) bubbles up here and fires onPageTap - the hook a host uses to
+            // toggle immersive/full-screen reading, matching iOS.
+            Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .then(
                         if (onPageTap != null) {
                             Modifier.pointerInput(onPageTap) {
@@ -101,40 +96,31 @@ fun QuranPageView(
                         } else Modifier
                     )
             ) {
-            LazyColumn(
-                state = rememberLazyListState(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
+                val pageVerses = verses.filter { it.pageNumber == pageNumber }
                 // Render 15 lines (1-15) as images - skip line 0 which is often empty
-                items(15) { index ->
+                repeat(15) { index ->
                     val line = index + 1  // Start from line 1 instead of 0
                     QuranLineImageView(
                         page = pageNumber,
                         line = line,
                         mushafType = mushafType,
-                        verses = verses.filter { it.pageNumber == pageNumber },
+                        verses = pageVerses,
                         selectedVerse = selectedVerse,
                         highlightedVerse = highlightedVerse,
                         pressedVerse = pressedVerse,
                         onVerseClick = onVerseClick,
                         onVerseLongClick = onVerseLongClick,
                         onVersePressChange = { pressedVerse = it },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                 }
-
-                // The page-number ornament flows as the last item of the page - it is the
-                // end of the page, not a pinned footer, so it sits right after the final
-                // line (and only comes into view once the reader reaches the bottom),
-                // exactly like the iOS viewer.
-                item {
-                    PageFooter(pageNumber = pageNumber)
-                }
             }
-            } // page-tap Box
+
+            // Page-number ornament, anchored at the bottom of the page. The page fits
+            // without scrolling, so it is always visible, matching the iOS viewer.
+            PageFooter(pageNumber = pageNumber)
         }
     }
 }
@@ -159,7 +145,7 @@ private fun PageHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp),
+            .padding(horizontal = 20.dp, vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -200,12 +186,14 @@ private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
             Image(
                 painter = painterResource(id = R.drawable.pagenumb),
                 contentDescription = null,
-                modifier = Modifier.size(width = 54.dp, height = 36.dp)
+                // iOS PageFooterView frames pagenumb at 42x26 in portrait; match it so the
+                // ornament is not oversized relative to iOS or to the verse-number markers.
+                modifier = Modifier.size(width = 42.dp, height = 26.dp)
             )
             Text(
                 text = convertToArabicNumerals(pageNumber),
                 fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
+                fontSize = 11.sp,
                 maxLines = 1,
                 color = Color(0xFF2B2B2B),
                 modifier = Modifier.offset(y = (-1).dp)
@@ -214,11 +202,11 @@ private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
     }
 
     Row(
-        // The reading lines already sit inside the list's 16dp horizontal inset, so a
-        // further 14dp here lands the ornament ~30dp from the screen edge, as on iOS.
+        // ~30dp inset from the screen edge, matching iOS's PageFooterView hPadding.
+        // Minimal vertical padding so the ornament hugs the bottom of the page.
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 30.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (isRight) {
