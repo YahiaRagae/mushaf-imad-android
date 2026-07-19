@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -28,6 +31,7 @@ import com.mushafimad.core.domain.models.ChapterHeader
 import com.mushafimad.core.domain.models.Verse
 import com.mushafimad.ui.R
 import com.mushafimad.ui.theme.MushafTypography
+import com.mushafimad.ui.theme.QuranFonts
 import com.mushafimad.ui.theme.mushafColors
 import com.mushafimad.ui.theme.readingTheme
 
@@ -199,21 +203,48 @@ private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
     val isRight = pageNumber % 2 == 1
 
     val ornament: @Composable () -> Unit = {
-        Box(contentAlignment = Alignment.Center) {
+        // iOS PageFooterView frames pagenumb at 42x26 in portrait and overlays the number
+        // at font size 32 in KFGQPCUthmanTahaNaskh-Bold, letting minimumScaleFactor shrink
+        // it to fit. What actually binds is the HEIGHT: this font's line box is ~1.68em, so
+        // a 32pt line is ~54pt tall in a 26pt frame and SwiftUI scales it to an effective
+        // ~15pt for every page number (verified by measuring a simulator screenshot's ink).
+        // Compose has no auto-shrink, so reproduce it: measure the number once at 32sp and
+        // scale by whatever factor fits BOTH the frame's width and height. The text is
+        // drawn unbounded so the line box is never clipped (iOS overlays don't clip either).
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(width = 42.dp, height = 26.dp)
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.pagenumb),
                 contentDescription = null,
-                // iOS PageFooterView frames pagenumb at 42x26 in portrait; match it so the
-                // ornament is not oversized relative to iOS or to the verse-number markers.
-                modifier = Modifier.size(width = 42.dp, height = 26.dp)
+                modifier = Modifier.fillMaxSize()
             )
-            Text(
-                text = convertToArabicNumerals(pageNumber),
+            val text = convertToArabicNumerals(pageNumber)
+            val measurer = rememberTextMeasurer()
+            val density = LocalDensity.current
+            val numberStyle = TextStyle(
+                fontFamily = QuranFonts.UthmanTaha,
                 fontWeight = FontWeight.Bold,
-                fontSize = 11.sp,
+                fontSize = 32.sp
+            )
+            val fontSize = remember(text, density) {
+                val budgetW = with(density) { 42.dp.toPx() }
+                val budgetH = with(density) { 26.dp.toPx() }
+                val size = measurer.measure(text, numberStyle, maxLines = 1, softWrap = false).size
+                val factor = minOf(1f, budgetW / size.width, budgetH / size.height)
+                32.sp * factor
+            }
+            Text(
+                text = text,
+                style = numberStyle,
+                fontSize = fontSize,
                 maxLines = 1,
+                softWrap = false,
                 color = Color(0xFF2B2B2B),
-                modifier = Modifier.offset(y = (-1).dp)
+                modifier = Modifier
+                    .wrapContentSize(unbounded = true)
+                    .offset(y = (-2).dp)
             )
         }
     }

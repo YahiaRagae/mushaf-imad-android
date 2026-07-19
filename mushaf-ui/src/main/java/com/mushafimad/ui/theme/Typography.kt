@@ -18,23 +18,23 @@ object QuranFonts {
      * Used for verse text in Hafs layout
      * TODO: Add font resources to res/font/
      */
-    val UthmanicHafs = FontFamily.Default
+    val UthmanicHafs: FontFamily = FontFamily.Default
     // FontFamily(Font(R.font.uthmanic_hafs1_ver17, FontWeight.Normal))
 
     /**
      * Alternative Quran text font - UthmanTaha (Naskh)
-     * Used for traditional layout
-     * TODO: Add font resources to res/font/
+     * Used for the verse-number (fasel) and page-number digits, matching iOS's
+     * KFGQPCUthmanTahaNaskh-Bold. Only the bold weight is shipped; the regular
+     * weight comes with text mode (#90).
      */
-    val UthmanTaha = FontFamily.Default
-    // FontFamily(Font(R.font.uthman_tn1_ver20, FontWeight.Normal), Font(R.font.uthman_tn1b_ver20, FontWeight.Bold))
+    val UthmanTaha: FontFamily = FontFamily(Font(R.font.uthman_tn1b_ver20, FontWeight.Bold))
 
     /**
      * Quran chapter titles font
      * Used for chapter headers and names
      * TODO: Add font resources to res/font/
      */
-    val QuranTitles = FontFamily.Default
+    val QuranTitles: FontFamily = FontFamily.Default
     // FontFamily(Font(R.font.quran_titles, FontWeight.Normal))
 
     /**
@@ -42,7 +42,7 @@ object QuranFonts {
      * Used for verse numbers and page markers
      * TODO: Add font resources to res/font/
      */
-    val QuranNumbers = FontFamily.Default
+    val QuranNumbers: FontFamily = FontFamily.Default
     // FontFamily(Font(R.font.quran_numbers, FontWeight.Normal))
 
     /**
@@ -50,7 +50,7 @@ object QuranFonts {
      * Alternative verse font
      * TODO: Add font resources to res/font/
      */
-    val AlQuranAlKareem = FontFamily.Default
+    val AlQuranAlKareem: FontFamily = FontFamily.Default
     // FontFamily(Font(R.font.al_quran_al_kareem_regular, FontWeight.Normal))
 
     /**
@@ -58,7 +58,7 @@ object QuranFonts {
      * Smart Hafs font with advanced features
      * TODO: Add font resources to res/font/
      */
-    val HafsSmart = FontFamily.Default
+    val HafsSmart: FontFamily = FontFamily.Default
     // FontFamily(Font(R.font.hafs_smart_08, FontWeight.Normal))
 
     /**
@@ -66,7 +66,7 @@ object QuranFonts {
      * Used for translations and UI elements
      * TODO: Add font resources to res/font/
      */
-    val Kitab = FontFamily.Default
+    val Kitab: FontFamily = FontFamily.Default
     // FontFamily(Font(R.font.kitab_regular, FontWeight.Normal), Font(R.font.kitab_bold, FontWeight.Bold))
 }
 

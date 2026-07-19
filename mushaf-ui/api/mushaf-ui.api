@@ -570,13 +570,13 @@ public final class com/mushafimad/ui/theme/MushafTypography {
 public final class com/mushafimad/ui/theme/QuranFonts {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mushafimad/ui/theme/QuranFonts;
-	public final fun getAlQuranAlKareem ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getHafsSmart ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getKitab ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getQuranNumbers ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getQuranTitles ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getUthmanTaha ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getUthmanicHafs ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getAlQuranAlKareem ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getHafsSmart ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getKitab ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getQuranNumbers ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getQuranTitles ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getUthmanTaha ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getUthmanicHafs ()Landroidx/compose/ui/text/font/FontFamily;
 }
 
 public final class com/mushafimad/ui/theme/ReadingTheme : java/lang/Enum {
