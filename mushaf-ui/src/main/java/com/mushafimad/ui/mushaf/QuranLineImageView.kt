@@ -101,7 +101,14 @@ fun QuranLineImageView(
                 val barWidth = containerWidth * 0.9f
                 val barHeight = scaledImageHeight * 0.8f
                 val centerX = containerWidth * (1.0f - header.centerX)
-                val centerY = scaledImageHeight * header.centerY - cropOffset
+                // The header's data point sits above the visual centre of the name text
+                // baked into the PNG, so iOS nudges the frame down 8pt when placing it
+                // (QuranPageView.swift `.position(y: chapterY + 8)`). 8pt is ~1/8 of the
+                // scaled image height on the iPhone widths that constant was tuned for;
+                // ported proportionally so the text stays centred at any page width.
+                // The old whole-box clipping hid this offset by cropping the frame (#112).
+                val centerY =
+                    scaledImageHeight * header.centerY - cropOffset + scaledImageHeight * 0.125f
 
                 Image(
                     painter = painterResource(id = R.drawable.suranamebar),
