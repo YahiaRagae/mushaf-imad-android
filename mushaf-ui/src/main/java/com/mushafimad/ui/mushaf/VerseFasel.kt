@@ -69,6 +69,9 @@ fun VerseFasel(
             fontSize = fontSizeSp,
             fontFamily = QuranFonts.UthmanTaha,
             fontWeight = FontWeight.Bold,
+            // Deliberately NOT theme-derived: the fasel ornament's interior is opaque
+            // white in every theme (same SVG on iOS), so black is the only readable
+            // digit colour - see #98.
             color = Color.Black,
             textAlign = TextAlign.Center,
             maxLines = 1,

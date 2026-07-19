@@ -584,6 +584,7 @@ public final class com/mushafimad/ui/theme/ReadingTheme : java/lang/Enum {
 	public static final field COMFORTABLE Lcom/mushafimad/ui/theme/ReadingTheme;
 	public static final field NIGHT Lcom/mushafimad/ui/theme/ReadingTheme;
 	public static final field WHITE Lcom/mushafimad/ui/theme/ReadingTheme;
+	public final fun getAccentColor-0d7_KjU ()J
 	public final fun getBackgroundColor-0d7_KjU ()J
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getTextColor-0d7_KjU ()J

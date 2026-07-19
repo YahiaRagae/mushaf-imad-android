@@ -5,14 +5,24 @@ import androidx.compose.ui.graphics.Color
 /**
  * Reading theme colors matching iOS ReadingTheme enum
  * Public API - exposed to library consumers
+ *
+ * accentColor carries iOS's `brand900` (its header/label green): iOS forces the SwiftUI
+ * colorScheme from the reading theme, so brand900 resolves to its light value on the three
+ * light themes and to its dark-appearance value on Night. The two values here are those
+ * two asset variants.
  */
-enum class ReadingTheme(val backgroundColor: Color, val textColor: Color) {
+enum class ReadingTheme(
+    val backgroundColor: Color,
+    val textColor: Color,
+    val accentColor: Color
+) {
     /**
      * Comfortable green theme - default
      */
     COMFORTABLE(
         backgroundColor = Color(0xFFE4EFD9),
-        textColor = Color(0xFF000000)
+        textColor = Color(0xFF000000),
+        accentColor = Color(0xFF015C42)
     ),
 
     /**
@@ -20,7 +30,8 @@ enum class ReadingTheme(val backgroundColor: Color, val textColor: Color) {
      */
     CALM(
         backgroundColor = Color(0xFFE0F1EA),
-        textColor = Color(0xFF000000)
+        textColor = Color(0xFF000000),
+        accentColor = Color(0xFF015C42)
     ),
 
     /**
@@ -28,7 +39,8 @@ enum class ReadingTheme(val backgroundColor: Color, val textColor: Color) {
      */
     NIGHT(
         backgroundColor = Color(0xFF2F352F),
-        textColor = Color(0xFFFFFFFF)
+        textColor = Color(0xFFFFFFFF),
+        accentColor = Color(0xFFE7FBCC)
     ),
 
     /**
@@ -36,7 +48,8 @@ enum class ReadingTheme(val backgroundColor: Color, val textColor: Color) {
      */
     WHITE(
         backgroundColor = Color(0xFFFFFFFF),
-        textColor = Color(0xFF000000)
+        textColor = Color(0xFF000000),
+        accentColor = Color(0xFF015C42)
     );
 
     /**
@@ -195,9 +208,12 @@ object MushafColors {
     val verseHighlightLight = Color(0xFFFFEB3B).copy(alpha = 0.3f)
     val verseHighlightDark = Color(0xFFFDD835).copy(alpha = 0.4f)
 
-    // Selection colors
-    val selectionLight = Color(0xFF2196F3).copy(alpha = 0.2f)
-    val selectionDark = Color(0xFF64B5F6).copy(alpha = 0.3f)
+    // Selection colors - iOS highlights the selected/recited verse with its solid
+    // `accent900` green (#B8F077), drawn BEHIND the glyph ink, and uses the same value
+    // in every reading theme (the asset has no dark variant). Both entries stay for
+    // API compatibility but carry the one iOS value.
+    val selectionLight = Color(0xFFB8F077)
+    val selectionDark = Color(0xFFB8F077)
 
     // Chapter header colors
     val chapterHeaderBackground = Color(0xFFF5F5F5)

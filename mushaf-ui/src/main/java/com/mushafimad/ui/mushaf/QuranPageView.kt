@@ -145,12 +145,13 @@ private fun PageHeader(
     modifier: Modifier = Modifier
 ) {
     // Minimal header, matching the iOS viewer: juz (and the hizb, where one starts on this
-    // page) on one side, the surah name on the other, both in the same soft green with no
-    // heavy background bar. The juz/hizb labels are the localized titles carried in the page
+    // page) on one side, the surah name on the other, both in the reading theme's accent
+    // green (iOS's brand900, which flips to its pale variant on Night) with no heavy
+    // background bar. The juz/hizb labels are the localized titles carried in the page
     // data (Arabic or English, chosen for the app language); the surah name uses the same
     // calligraphic SurahName font iOS does (shipped in mushaf-core's assets). The page number
     // is no longer shown here - it appears as an ornament at the foot of the page.
-    val accent = Color(0xFF5E8B6A)
+    val accent = MaterialTheme.readingTheme.accentColor
     val context = LocalContext.current
     val surahNameFont = remember { FontFamily(Font("SurahName.otf", context.assets)) }
 
@@ -241,7 +242,10 @@ private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
                 fontSize = fontSize,
                 maxLines = 1,
                 softWrap = false,
-                color = Color(0xFF2B2B2B),
+                // Deliberately NOT theme-derived: the pagenumb ornament's interior is
+                // opaque white in every theme (same SVG on iOS), so black is the only
+                // readable digit colour. iOS's .primary would go white-on-white on Night.
+                color = Color.Black,
                 modifier = Modifier
                     .wrapContentSize(unbounded = true)
                     .offset(y = (-2).dp)

@@ -116,22 +116,11 @@ fun QuranLineImageView(
             }
         }
 
-        // Render line image
-        imageBitmap?.let { bitmap ->
-            Image(
-                bitmap = bitmap,
-                contentDescription = "Quran page $page line $line",
-                // Fill the width and crop the image's top/bottom whitespace: the line frame
-                // is deliberately shorter than the image's natural height so 15 lines fit the
-                // screen, and cropping (not scaling) keeps the glyphs full-size and tightens
-                // line spacing, exactly as the iOS viewer does.
-                contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.tint(readingTheme.textColor),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        // Render verse highlights
+        // Render verse highlights. Like the surah bar, these draw BEFORE the line image:
+        // iOS fills the highlight rectangle with SOLID accent900 green underneath the
+        // glyph ink (the line PNG on top is ink-on-transparent), so the text never gets
+        // washed out the way an overlaid translucent tint would. The boxes stay clickable
+        // even under the image - the image has no pointer handlers, so hits pass through.
         verses.forEach { verse ->
             val highlights = when (mushafType) {
                 MushafType.HAFS_1441 -> verse.highlights1441
@@ -181,12 +170,10 @@ fun QuranLineImageView(
                             )
                             .clip(RoundedCornerShape(8.dp))
                             .background(
+                                // One colour for every theme, exactly like iOS's
+                                // universal accent900 asset.
                                 if (shouldHighlight) {
-                                    if (readingTheme.isDark) {
-                                        MushafColors.selectionDark
-                                    } else {
-                                        MushafColors.selectionLight
-                                    }
+                                    MushafColors.selectionLight
                                 } else {
                                     androidx.compose.ui.graphics.Color.Transparent
                                 }
@@ -202,6 +189,22 @@ fun QuranLineImageView(
                     )
                 }
             }
+        }
+
+        // Render line image, ABOVE the surah bar and the highlights (iOS draws its
+        // QuranLineImageView last for the same reason).
+        imageBitmap?.let { bitmap ->
+            Image(
+                bitmap = bitmap,
+                contentDescription = "Quran page $page line $line",
+                // Fill the width and crop the image's top/bottom whitespace: the line frame
+                // is deliberately shorter than the image's natural height so 15 lines fit the
+                // screen, and cropping (not scaling) keeps the glyphs full-size and tightens
+                // line spacing, exactly as the iOS viewer does.
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.tint(readingTheme.textColor),
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         // Render verse numbers
