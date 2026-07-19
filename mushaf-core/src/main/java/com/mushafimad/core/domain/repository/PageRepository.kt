@@ -1,5 +1,6 @@
 package com.mushafimad.core.domain.repository
 
+import com.mushafimad.core.domain.models.ChapterHeader
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Page
 import com.mushafimad.core.domain.models.PageHeaderInfo
@@ -27,6 +28,15 @@ interface PageRepository {
         pageNumber: Int,
         mushafType: MushafType = MushafType.HAFS_1441
     ): PageHeaderInfo?
+
+    /**
+     * Get the surah headers that start on a page, each with the normalized position of the
+     * chapter's name, so a reader can draw the decorative name bar behind it.
+     */
+    suspend fun getChapterHeaders(
+        pageNumber: Int,
+        mushafType: MushafType = MushafType.HAFS_1441
+    ): List<ChapterHeader>
 
     /**
      * Pre-cache a specific page

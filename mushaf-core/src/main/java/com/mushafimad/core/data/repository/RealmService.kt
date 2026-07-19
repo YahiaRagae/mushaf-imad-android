@@ -88,6 +88,15 @@ internal interface RealmService {
         mushafType: MushafType = MushafType.HAFS_1441
     ): PageHeaderInfo?
 
+    /**
+     * Get the surah headers that start on a page, with the normalized position of each
+     * chapter's name on the page, so the reader can draw the decorative name bar there.
+     */
+    suspend fun getChapterHeaders(
+        pageNumber: Int,
+        mushafType: MushafType = MushafType.HAFS_1441
+    ): List<ChapterHeader>
+
     // MARK: - Verse Operations
 
     /**

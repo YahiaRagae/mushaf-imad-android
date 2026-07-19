@@ -21,9 +21,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.mushafimad.core.domain.models.ChapterHeader
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
+import com.mushafimad.ui.R
 import com.mushafimad.ui.theme.MushafColors
 import com.mushafimad.ui.theme.readingTheme
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +48,7 @@ fun QuranLineImageView(
     line: Int,
     mushafType: MushafType,
     verses: List<Verse>,
+    chapterHeaders: List<ChapterHeader> = emptyList(),
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
     pressedVerse: Verse? = null,
@@ -81,6 +85,37 @@ fun QuranLineImageView(
                 }
             }
     ) {
+        // Surah-name ornamental bar. Drawn FIRST so it sits behind the line image - the
+        // surah name itself is baked into the PNG, and this is the decorative frame around
+        // it. Sized and positioned from the page data exactly as the iOS viewer does:
+        // 90% of the line width, 80% of the image's natural height, centred on the header's
+        // normalized point (RTL-flipped in X, crop-adjusted in Y).
+        chapterHeaders.forEach { header ->
+            if (header.line == (line - 1) && containerWidth > 0f && containerHeight > 0f) {
+                val scaledImageHeight = containerWidth / imageAspect
+                val cropOffset = (scaledImageHeight - containerHeight) / 2f
+                val barWidth = containerWidth * 0.9f
+                val barHeight = scaledImageHeight * 0.8f
+                val centerX = containerWidth * (1.0f - header.centerX)
+                val centerY = scaledImageHeight * header.centerY - cropOffset
+
+                Image(
+                    painter = painterResource(id = R.drawable.suranamebar),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .offset(
+                            x = with(density) { (centerX - barWidth / 2f).toDp() },
+                            y = with(density) { (centerY - barHeight / 2f).toDp() }
+                        )
+                        .size(
+                            width = with(density) { barWidth.toDp() },
+                            height = with(density) { barHeight.toDp() }
+                        )
+                )
+            }
+        }
+
         // Render line image
         imageBitmap?.let { bitmap ->
             Image(
