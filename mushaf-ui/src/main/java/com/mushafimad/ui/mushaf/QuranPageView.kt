@@ -105,18 +105,33 @@ fun QuranPageView(
                         } else Modifier
                     )
             ) {
-                // Every line - blank or not - is pinned to the height iOS uses: derived
-                // from the page WIDTH alone (the 1440x232 image aspect x a 0.73 crop
-                // factor, QuranPageView.swift:68,118), with the leftover height sitting
-                // BELOW the last line, before the footer. Dividing the height equally
-                // instead (the old model) made every blank slot on a sparse page claim a
-                // full uncapped 1/15 share, stretching pages 1-2's few real lines apart,
-                // and loosened line spacing on tall screens. The equal share remains only
-                // as a CAP so short/wide screens still fit all 15 lines with no scrolling
-                // (fit-to-page, #94).
-                val lineHeight = minOf(maxWidth / (1440f / 232f) * 0.73f, maxHeight / 15)
+                // Line pitch. iOS pins every line to a width-derived height (the 1440x232
+                // image aspect x a 0.73 crop factor, QuranPageView.swift:68,118) and lets
+                // one trailing spacer take the leftover - which on iPhone aspect ratios is
+                // ~ZERO, so iOS pages visually FILL the space down to the footer. Android
+                // phones are taller: the same pinned pitch left ~12% of the content area
+                // as a blank band at the bottom (#114). So:
+                //  - FULL pages (content on all 15 lines - every page but 1 and 2) take
+                //    the equal share of the available height, filling to the footer the
+                //    way iOS looks on its own hardware; capped at the image's natural
+                //    height so an extreme aspect can never letterbox a line.
+                //  - SPARSE pages (any line with neither a verse fragment nor a chapter
+                //    header on it) keep the iOS pinned pitch, so their blank slots stay
+                //    small instead of stretching the few real lines apart (#110).
+                val pageVerses = verses.filter { it.pageNumber == pageNumber }
+                // Pages 1 and 2 are this mushaf's only sparse pages: they ship 7 of their
+                // 15 line PNGs as blank placeholders. Every other page's 15 lines all
+                // carry real ink (verses, surah bars, or bismillahs - note bismillah
+                // lines have no verse/header DATA, so this cannot be derived from the
+                // page's verse fragments; it is a fixed property of the shipped assets).
+                val isSparse = pageNumber <= 2
+                val scaledImageHeight = maxWidth / (1440f / 232f)
+                val lineHeight = if (isSparse) {
+                    minOf(scaledImageHeight * 0.73f, maxHeight / 15)
+                } else {
+                    minOf(scaledImageHeight, maxHeight / 15)
+                }
                 Column(modifier = Modifier.fillMaxSize()) {
-                    val pageVerses = verses.filter { it.pageNumber == pageNumber }
                     // Render 15 lines (1-15) as images - skip line 0 which is often empty
                     repeat(15) { index ->
                         val line = index + 1  // Start from line 1 instead of 0
