@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -60,8 +61,13 @@ fun MushafView(
     initialPage: Int? = null,
     highlightedVerse: Verse? = null,
     showNavigationControls: Boolean = true,
-    showPageInfo: Boolean = true,
+    // Off by default: the floating page-info card duplicated the reader header and the
+    // iOS viewer has no such card. A consumer can still opt in.
+    showPageInfo: Boolean = false,
+    pageSwipeEnabled: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
+    onVerseLongPress: ((Verse) -> Unit)? = null,
+    onPageTap: (() -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: MushafViewModel = mushafViewModel()
@@ -144,24 +150,33 @@ fun MushafView(
                             .collect { index -> viewModel.onPageSettled(index + 1) }
                     }
 
-                    HorizontalPager(
-                        state = pagerState,
-                        // Pre-compose neighbours so their content is already
-                        // loaded when the swipe starts (issue #70)
-                        beyondViewportPageCount = 1,
-                        modifier = Modifier.fillMaxSize()
-                    ) { index ->
-                        MushafPagerPage(
-                            pageNumber = index + 1,
-                            mushafType = uiState.mushafType,
-                            selectedVerse = uiState.selectedVerse,
-                            highlightedVerse = highlightedVerse,
-                            onVerseClick = { verse ->
-                                viewModel.selectVerse(verse)
-                                onVerseSelected?.invoke(verse)
-                            },
-                            viewModel = viewModel
-                        )
+                    // The Mushaf is an Arabic book: swiping right always turns to the
+                    // next page, whatever the host app's locale (issue #105)
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                        HorizontalPager(
+                            state = pagerState,
+                            // Pre-compose neighbours so their content is already
+                            // loaded when the swipe starts (issue #70)
+                            beyondViewportPageCount = 1,
+                            // Let a host lock page-turning by swipe (the nav buttons and
+                            // programmatic navigation still work). Default keeps swiping on.
+                            userScrollEnabled = pageSwipeEnabled,
+                            modifier = Modifier.fillMaxSize()
+                        ) { index ->
+                            MushafPagerPage(
+                                pageNumber = index + 1,
+                                mushafType = uiState.mushafType,
+                                selectedVerse = uiState.selectedVerse,
+                                highlightedVerse = highlightedVerse,
+                                onVerseClick = { verse ->
+                                    viewModel.selectVerse(verse)
+                                    onVerseSelected?.invoke(verse)
+                                },
+                                onVerseLongClick = onVerseLongPress,
+                                onPageTap = onPageTap,
+                                viewModel = viewModel
+                            )
+                        }
                     }
 
                     // Navigation controls overlay
@@ -208,6 +223,8 @@ private fun MushafPagerPage(
     selectedVerse: Verse?,
     highlightedVerse: Verse?,
     onVerseClick: (Verse) -> Unit,
+    onVerseLongClick: ((Verse) -> Unit)? = null,
+    onPageTap: (() -> Unit)? = null,
     viewModel: MushafViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -223,15 +240,22 @@ private fun MushafPagerPage(
 
     val pageContent = content
     if (pageContent != null) {
+        // Pick the juz/hizb labels for the app language: Arabic titles for an Arabic app,
+        // English otherwise. Both variants come from the page data.
+        val isArabic = LocalConfiguration.current.locales.get(0).language == "ar"
         QuranPageView(
             verses = pageContent.verses,
             chapters = pageContent.chapters,
             pageNumber = pageNumber,
-            juzNumber = ((pageNumber - 1) / 20) + 1,
+            juzLabel = if (isArabic) pageContent.juzArabic else pageContent.juzEnglish,
+            hizbLabel = if (isArabic) pageContent.hizbArabic else pageContent.hizbEnglish,
+            chapterHeaders = pageContent.chapterHeaders,
             mushafType = mushafType,
             selectedVerse = selectedVerse,
             highlightedVerse = highlightedVerse,
             onVerseClick = onVerseClick,
+            onVerseLongClick = onVerseLongClick,
+            onPageTap = onPageTap,
             modifier = modifier.fillMaxSize()
         )
     } else {

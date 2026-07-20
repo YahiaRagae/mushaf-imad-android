@@ -2,24 +2,34 @@ package com.mushafimad.ui.mushaf
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.mushafimad.core.domain.models.ChapterHeader
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Verse
+import com.mushafimad.ui.R
 import com.mushafimad.ui.theme.MushafColors
 import com.mushafimad.ui.theme.readingTheme
 import kotlinx.coroutines.Dispatchers
@@ -34,15 +44,20 @@ import java.io.InputStream
  * Original dimensions: 1440 x 232 pixels
  * Each page has 15 lines (0-14)
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuranLineImageView(
     page: Int,
     line: Int,
     mushafType: MushafType,
     verses: List<Verse>,
+    chapterHeaders: List<ChapterHeader> = emptyList(),
     selectedVerse: Verse? = null,
     highlightedVerse: Verse? = null,
+    pressedVerse: Verse? = null,
     onVerseClick: ((Verse) -> Unit)? = null,
+    onVerseLongClick: ((Verse) -> Unit)? = null,
+    onVersePressChange: ((Verse?) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -63,10 +78,13 @@ fun QuranLineImageView(
         imageBitmap = loadLineImage(context, page, line)
     }
 
+    // NOT clipped as a whole: the surah-name bar (and, at the margins, the fasel
+    // markers) are deliberately taller than the line frame and must overflow it,
+    // exactly as iOS's unclipped line ZStack allows. Clipping here (as fit-to-page
+    // #94 once did) cuts the bar's top/bottom rules wherever the frame is short -
+    // e.g. tablet portrait (#112). Only the line IMAGE is clipped, below.
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(imageAspect)
             .onGloballyPositioned { coordinates ->
                 with(density) {
                     containerWidth = coordinates.size.width.toFloat()
@@ -74,18 +92,55 @@ fun QuranLineImageView(
                 }
             }
     ) {
-        // Render line image
-        imageBitmap?.let { bitmap ->
-            Image(
-                bitmap = bitmap,
-                contentDescription = "Quran page $page line $line",
-                contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(readingTheme.textColor),
-                modifier = Modifier.fillMaxSize()
-            )
+        // Surah-name ornamental bar. Drawn FIRST so it sits behind the line image - the
+        // surah name itself is baked into the PNG, and this is the decorative frame around
+        // it. Sized and positioned from the page data exactly as the iOS viewer does:
+        // 90% of the line width, 80% of the image's natural height, centred on the header's
+        // normalized point (RTL-flipped in X, crop-adjusted in Y).
+        chapterHeaders.forEach { header ->
+            if (header.line == (line - 1) && containerWidth > 0f && containerHeight > 0f) {
+                val scaledImageHeight = containerWidth / imageAspect
+                val cropOffset = (scaledImageHeight - containerHeight) / 2f
+                val barWidth = containerWidth * 0.9f
+                val barHeight = scaledImageHeight * 0.8f
+                val centerX = containerWidth * (1.0f - header.centerX)
+                val centerY = scaledImageHeight * header.centerY - cropOffset
+
+                Image(
+                    painter = painterResource(id = R.drawable.suranamebar),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    // Measured OUTSIDE the parent's constraints: the bar is deliberately
+                    // taller than the line frame, and a plain size() request gets CLAMPED
+                    // to the line height - which squashed the frame and, because the
+                    // offset still assumed the full height, shifted it up by half the
+                    // overflow. That clamp was the real source of every "surah name not
+                    // centred in its bar" report (#112, #114 review); iOS never hits it
+                    // because SwiftUI frames don't constrain children. wrapContentSize
+                    // with unbounded=true measures the child free of the parent's max
+                    // constraints; TopStart alignment keeps the true box anchored to the
+                    // offset, so the centre math holds at any line pitch.
+                    modifier = Modifier
+                        .offset {
+                            IntOffset(
+                                (centerX - barWidth / 2f).roundToInt(),
+                                (centerY - barHeight / 2f).roundToInt()
+                            )
+                        }
+                        .wrapContentSize(align = Alignment.TopStart, unbounded = true)
+                        .size(
+                            width = with(density) { barWidth.toDp() },
+                            height = with(density) { barHeight.toDp() }
+                        )
+                )
+            }
         }
 
-        // Render verse highlights
+        // Render verse highlights. Like the surah bar, these draw BEFORE the line image:
+        // iOS fills the highlight rectangle with SOLID accent900 green underneath the
+        // glyph ink (the line PNG on top is ink-on-transparent), so the text never gets
+        // washed out the way an overlaid translucent tint would. The boxes stay clickable
+        // even under the image - the image has no pointer handlers, so hits pass through.
         verses.forEach { verse ->
             val highlights = when (mushafType) {
                 MushafType.HAFS_1441 -> verse.highlights1441
@@ -101,8 +156,27 @@ fun QuranLineImageView(
                     val highlightWidth = visualRightX - visualLeftX
                     val highlightHeight = containerHeight * 0.94f
 
-                    // Determine if this verse should be highlighted
-                    val shouldHighlight = verse == selectedVerse || verse == highlightedVerse
+                    // The committed selection, the audio highlight, and the transient
+                    // press preview all paint the same way. pressedVerse makes the WHOLE
+                    // verse light up while a finger is down on any one of its fragments
+                    // (matching iOS), instead of a per-fragment ripple on one line only.
+                    val shouldHighlight =
+                        verse == selectedVerse || verse == highlightedVerse || verse == pressedVerse
+
+                    // Report press down/up for this fragment up to the page, which shares
+                    // one pressedVerse across all lines so every fragment reacts together.
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    LaunchedEffect(isPressed) {
+                        onVersePressChange?.invoke(if (isPressed) verse else null)
+                    }
+                    // If this fragment leaves composition while still pressed - e.g. the page
+                    // scrolls out from under the finger - the effect above is cancelled without
+                    // ever reporting the release, which would leave the preview stuck on a verse
+                    // that scrolled away. Clear it on disposal to guarantee it never sticks.
+                    DisposableEffect(Unit) {
+                        onDispose { if (isPressed) onVersePressChange?.invoke(null) }
+                    }
 
                     Box(
                         modifier = Modifier
@@ -116,22 +190,46 @@ fun QuranLineImageView(
                             )
                             .clip(RoundedCornerShape(8.dp))
                             .background(
+                                // One colour for every theme, exactly like iOS's
+                                // universal accent900 asset.
                                 if (shouldHighlight) {
-                                    if (readingTheme.isDark) {
-                                        MushafColors.selectionDark
-                                    } else {
-                                        MushafColors.selectionLight
-                                    }
+                                    MushafColors.selectionLight
                                 } else {
                                     androidx.compose.ui.graphics.Color.Transparent
                                 }
                             )
-                            .clickable(enabled = onVerseClick != null) {
-                                onVerseClick?.invoke(verse)
-                            }
+                            .combinedClickable(
+                                interactionSource = interactionSource,
+                                // No ripple: the whole-verse background flip IS the feedback.
+                                indication = null,
+                                enabled = onVerseClick != null || onVerseLongClick != null,
+                                onClick = { onVerseClick?.invoke(verse) },
+                                onLongClick = onVerseLongClick?.let { cb -> { cb(verse) } }
+                            )
                     )
                 }
             }
+        }
+
+        // Render line image, ABOVE the surah bar and the highlights (iOS draws its
+        // QuranLineImageView last for the same reason).
+        imageBitmap?.let { bitmap ->
+            Image(
+                bitmap = bitmap,
+                contentDescription = "Quran page $page line $line",
+                // Fill the width and crop the image's top/bottom whitespace: the line frame
+                // is deliberately shorter than the image's natural height so 15 lines fit the
+                // screen, and cropping (not scaling) keeps the glyphs full-size and tightens
+                // line spacing, exactly as the iOS viewer does.
+                contentScale = ContentScale.Crop,
+                colorFilter = ColorFilter.tint(readingTheme.textColor),
+                // Clip the IMAGE only (iOS `.clipped()` on its Image likewise): Crop
+                // scales the bitmap past the frame and without this it would bleed
+                // into the neighbouring lines.
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clipToBounds()
+            )
         }
 
         // Render verse numbers
@@ -143,20 +241,25 @@ fun QuranLineImageView(
 
             // Markers use 0-14 indexing like highlights, adjust for UI's 1-15
             if (marker != null && marker.line == (line - 1) && containerWidth > 0f && containerHeight > 0f) {
-                // Transform percentage coordinates to screen pixels (RTL-aware for X)
+                // Transform percentage coordinates to screen pixels (RTL-aware for X).
+                // The line frame is shorter than the image's natural height (the page fits
+                // 15 lines to the screen and the image is cropped top/bottom), so the marker
+                // centerY - given relative to the FULL image - is mapped into full-image
+                // space and shifted up by the crop offset. Mirrors the iOS renderer.
+                val scaledImageHeight = containerWidth / imageAspect
+                val cropOffset = (scaledImageHeight - containerHeight) / 2f
                 val markerX = containerWidth * (1.0f - marker.centerX)
-                val markerY = containerHeight * marker.centerY
+                val markerY = scaledImageHeight * marker.centerY - cropOffset
 
-                // Marker size calculation (increased from quran_android's 5% for better readability)
-                // quran_android uses: markerDimen = (0.025f * 2 * width).toInt() = 5%
-                // We use 7% for better visibility and readability
-                val markerDimen = (0.035f * 2 * containerWidth).toInt()
+                // Marker WIDTH = 5.4% of the line width - the width of the blank slot the
+                // Mushaf reserves for the verse number. The height follows the ornament's
+                // taller-than-wide aspect (see VerseFasel), so the number stays readable
+                // without the marker spilling sideways onto the text. Mirrors the iOS renderer.
+                val markerWidth = 0.054f * containerWidth
+                val markerHeight = markerWidth / (92f / 117f)
 
-                // Center the marker at coordinates (quran_android approach)
-                // x = points[0] - (markerDimen / 2) + paddingLeft
-                // Note: we don't have padding in our Compose setup
-                val adjustedX = markerX - (markerDimen / 2f)
-                val adjustedY = markerY - (markerDimen / 2f)
+                val adjustedX = markerX - (markerWidth / 2f)
+                val adjustedY = markerY - (markerHeight / 2f)
 
                 Box(
                     modifier = Modifier
@@ -167,7 +270,7 @@ fun QuranLineImageView(
                 ) {
                     VerseFasel(
                         number = verse.number,
-                        sizeInPx = markerDimen.toFloat()
+                        sizeInPx = markerWidth
                     )
                 }
             }

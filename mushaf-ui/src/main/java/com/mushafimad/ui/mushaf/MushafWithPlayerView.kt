@@ -40,9 +40,12 @@ fun MushafWithPlayerView(
     mushafType: MushafType = MushafType.HAFS_1441,
     initialPage: Int? = null,
     showNavigationControls: Boolean = true,
-    showPageInfo: Boolean = true,
+    showPageInfo: Boolean = false,
     showAudioPlayer: Boolean = true,
+    pageSwipeEnabled: Boolean = true,
     onVerseSelected: ((Verse) -> Unit)? = null,
+    onVerseLongPress: ((Verse) -> Unit)? = null,
+    onPageTap: (() -> Unit)? = null,
     onPageChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -144,7 +147,10 @@ fun MushafWithPlayerView(
                 highlightedVerse = highlightedVerse,
                 showNavigationControls = showNavigationControls,
                 showPageInfo = showPageInfo,
+                pageSwipeEnabled = pageSwipeEnabled,
                 onVerseSelected = onVerseSelected,
+                onVerseLongPress = onVerseLongPress,
+                onPageTap = onPageTap,
                 onPageChanged = onPageChangedStable,
                 viewModel = mushafViewModel
             )

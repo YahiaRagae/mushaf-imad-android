@@ -36,47 +36,46 @@ fun VerseFasel(
 ) {
     val density = LocalDensity.current
 
-    // Base dimensions for marker sizing and font scaling
-    val baseFontSize = 18f
-    val balance = 1.2f
-    val baseWidth = 21 * balance
+    // The fasel ornament is taller than it is wide (native 92x117). iOS renders it at
+    // that aspect so the marker fits the narrow slot the Mushaf reserves for the number
+    // (its width) while staying tall enough to read (its height). Rendering it square, as
+    // before, forced a bad choice: wide enough to read meant spilling onto the adjacent
+    // letter; narrow enough not to spill meant it was too small.
+    val ornamentWtoH = 92f / 117f
 
-    // Calculate size: either use provided sizeInPx or fallback to scale-based calculation
-    val finalSize = sizeInPx?.let { px ->
-        with(density) { px.toDp() }
-    } ?: run {
-        (baseWidth * scale).dp
-    }
-
-    // Calculate effective scale for font sizing
-    val effectiveScale = sizeInPx?.let { px ->
-        with(density) {
-            px.toDp().value / baseWidth
-        }
-    } ?: scale
+    // sizeInPx, when provided, is the target WIDTH in px; the height follows the aspect.
+    val widthDp = sizeInPx?.let { px -> with(density) { px.toDp() } } ?: (21 * 1.2f * scale).dp
+    val heightDp = widthDp / ornamentWtoH
+    // iOS draws the digits at 14pt over a 27pt-tall fasel (VerseFasel.swift); with the
+    // same UthmanTaha font shipped (#97) the same ratio gives the same rendered digits.
+    val fontSizeSp = with(density) { (heightDp.toPx() * (14f / 27f)).toSp() }
 
     Box(
-        modifier = modifier.size(finalSize),
+        modifier = modifier
+            .width(widthDp)
+            .height(heightDp),
         contentAlignment = Alignment.Center
     ) {
-        // Decorative ornamental background
+        // Decorative ornamental background, stretched to the ornament's own aspect
         Image(
             painter = painterResource(id = R.drawable.fasel),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.FillBounds
         )
 
         Text(
             text = convertToArabicNumerals(number),
-            fontSize = (baseFontSize * effectiveScale * 0.6f).sp,
+            fontSize = fontSizeSp,
             fontFamily = QuranFonts.UthmanTaha,
             fontWeight = FontWeight.Bold,
+            // Deliberately NOT theme-derived: the fasel ornament's interior is opaque
+            // white in every theme (same SVG on iOS), so black is the only readable
+            // digit colour - see #98.
             color = Color.Black,
             textAlign = TextAlign.Center,
-            modifier = Modifier.offset(
-                y = (1 * effectiveScale).dp,
-            )
+            maxLines = 1,
+            softWrap = false
         )
     }
 }

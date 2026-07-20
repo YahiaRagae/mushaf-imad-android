@@ -1,6 +1,7 @@
 package com.mushafimad.core.data.repository
 
 import com.mushafimad.core.data.cache.QuranDataCacheService
+import com.mushafimad.core.domain.models.ChapterHeader
 import com.mushafimad.core.domain.models.MushafType
 import com.mushafimad.core.domain.models.Page
 import com.mushafimad.core.domain.models.PageHeaderInfo
@@ -33,6 +34,13 @@ internal class DefaultPageRepository (
 
         // Otherwise fetch from database
         return realmService.getPageHeaderInfo(pageNumber, mushafType)
+    }
+
+    override suspend fun getChapterHeaders(
+        pageNumber: Int,
+        mushafType: MushafType
+    ): List<ChapterHeader> {
+        return realmService.getChapterHeaders(pageNumber, mushafType)
     }
 
     override suspend fun cachePage(pageNumber: Int) {

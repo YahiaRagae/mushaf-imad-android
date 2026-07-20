@@ -164,12 +164,12 @@ public final class com/mushafimad/ui/mushaf/MushafUiState {
 }
 
 public final class com/mushafimad/ui/mushaf/MushafViewKt {
-	public static final fun MushafView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/mushafimad/ui/mushaf/MushafViewModel;Landroidx/compose/runtime/Composer;III)V
+	public static final fun MushafView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;Lcom/mushafimad/core/domain/models/Verse;ZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/mushafimad/ui/mushaf/MushafViewModel;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/MushafViewModel : androidx/lifecycle/ViewModel {
 	public static final field $stable I
-	public fun <init> (Lcom/mushafimad/core/domain/repository/VerseRepository;Lcom/mushafimad/core/domain/repository/ChapterRepository;Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Lcom/mushafimad/core/domain/repository/PreferencesRepository;)V
+	public fun <init> (Lcom/mushafimad/core/domain/repository/VerseRepository;Lcom/mushafimad/core/domain/repository/ChapterRepository;Lcom/mushafimad/core/domain/repository/PageRepository;Lcom/mushafimad/core/domain/repository/ReadingHistoryRepository;Lcom/mushafimad/core/domain/repository/PreferencesRepository;)V
 	public final fun clearAllSelections ()V
 	public final fun clearError ()V
 	public final fun clearSelection ()V
@@ -191,7 +191,7 @@ public final class com/mushafimad/ui/mushaf/MushafViewModel : androidx/lifecycle
 }
 
 public final class com/mushafimad/ui/mushaf/MushafWithPlayerViewKt {
-	public static final fun MushafWithPlayerView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;ZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+	public static final fun MushafWithPlayerView (Lcom/mushafimad/ui/theme/ReadingTheme;Lcom/mushafimad/ui/theme/ColorSchemeType;Lcom/mushafimad/core/domain/models/MushafType;Ljava/lang/Integer;ZZZZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/PageInfo {
@@ -215,11 +215,11 @@ public final class com/mushafimad/ui/mushaf/PageInfo {
 }
 
 public final class com/mushafimad/ui/mushaf/QuranLineImageViewKt {
-	public static final fun QuranLineImageView (IILcom/mushafimad/core/domain/models/MushafType;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+	public static final fun QuranLineImageView (IILcom/mushafimad/core/domain/models/MushafType;Ljava/util/List;Ljava/util/List;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/QuranPageViewKt {
-	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;IILcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+	public static final fun QuranPageView (Ljava/util/List;Ljava/util/List;ILjava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/mushafimad/core/domain/models/MushafType;Lcom/mushafimad/core/domain/models/Verse;Lcom/mushafimad/core/domain/models/Verse;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;III)V
 }
 
 public final class com/mushafimad/ui/mushaf/VerseFaselKt {
@@ -570,13 +570,13 @@ public final class com/mushafimad/ui/theme/MushafTypography {
 public final class com/mushafimad/ui/theme/QuranFonts {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/mushafimad/ui/theme/QuranFonts;
-	public final fun getAlQuranAlKareem ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getHafsSmart ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getKitab ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getQuranNumbers ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getQuranTitles ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getUthmanTaha ()Landroidx/compose/ui/text/font/SystemFontFamily;
-	public final fun getUthmanicHafs ()Landroidx/compose/ui/text/font/SystemFontFamily;
+	public final fun getAlQuranAlKareem ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getHafsSmart ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getKitab ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getQuranNumbers ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getQuranTitles ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getUthmanTaha ()Landroidx/compose/ui/text/font/FontFamily;
+	public final fun getUthmanicHafs ()Landroidx/compose/ui/text/font/FontFamily;
 }
 
 public final class com/mushafimad/ui/theme/ReadingTheme : java/lang/Enum {
@@ -584,6 +584,7 @@ public final class com/mushafimad/ui/theme/ReadingTheme : java/lang/Enum {
 	public static final field COMFORTABLE Lcom/mushafimad/ui/theme/ReadingTheme;
 	public static final field NIGHT Lcom/mushafimad/ui/theme/ReadingTheme;
 	public static final field WHITE Lcom/mushafimad/ui/theme/ReadingTheme;
+	public final fun getAccentColor-0d7_KjU ()J
 	public final fun getBackgroundColor-0d7_KjU ()J
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getTextColor-0d7_KjU ()J

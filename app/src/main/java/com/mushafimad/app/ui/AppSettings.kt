@@ -29,7 +29,7 @@ object AppSettings {
     private lateinit var prefs: SharedPreferences
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val _readingTheme = MutableStateFlow(ReadingTheme.COMFORTABLE)
+    private val _readingTheme = MutableStateFlow(ReadingTheme.WHITE)
     val readingTheme: StateFlow<ReadingTheme> = _readingTheme
 
     /** Sourced from the library's own PreferencesRepository (proves it persists). */
@@ -39,8 +39,8 @@ object AppSettings {
     fun init(context: Context) {
         prefs = context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
         _readingTheme.value = runCatching {
-            ReadingTheme.valueOf(prefs.getString(KEY_READING_THEME, null) ?: "COMFORTABLE")
-        }.getOrDefault(ReadingTheme.COMFORTABLE)
+            ReadingTheme.valueOf(prefs.getString(KEY_READING_THEME, null) ?: "WHITE")
+        }.getOrDefault(ReadingTheme.WHITE)
 
         colorScheme = MushafLibrary.getPreferencesRepository()
             .getThemeConfigFlow()
