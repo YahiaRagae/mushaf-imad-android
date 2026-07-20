@@ -9,7 +9,7 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 [![JitPack](https://jitpack.io/v/YahiaRagae/mushaf-imad-android.svg)](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
 
-> ✅ **Version 0.2.1:** Supports 16 KB memory pages (required by Google Play for apps targeting Android 15+), and fixes a long list of bugs found during QA — including a startup crash and the loss of all saved user data on every launch. The public API is unchanged, so v0.1 code compiles as-is.
+> ✅ **Version 0.3.0:** The reader now renders the Mushaf the way the iOS viewer does — the page fits the screen with no scrolling, surah-name and page-number ornaments are drawn in place, the real KFGQPC digit font ships with the library, and page turning is always right-to-left whatever your app's locale. Landscape switches to a vertical scroll. The public API gains only `ReadingTheme.accentColor`, so 0.2.x code compiles as-is.
 
 ## Features
 
@@ -423,6 +423,37 @@ in two product flavours against two different spellings of the same library:
 **Status:** Published on [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 
 ---
+
+## What's new in 0.3.0
+
+The viewer release: the Android reader now renders the page the way the iOS viewer does.
+The public API gains only `ReadingTheme.accentColor`, so 0.2.x code compiles as-is.
+
+**The page**
+- The whole page fits the screen — 15 lines between header and footer, no scrolling. Lines run
+  the full page width, and the line pitch follows the iOS model, so full pages fill down to the
+  footer while Al-Fātiḥah and page 2 stay compact instead of stretching apart.
+- **Landscape** switches to a vertical scroll, as on iOS. It was previously unusable: the fixed
+  line slots collapsed into overlapping slivers of text.
+- A full-screen immersive mode with a floating toolbar, so the page is the whole screen.
+
+**Mushaf furniture**
+- The ornamental **surah-name bar** is drawn on surah starts, and the **page-number ornament**
+  sits at the foot of the page, alternating side by page parity like a printed facing-page Mushaf.
+- The header shows the real **juz and hizb** for the page.
+- Verse-number markers are sized to the ornament's own aspect and no longer overlap the text.
+
+**Typography and colour**
+- Ships the real **KFGQPC UthmanTaha** font, so verse-number and page-number digits match iOS
+  instead of falling back to the system font.
+- The verse highlight is iOS's green, drawn *underneath* the glyph ink rather than as a
+  translucent wash over it, and the header accent follows the reading theme (including Night).
+
+**Reading and interaction**
+- **Page turning is always right-to-left**, whatever locale your app runs in — swiping right
+  always goes forward through the Mushaf. Previously an English-locale host turned pages backwards.
+- Long-press verse selection with a whole-verse press preview, and `pageSwipeEnabled` so a host
+  can lock page-turning by swipe while keeping programmatic navigation.
 
 ## What's new in 0.2.2
 
