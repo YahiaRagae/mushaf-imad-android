@@ -3,6 +3,8 @@ package com.mushafimad.ui.mushaf
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -72,92 +74,125 @@ fun QuranPageView(
     val readingTheme = MaterialTheme.readingTheme
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Column(
+        BoxWithConstraints(
             modifier = modifier
                 .fillMaxSize()
                 .background(readingTheme.backgroundColor)
         ) {
-            // Page header
-            PageHeader(
-                chapters = chapters,
-                juzLabel = juzLabel,
-                hizbLabel = hizbLabel
-            )
-
-            // The 15 lines between the header and the footer - the line is the unit of
-            // measure, as in a printed Mushaf and the iOS viewer. Each line frame is
-            // shorter than the image's natural height; QuranLineImageView crops the
-            // top/bottom whitespace to fit. Lines run the FULL page width - iOS pads only
-            // the header row, not the line stack, and everything on the line (text scale,
-            // surah-name bar) derives from this width. A tap on the reading area that is
-            // NOT on a verse (verse fragments consume their own taps) bubbles up here and
-            // fires onPageTap - the hook a host uses to toggle immersive/full-screen
-            // reading, matching iOS.
-            BoxWithConstraints(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .then(
-                        if (onPageTap != null) {
-                            Modifier.pointerInput(onPageTap) {
-                                detectTapGestures { onPageTap() }
-                            }
-                        } else Modifier
-                    )
-            ) {
-                // Line pitch. iOS pins every line to a width-derived height (the 1440x232
-                // image aspect x a 0.73 crop factor, QuranPageView.swift:68,118) and lets
-                // one trailing spacer take the leftover - which on iPhone aspect ratios is
-                // ~ZERO, so iOS pages visually FILL the space down to the footer. Android
-                // phones are taller: the same pinned pitch left ~12% of the content area
-                // as a blank band at the bottom (#114). So:
-                //  - FULL pages (content on all 15 lines - every page but 1 and 2) take
-                //    the equal share of the available height, filling to the footer the
-                //    way iOS looks on its own hardware; capped at the image's natural
-                //    height so an extreme aspect can never letterbox a line.
-                //  - SPARSE pages (any line with neither a verse fragment nor a chapter
-                //    header on it) keep the iOS pinned pitch, so their blank slots stay
-                //    small instead of stretching the few real lines apart (#110).
-                val pageVerses = verses.filter { it.pageNumber == pageNumber }
-                // Pages 1 and 2 are this mushaf's only sparse pages: they ship 7 of their
-                // 15 line PNGs as blank placeholders. Every other page's 15 lines all
-                // carry real ink (verses, surah bars, or bismillahs - note bismillah
-                // lines have no verse/header DATA, so this cannot be derived from the
-                // page's verse fragments; it is a fixed property of the shipped assets).
-                val isSparse = pageNumber <= 2
-                val scaledImageHeight = maxWidth / (1440f / 232f)
-                val lineHeight = if (isSparse) {
-                    minOf(scaledImageHeight * 0.73f, maxHeight / 15)
-                } else {
-                    minOf(scaledImageHeight, maxHeight / 15)
+            val pageVerses = verses.filter { it.pageNumber == pageNumber }
+            // A tap on the reading area that is NOT on a verse (verse fragments consume
+            // their own taps) fires onPageTap - the hook a host uses to toggle
+            // immersive/full-screen reading, matching iOS.
+            val tapModifier = if (onPageTap != null) {
+                Modifier.pointerInput(onPageTap) {
+                    detectTapGestures { onPageTap() }
                 }
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // Render 15 lines (1-15) as images - skip line 0 which is often empty
-                    repeat(15) { index ->
-                        val line = index + 1  // Start from line 1 instead of 0
-                        QuranLineImageView(
-                            page = pageNumber,
-                            line = line,
-                            mushafType = mushafType,
-                            verses = pageVerses,
-                            chapterHeaders = chapterHeaders,
-                            selectedVerse = selectedVerse,
-                            highlightedVerse = highlightedVerse,
-                            pressedVerse = pressedVerse,
-                            onVerseClick = onVerseClick,
-                            onVerseLongClick = onVerseLongClick,
-                            onVersePressChange = { pressedVerse = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(lineHeight)
-                        )
-                    }
+            } else Modifier
+            // The 15 lines, rendered at a given pitch - the line is the unit of measure,
+            // as in a printed Mushaf and the iOS viewer. Each line frame is shorter than
+            // the image's natural height; QuranLineImageView crops the top/bottom
+            // whitespace to fit. Lines run the FULL page width - iOS pads only the header
+            // row, not the line stack, and everything on the line (text scale, surah-name
+            // bar) derives from this width.
+            val lineStack: @Composable (androidx.compose.ui.unit.Dp) -> Unit = { lineHeight ->
+                // Render 15 lines (1-15) as images - skip line 0 which is often empty
+                repeat(15) { index ->
+                    val line = index + 1  // Start from line 1 instead of 0
+                    QuranLineImageView(
+                        page = pageNumber,
+                        line = line,
+                        mushafType = mushafType,
+                        verses = pageVerses,
+                        chapterHeaders = chapterHeaders,
+                        selectedVerse = selectedVerse,
+                        highlightedVerse = highlightedVerse,
+                        pressedVerse = pressedVerse,
+                        onVerseClick = onVerseClick,
+                        onVerseLongClick = onVerseLongClick,
+                        onVersePressChange = { pressedVerse = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(lineHeight)
+                    )
                 }
             }
 
-            // Page-number ornament, anchored at the bottom of the page. The page fits
-            // without scrolling, so it is always visible, matching the iOS viewer.
-            PageFooter(pageNumber = pageNumber)
+            if (maxWidth > maxHeight) {
+                // LANDSCAPE: the width-derived line pitch is far taller than the screen,
+                // so - exactly like iOS (QuranPageView.swift:70-97) - the page becomes a
+                // vertical scroll: header, 15 lines at the width-derived pitch (x0.7,
+                // iOS's landscape crop factor), and the footer inside the scroll content,
+                // padded 40dp. The footer ornament scales 2.5x like iOS's
+                // deviceScaleFactor so it doesn't look lost on the wide page.
+                val lineHeight = maxWidth / (1440f / 232f) * 0.7f
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .then(tapModifier)
+                ) {
+                    PageHeader(
+                        chapters = chapters,
+                        juzLabel = juzLabel,
+                        hizbLabel = hizbLabel
+                    )
+                    lineStack(lineHeight)
+                    PageFooter(
+                        pageNumber = pageNumber,
+                        scale = 2.5f,
+                        modifier = Modifier.padding(vertical = 40.dp)
+                    )
+                }
+            } else {
+                // PORTRAIT: fit to the screen, no scrolling; header and footer fixed.
+                Column(modifier = Modifier.fillMaxSize()) {
+                    PageHeader(
+                        chapters = chapters,
+                        juzLabel = juzLabel,
+                        hizbLabel = hizbLabel
+                    )
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .then(tapModifier)
+                    ) {
+                        // Line pitch. iOS pins every line to a width-derived height (the
+                        // 1440x232 image aspect x a 0.73 crop factor,
+                        // QuranPageView.swift:68,118) and lets one trailing spacer take
+                        // the leftover - which on iPhone aspect ratios is ~ZERO, so iOS
+                        // pages visually FILL the space down to the footer. Android
+                        // phones are taller: the same pinned pitch left ~12% of the
+                        // content area as a blank band at the bottom (#114). So:
+                        //  - FULL pages (content on all 15 lines - every page but 1 and
+                        //    2) take the equal share of the available height, filling to
+                        //    the footer the way iOS looks on its own hardware; capped at
+                        //    the image's natural height so an extreme aspect can never
+                        //    letterbox a line.
+                        //  - SPARSE pages keep the iOS pinned pitch, so their blank slots
+                        //    stay small instead of stretching the few real lines apart
+                        //    (#110). Pages 1 and 2 are this mushaf's only sparse pages:
+                        //    they ship 7 of their 15 line PNGs as blank placeholders
+                        //    (bismillah lines carry no verse/header DATA, so this cannot
+                        //    be derived from the page data; it is a property of the
+                        //    shipped assets).
+                        val isSparse = pageNumber <= 2
+                        val scaledImageHeight = maxWidth / (1440f / 232f)
+                        val lineHeight = if (isSparse) {
+                            minOf(scaledImageHeight * 0.73f, maxHeight / 15)
+                        } else {
+                            minOf(scaledImageHeight, maxHeight / 15)
+                        }
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            lineStack(lineHeight)
+                        }
+                    }
+
+                    // Page-number ornament, anchored at the bottom of the page. The page
+                    // fits without scrolling, so it is always visible, matching iOS.
+                    PageFooter(pageNumber = pageNumber)
+                }
+            }
         }
     }
 }
@@ -224,7 +259,7 @@ private fun PageHeader(
  * on the left or right by page parity the way a facing-page Mushaf alternates it.
  */
 @Composable
-private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
+private fun PageFooter(pageNumber: Int, scale: Float = 1f, modifier: Modifier = Modifier) {
     // Which edge the ornament sits on. This mirrors iOS, which reads Page.isRight
     // from the shared quran.realm; that field is strict parity for all 604 pages
     // (odd = right, even = left), so computing it here is identical to the data
@@ -242,7 +277,9 @@ private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
         // drawn unbounded so the line box is never clipped (iOS overlays don't clip either).
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(width = 42.dp, height = 26.dp)
+            // scale mirrors iOS's deviceScaleFactor: 1.0 in portrait, 2.5 in the
+            // landscape scroll layout, applied to the frame and the digit alike.
+            modifier = Modifier.size(width = 42.dp * scale, height = 26.dp * scale)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.pagenumb),
@@ -255,14 +292,14 @@ private fun PageFooter(pageNumber: Int, modifier: Modifier = Modifier) {
             val numberStyle = TextStyle(
                 fontFamily = QuranFonts.UthmanTaha,
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp
+                fontSize = 32.sp * scale
             )
-            val fontSize = remember(text, density) {
-                val budgetW = with(density) { 42.dp.toPx() }
-                val budgetH = with(density) { 26.dp.toPx() }
+            val fontSize = remember(text, density, scale) {
+                val budgetW = with(density) { (42.dp * scale).toPx() }
+                val budgetH = with(density) { (26.dp * scale).toPx() }
                 val size = measurer.measure(text, numberStyle, maxLines = 1, softWrap = false).size
                 val factor = minOf(1f, budgetW / size.width, budgetH / size.height)
-                32.sp * factor
+                32.sp * scale * factor
             }
             Text(
                 text = text,
