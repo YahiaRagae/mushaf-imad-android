@@ -5,7 +5,7 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg)](https://android-arsenal.com/api?level=24)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg)](https://kotlinlang.org)
-[![Version](https://img.shields.io/badge/Version-0.2.3-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.2.3)
+[![Version](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.3.0)
 [![JitPack](https://jitpack.io/v/YahiaRagae/mushaf-imad-android.svg)](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
 
@@ -59,14 +59,14 @@ Then add the dependency in your app's `build.gradle.kts`:
 **Option A: Full library (UI + Data) — recommended**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.2.3")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-ui:0.3.0")
 }
 ```
 
 **Option B: Data layer only (custom UI)**
 ```kotlin
 dependencies {
-    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.2.3")
+    implementation("com.github.YahiaRagae.mushaf-imad-android:mushaf-core:0.3.0")
 }
 ```
 
@@ -419,7 +419,7 @@ in two product flavours against two different spellings of the same library:
 
 ## Project Status
 
-**Version:** 0.2.3
+**Version:** 0.3.0
 **Status:** Published on [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 
 ---
@@ -546,6 +546,6 @@ Developed with care for the Muslim community.
 ---
 
 **Last Updated:** July 2026
-**Current Version:** 0.2.3
+**Current Version:** 0.3.0
 **Status:** Stable - Production Ready
 **Published:** [JitPack](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
