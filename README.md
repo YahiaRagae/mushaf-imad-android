@@ -8,6 +8,7 @@ A Quran reader library for Android providing high-quality Mushaf page display wi
 [![Version](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/YahiaRagae/mushaf-imad-android/releases/tag/0.3.0)
 [![JitPack](https://jitpack.io/v/YahiaRagae/mushaf-imad-android.svg)](https://jitpack.io/#YahiaRagae/mushaf-imad-android)
 [![Status](https://img.shields.io/badge/Status-Stable-green.svg)](https://github.com/YahiaRagae/mushaf-imad-android)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > ✅ **Version 0.3.0:** The reader now renders the Mushaf the way the iOS viewer does — the page fits the screen with no scrolling, surah-name and page-number ornaments are drawn in place, the real KFGQPC digit font ships with the library, and page turning is always right-to-left whatever your app's locale. Landscape switches to a vertical scroll. The public API gains only `ReadingTheme.accentColor`, so 0.2.x code compiles as-is.
 
@@ -589,6 +590,12 @@ The library is currently undergoing QA validation. Test cases are tracked as [Gi
 ## Repository
 
 **GitHub:** [https://github.com/YahiaRagae/mushaf-imad-android](https://github.com/YahiaRagae/mushaf-imad-android)
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
