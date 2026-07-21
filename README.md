@@ -417,6 +417,37 @@ in two product flavours against two different spellings of the same library:
 
 ---
 
+## Release Tooling
+
+`scripts/jitpack-stats.sh` reports how often the published library is actually being
+resolved, one row per version, plus the APK download counts from the GitHub releases:
+
+```bash
+./scripts/jitpack-stats.sh              # this library
+./scripts/jitpack-stats.sh owner/repo   # any other JitPack library
+```
+
+```
+  VERSION      BUILD        WEEK    MONTH
+  0.3.0        ok             15       15
+  0.2.3        ok              7        7
+  ...
+  ALL                         15       56
+```
+
+It reads JitPack's undocumented stats endpoint — the one the "Stats" tab on jitpack.io
+uses — and takes the version list from the builds API, so a tag that JitPack never built
+successfully (and therefore nobody can consume) is correctly left out.
+
+Read the numbers as a floor rather than an install count: only **week** and **month**
+windows exist, there is no per-module breakdown, and anything resolved from a cache or a
+mirror never reaches JitPack to be counted.
+
+`scripts/verify-aar.sh` checks a published artifact from a consumer's point of view; see
+**App** above for the `published` flavour that builds against it.
+
+---
+
 ## Project Status
 
 **Version:** 0.3.0
