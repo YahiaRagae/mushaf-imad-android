@@ -612,6 +612,14 @@ Developed with care for the Muslim community.
 - Audio recitations from various reciters
 - Open source libraries: Jetpack Compose, Realm, ExoPlayer, Koin
 
+Special thanks to the [ITQAN Community](https://community.itqan.dev) for their support and contribution to the Quran technology ecosystem.
+
+<p align="center">
+  <a href="https://itqan.dev">
+    <img src="https://itqan.dev/logo.svg" alt="ITQAN Community Logo" width="150" />
+  </a>
+</p>
+
 ---
 
 **Last Updated:** July 2026
